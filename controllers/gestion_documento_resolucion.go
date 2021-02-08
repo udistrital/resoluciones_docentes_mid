@@ -61,7 +61,7 @@ func (c *GestionDocumentoResolucionController) GetContenidoResolucion() {
 	fecha_actual := time.Now().Format("2006-01-02")
 	query = "?query=DependenciaId:" + id_facultad + ",FechaFin__gte:" + fecha_actual + ",FechaInicio__lte:" + fecha_actual
 	if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia/"+query, &jefe_dependencia); err == nil {
-		contenidoResolucion.OrdenadorGasto.NombreOrdenador = BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
+		contenidoResolucion.OrdenadorGasto.NombreOrdenador = helpers.BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
 
 	} else {
 

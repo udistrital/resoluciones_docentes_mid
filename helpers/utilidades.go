@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/administrativa_mid_api/models"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 func SendJson(url string, trequest string, target interface{}, datajson interface{}) error {
