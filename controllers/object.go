@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"resoluciones_docentes_mid/models"
 	"encoding/json"
 
-	beego "github.com/beego/beego/v2/server/web"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
+
+	"github.com/astaxie/beego"
 )
 
 // Operations about object
@@ -89,4 +90,3 @@ func (o *ObjectController) Delete() {
 	o.Data["json"] = "delete success!"
 	o.ServeJSON()
 }
-

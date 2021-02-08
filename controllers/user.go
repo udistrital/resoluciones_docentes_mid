@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"resoluciones_docentes_mid/models"
 	"encoding/json"
 
-	beego "github.com/beego/beego/v2/server/web"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
+
+	"github.com/astaxie/beego"
 )
 
 // Operations about Users
@@ -116,4 +117,3 @@ func (u *UserController) Logout() {
 	u.Data["json"] = "logout success"
 	u.ServeJSON()
 }
-

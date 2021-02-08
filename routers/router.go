@@ -8,9 +8,9 @@
 package routers
 
 import (
-	"resoluciones_docentes_mid/controllers"
+	"github.com/udistrital/resoluciones_docentes_mid/controllers"
 
-	beego "github.com/beego/beego/v2/server/web"
+	"github.com/astaxie/beego"
 )
 
 func init() {
