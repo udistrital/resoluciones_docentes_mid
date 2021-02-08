@@ -9,8 +9,8 @@ import (
 	"github.com/astaxie/beego/httplib"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/resoluciones_docentes_mid/models"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 //GestionResolucionesController operations for Preliquidacion
@@ -42,8 +42,8 @@ func (c *GestionResolucionesController) GetResolucionesAprobadas() {
 
 	if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion/Aprobada"+"?query="+query+"&offset="+strconv.Itoa(offset)+"&limit="+strconv.Itoa(limit), &resolucion_vinculacion_aprobada); err == nil {
 		for x, pos := range resolucion_vinculacion_aprobada {
-			resolucion_vinculacion_aprobada[x].FacultadNombre = BuscarNombreFacultad(pos.Facultad)
-			resolucion_vinculacion_aprobada[x].FacultadFirmaNombre = BuscarNombreFacultad(pos.IdDependenciaFirma)
+			resolucion_vinculacion_aprobada[x].FacultadNombre = helpers.BuscarNombreFacultad(pos.Facultad)
+			resolucion_vinculacion_aprobada[x].FacultadFirmaNombre = helpers.BuscarNombreFacultad(pos.IdDependenciaFirma)
 		}
 
 		c.Data["json"] = resolucion_vinculacion_aprobada
@@ -77,8 +77,8 @@ func (c *GestionResolucionesController) GetResolucionesInscritas() {
 	}
 	if err := r.ToJSON(&resolucion_vinculacion); err == nil {
 		for x, pos := range resolucion_vinculacion {
-			resolucion_vinculacion[x].FacultadNombre = BuscarNombreFacultad(pos.Facultad)
-			resolucion_vinculacion[x].FacultadFirmaNombre = BuscarNombreFacultad(pos.IdDependenciaFirma)
+			resolucion_vinculacion[x].FacultadNombre = helpers.BuscarNombreFacultad(pos.Facultad)
+			resolucion_vinculacion[x].FacultadFirmaNombre = helpers.BuscarNombreFacultad(pos.IdDependenciaFirma)
 		}
 
 		c.Data["json"] = resolucion_vinculacion
@@ -141,19 +141,6 @@ func (c *GestionResolucionesController) InsertarResolucionCompleta() {
 		c.Data["json"] = "Error"
 	}
 	c.ServeJSON()
-}
-
-
-func BuscarNombreFacultad(id_facultad int) (nombre_facultad string) {
-
-	var facultad []models.Facultad
-	var nom string
-	if err2 := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudOikos")+"/"+beego.AppConfig.String("NscrudOikos")+"/dependencia?query=Id:"+strconv.Itoa(id_facultad), &facultad); err2 == nil {
-		nom = facultad[0].Nombre
-	} else {
-		nom = "N/A"
-	}
-	return nom
 }
 
 func InsertarResolucionEstado(id_res int) (contr bool) {
@@ -228,7 +215,7 @@ func InsertarArticulos(id_resolucion int, articulos []models.Articulo) {
 }
 
 func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre int) {
-	resolucion.NomDependencia = BuscarNombreFacultad(resolucion.Resolucion.IdDependencia)
+	resolucion.NomDependencia = helpers.BuscarNombreFacultad(resolucion.Resolucion.IdDependencia)
 	var temp = resolucion.Resolucion
 	var respuesta models.Resolucion
 	var id_creada int

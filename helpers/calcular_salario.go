@@ -2,12 +2,13 @@ package helpers
 
 import (
 	"encoding/json"
-	"strconv"
 	"fmt"
+	"strconv"
 	"strings"
+
 	"github.com/astaxie/beego"
-	"github.com/udistrital/resoluciones_docentes_mid/models"
 	. "github.com/udistrital/golog"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDocente) (docentes_a_insertar []models.VinculacionDocente, err error) {
@@ -50,17 +51,16 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		reglasbase, err := CargarReglasBase("CDVE")
 		beego.Info("predicados: ", predicados, "a ", a)
 
-
 		if err != nil {
 			return docentes_a_insertar, err
 		}
 		reglasbase = reglasbase + predicados
 		m := NewMachine().Consult(reglasbase)
-   	beego.Info("m: ", m)
+		beego.Info("m: ", m)
 		contratos := m.ProveAll("valor_contrato(" + strings.ToLower(nivelAcademico) + "," + docente.IdPersona + "," + vigencia + ",X).")
 		for _, solution := range contratos {
 			a = fmt.Sprintf("%s", solution.ByName_("X"))
-				beego.Info("a: ", a)
+			beego.Info("a: ", a)
 		}
 		f, err := strconv.ParseFloat(a, 64)
 		if err != nil {
@@ -125,4 +125,43 @@ func CargarPuntoSalarial() (p models.PuntoSalarial, err error) {
 		err = fmt.Errorf("He fallado en punto_salarial (get) función CargarPuntoSalarial, %s", err)
 	}
 	return v[0], err
+}
+
+func CalcularTotalSalario(v []models.VinculacionDocente) (total float64) {
+
+	var sumatoria float64
+	for _, docente := range v {
+		sumatoria = sumatoria + docente.ValorContrato
+	}
+
+	return sumatoria
+}
+
+func Calcular_totales_vinculacion_pdf_nueva(cedula, id_resolucion string, IdDedicacion int) (suma_total_horas int, suma_total_contrato float64, semanasOriginales int) {
+
+	query := "?limit=-1&query=IdPersona:" + cedula + ",IdResolucion.Id:" + id_resolucion
+	var temp []models.VinculacionDocente
+	var total_contrato int
+	var total_horas int
+
+	// Busca las vinculaciones del docente en la misma resolución (aplica para diferentes proyectos curriculares en vinculaciones y las de modificación)
+	if err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &temp); err2 == nil {
+
+		if IdDedicacion != 3 && IdDedicacion != 4 {
+			for _, pos := range temp {
+				total_horas = total_horas + pos.NumeroHorasSemanales
+				total_contrato = total_contrato + int(pos.ValorContrato)
+			}
+		} else {
+			total_horas = temp[0].NumeroHorasSemanales
+			total_contrato = int(temp[0].ValorContrato)
+		}
+
+	} else {
+		fmt.Println("error al guardar en json")
+		total_horas = 0
+		total_contrato = 0
+	}
+
+	return total_horas, float64(total_contrato), temp[0].NumeroSemanas
 }
