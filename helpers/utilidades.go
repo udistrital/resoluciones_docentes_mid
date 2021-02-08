@@ -195,7 +195,7 @@ func FormatNumber(value interface{}, precision int, thousand string, decimal str
 		panic("Unsupported type - " + v.Kind().String())
 	}
 
-	return formatNumberString(x, precision, thousand, decimal)
+	return FormatNumberString(x, precision, thousand, decimal)
 }
 
 func FormatNumberString(x string, precision int, thousand string, decimal string) string {
