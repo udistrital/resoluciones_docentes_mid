@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -501,6 +502,41 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 	c.Ctx.Output.SetStatus(201)
 
 	c.Data["json"] = v
+	c.ServeJSON()
+
+}
+
+// GestionPrevinculacionesController ...
+// @Title GetCdpRpDocente
+// @Description Get RPs de la vinculacion docente
+// @Param num_vinculacion query string true "Número de la vinculación del docente"
+// @Param vigencia query string true "Vigencia de la vinculación del docente"
+// @Success 201 {object}  models.RpDocente
+// @Failure 403 :num_vinculacion is empty
+// @Failure 403 :vigencia is empty
+// @router /rp_docente/:num_vinculacion/:vigencia/:identificacion [get]
+func (c *GestionPrevinculacionesController) GetCdpRpDocente() {
+	num_vinculacion := c.Ctx.Input.Param(":num_vinculacion")
+	vigencia := c.Ctx.Input.Param(":vigencia")
+	identificacion := c.Ctx.Input.Param(":identificacion")
+
+	var contratoDisponibilidad []models.ContratoDisponibilidad
+	var rpdocente models.RpDocente
+
+	//If 1 contrato_disponibilidad (get)
+	if err := helpers.GetJson("http://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/?query=NumeroContrato:"+num_vinculacion+",Vigencia:"+vigencia, &contratoDisponibilidad); err == nil { //If 2  (get)
+		//for contrato_disponibilidad
+		for _, pos := range contratoDisponibilidad {
+			rpdocente = helpers.GetInformacionRpDocente(strconv.Itoa(pos.NumeroCdp), strconv.Itoa(pos.VigenciaCdp), identificacion)
+			c.Data["json"] = rpdocente
+		}
+
+	} else { //If 1 contrato_disponibilidad (get)
+		fmt.Println("He fallado en If 1 contrato_disponibilidad (get), solucioname!!!", err)
+	}
+
+	c.Ctx.Output.SetStatus(201)
+	c.Data["json"] = rpdocente
 	c.ServeJSON()
 
 }
