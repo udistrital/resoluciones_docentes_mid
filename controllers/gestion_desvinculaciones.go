@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/resoluciones_docentes_mid/models"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 // PreliquidacionController operations for Preliquidacion
@@ -34,26 +34,11 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 	fmt.Println("docentes desvinculados")
 	id_resolucion := c.GetString("id_resolucion")
 	query := "?limit=-1&query=IdResolucion.Id:" + id_resolucion
-	v := []models.VinculacionDocente{}
 
-	err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &v)
-	beego.Debug(v)
-	if err != nil {
-		beego.Error("Error de consulta en vinculacion", err)
-		c.Abort("403")
-	}
-	for x, pos := range v {
-		documento_identidad, _ := strconv.Atoi(pos.IdPersona)
-		v[x].NombreCompleto = helpers.BuscarNombreProveedor(documento_identidad)
-		v[x].NumeroDisponibilidad = helpers.BuscarNumeroDisponibilidad(pos.Disponibilidad)
-		v[x].Dedicacion = helpers.BuscarNombreDedicacion(pos.IdDedicacion.Id)
-		v[x].LugarExpedicionCedula = helpers.BuscarLugarExpedicion(pos.IdPersona)
-	}
-	if v == nil {
-		v = []models.VinculacionDocente{}
-	}
+	lista_docentes := helpers.ListarDocentesDesvinculados(query)
+
 	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = v
+	c.Data["json"] = lista_docentes
 	c.ServeJSON()
 
 }
@@ -402,7 +387,7 @@ func (c *GestionDesvinculacionesController) AdicionarHoras() {
 				ModificacionResolucion:       &models.ModificacionResolucion{Id: v.IdModificacionResolucion},
 				VinculacionDocenteCancelada:  &models.VinculacionDocente{Id: pos.Id},
 				VinculacionDocenteRegistrada: &models.VinculacionDocente{Id: vinculacion_nueva},
-				Horas: pos.NumeroHorasNuevas,
+				Horas:                        pos.NumeroHorasNuevas,
 			}
 			err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp)
 
@@ -487,7 +472,7 @@ func (c *GestionDesvinculacionesController) ActualizarVinculacionesCancelacion()
 			ModificacionResolucion:       &models.ModificacionResolucion{Id: v.IdModificacionResolucion},
 			VinculacionDocenteCancelada:  &models.VinculacionDocente{Id: pos.Id},
 			VinculacionDocenteRegistrada: &models.VinculacionDocente{Id: vinculacion_nueva},
-			Horas: pos.NumeroHorasSemanales,
+			Horas:                        pos.NumeroHorasSemanales,
 		}
 		errorMod := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp)
 
@@ -505,8 +490,6 @@ func (c *GestionDesvinculacionesController) ActualizarVinculacionesCancelacion()
 	c.ServeJSON()
 
 }
-
-
 
 func InsertarDesvinculaciones(v [1]models.VinculacionDocente) (id int, err error) {
 	var d []models.VinculacionDocente
