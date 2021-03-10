@@ -58,7 +58,7 @@ func (c *GestionResolucionesController) GetResolucionesInscritas() {
 	limit, _ := c.GetInt("limit")
 	offset, _ := c.GetInt("offset")
 
-	resolucion_vinculacion = helpers.GetResolucionesAprobadas(query, limit, offset)
+	resolucion_vinculacion = helpers.GetResolucionesInscritas(query, limit, offset)
 
 	c.Ctx.Output.SetStatus(201)
 	c.Data["json"] = resolucion_vinculacion
