@@ -20,6 +20,30 @@ func init() {
 				&controllers.GestionDocumentoResolucionController{},
 			),
 		),
+
+		beego.NSNamespace("/expedir_resolucion",
+			beego.NSInclude(
+				&controllers.ExpedirResolucionController{},
+			),
+		),
+
+		beego.NSNamespace("/gestion_desvinculaciones",
+			beego.NSInclude(
+				&controllers.GestionDesvinculacionesController{},
+			),
+		),
+
+		beego.NSNamespace("/gestion_previnculaciones",
+			beego.NSInclude(
+				&controllers.GestionPrevinculacionesController{},
+			),
+		),
+
+		beego.NSNamespace("/gestion_resoluciones",
+			beego.NSInclude(
+				&controllers.GestionResolucionesController{},
+			),
+		),
 	/*	beego.NSNamespace("/user",
 		beego.NSInclude(
 			&controllers.UserController{},
