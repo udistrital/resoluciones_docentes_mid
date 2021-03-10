@@ -47,3 +47,40 @@ func CalcularFechaFin(fecha_inicio time.Time, numero_semanas int) (fecha_fin tim
 	after := f_i.AddDate(0, entero, int(numero_dias))
 	return after
 }
+
+func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenidoResolucion models.ResolucionCompleta) {
+	var ordenador_gasto []models.OrdenadorGasto
+	var jefe_dependencia []models.JefeDependencia
+	var query string
+
+	if request, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err == nil && request == 200 {
+		query = "?limit=-1&query=DependenciaId:" + id_facultad
+
+		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/"+query, &ordenador_gasto); err2 == nil && request2 == 200 {
+			if ordenador_gasto == nil {
+				if request3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/1", &ordenador_gasto); err3 == nil && request3 == 200 {
+					contenidoResolucion.OrdenadorGasto = ordenador_gasto[0]
+				} else {
+					fmt.Println("Error al consultar ordenador 1", err3)
+				}
+			} else {
+				contenidoResolucion.OrdenadorGasto = ordenador_gasto[0]
+			}
+
+		} else {
+			fmt.Println("Error al consultar ordenador del gasto", err2)
+		}
+	} else {
+		fmt.Println("Error al consultar contenido", err)
+	}
+
+	fecha_actual := time.Now().Format("2006-01-02")
+	query = "?query=DependenciaId:" + id_facultad + ",FechaFin__gte:" + fecha_actual + ",FechaInicio__lte:" + fecha_actual
+	if request4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia/"+query, &jefe_dependencia); err4 == nil && request4 == 200 {
+		contenidoResolucion.OrdenadorGasto.NombreOrdenador = BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
+	} else {
+		fmt.Println("Error al consultar contenido", err4)
+	}
+
+	return contenidoResolucion
+}

@@ -11,6 +11,25 @@ import (
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
+func CalculoSalarios(v []models.VinculacionDocente) (total int) {
+	var totalesDisponibilidad int
+	if v, err := CalcularSalarioPrecontratacion(v); err == nil {
+		totalesSalario := CalcularTotalSalario(v)
+		vigencia := strconv.Itoa(int(v[0].Vigencia.Int64))
+		periodo := strconv.Itoa(v[0].Periodo)
+		disponibilidad := strconv.Itoa(v[0].Disponibilidad)
+
+		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/get_valores_totales_x_disponibilidad/"+vigencia+"/"+periodo+"/"+disponibilidad+"", &totalesDisponibilidad); err2 == nil && request2 == 200 {
+			total = int(totalesSalario) + totalesDisponibilidad
+		} else {
+			beego.Error("ERROR al calcular total de contratos", err2)
+		}
+	} else {
+		beego.Error(err)
+	}
+	return total
+}
+
 func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDocente) (docentes_a_insertar []models.VinculacionDocente, err error) {
 	nivelAcademico := docentes_a_vincular[0].NivelAcademico
 	vigencia := strconv.Itoa(int(docentes_a_vincular[0].Vigencia.Int64))
