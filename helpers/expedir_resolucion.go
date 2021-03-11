@@ -53,13 +53,20 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 	var jefe_dependencia []models.JefeDependencia
 	var query string
 
+	fmt.Println(id_resolucion)
+	fmt.Println(id_facultad)
+
 	if request, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err == nil && request == 200 {
 		query = "?limit=-1&query=DependenciaId:" + id_facultad
 
+		fmt.Println(contenidoResolucion)
+
 		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/"+query, &ordenador_gasto); err2 == nil && request2 == 200 {
+			fmt.Println(ordenador_gasto)
 			if ordenador_gasto == nil {
 				if request3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/1", &ordenador_gasto); err3 == nil && request3 == 200 {
 					contenidoResolucion.OrdenadorGasto = ordenador_gasto[0]
+					fmt.Println(ordenador_gasto)
 				} else {
 					fmt.Println("Error al consultar ordenador 1", err3)
 				}

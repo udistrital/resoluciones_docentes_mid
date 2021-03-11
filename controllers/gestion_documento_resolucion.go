@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/astaxie/beego"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
 )
@@ -26,6 +28,8 @@ func (c *GestionDocumentoResolucionController) URLMapping() {
 func (c *GestionDocumentoResolucionController) GetContenidoResolucion() {
 	id_resolucion := c.GetString("id_resolucion")
 	id_facultad := c.GetString("id_facultad")
+
+	fmt.Println("ENTRA")
 
 	contenidoResolucion := helpers.GetContenidoResolucion(id_resolucion, id_facultad)
 
