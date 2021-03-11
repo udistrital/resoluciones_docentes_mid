@@ -106,12 +106,9 @@ func (c *ExpedirResolucionController) Expedir() {
 						if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_proveedor/?query=NumDocumento:"+strconv.Itoa(contrato.Contratista), &proveedor); err == nil {
 							if proveedor != nil { //Nuevo If
 								temp = proveedor[0].Id
-								fmt.Println("sup")
-								fmt.Println(sup)
 								contratoGeneral := make(map[string]interface{})
-								
 								contratoGeneral = map[string]interface{}{
-									"Id": "ASDASD",
+									"Id": contrato.Id,
 									"VigenciaContrato": contrato.VigenciaContrato,
 									"ObjetoContrato": contrato.ObjetoContrato,
 									"PlazoEjecucion": contrato.PlazoEjecucion,
@@ -133,7 +130,7 @@ func (c *ExpedirResolucionController) Expedir() {
             							"EstadoRegistro": true,
             							"FechaRegistro": "2018-03-20T00:00:00Z",
 									},
-									"ValorContrato": contrato.ValorContrato,
+									"ValorContrato": int(contrato.ValorContrato),
 									"Justificacion": contrato.Justificacion,
 									"DescripcionFormaPago": contrato.DescripcionFormaPago,
 									"Condiciones": contrato.Condiciones,
@@ -182,24 +179,12 @@ func (c *ExpedirResolucionController) Expedir() {
 									},
 								}
 								fmt.Println(contratoGeneral)
-								/*jsonString, err := json.Marshal(contratoGeneral)
-								fmt.Println(jsonString)
-								fmt.Println(err)
-								var contratoGen interface{}
-								err1 := json.Unmarshal(jsonString, &contratoGen)
-								fmt.Println(contratoGen)
-								fmt.Println(err1)*/
-								//	_, err = amazon.Raw("INSERT INTO argo.contrato_general(numero_contrato, vigencia, objeto_contrato, plazo_ejecucion, forma_pago, ordenador_gasto, sede_solicitante, dependencia_solicitante, contratista, unidad_ejecucion, valor_contrato, justificacion, descripcion_forma_pago, condiciones, unidad_ejecutora, fecha_registro, tipologia_contrato, tipo_compromiso, modalidad_seleccion, procedimiento, regimen_contratacion, tipo_gasto, tema_gasto_inversion, origen_presupueso, origen_recursos, tipo_moneda, tipo_control, observaciones, supervisor,clase_contratista, tipo_contrato, lugar_ejecucion) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", contrato.Id, contrato.VigenciaContrato, contrato.ObjetoContrato, contrato.PlazoEjecucion, contrato.FormaPago.Id, contrato.OrdenadorGasto, contrato.SedeSolicitante, contrato.DependenciaSolicitante, temp, contrato.UnidadEjecucion.Id, contrato.ValorContrato, contrato.Justificacion, contrato.DescripcionFormaPago, contrato.Condiciones, contrato.UnidadEjecutora, contrato.FechaRegistro.Format(time.RFC1123), contrato.TipologiaContrato, contrato.TipoCompromiso, contrato.ModalidadSeleccion, contrato.Procedimiento, contrato.RegimenContratacion, contrato.TipoGasto, contrato.TemaGastoInversion, contrato.OrigenPresupueso, contrato.OrigenRecursos, contrato.TipoMoneda, contrato.TipoControl, contrato.Observaciones, contrato.Supervisor.Id, contrato.ClaseContratista, contrato.TipoContrato.Id, contrato.LugarEjecucion.Id).Exec()
-								//If insert contrato_general
 								fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general")
+								//var response1 models.ContratoGeneral
 								if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general", "POST", &response, contratoGeneral); err == nil {
+									//var id1 = response
 									fmt.Println("response")
 									fmt.Println(response)
-								}else{
-									fmt.Println("err")
-									fmt.Println(err)	
-								}
-								if err == nil {
 									aux1 := contrato.Id
 									aux2 := contrato.VigenciaContrato
 									var ce models.ContratoEstado
@@ -210,54 +195,76 @@ func (c *ExpedirResolucionController) Expedir() {
 									ec.Id = 4
 									ce.Estado = &ec
 									// If 4 - contrato_estado
-									if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado", "POST", &response, &ce); err == nil {
-									a := vinculacion.VinculacionDocente
-									var ai models.ActaInicio
-									ai.NumeroContrato = aux1
-									ai.Vigencia = aux2
-									ai.Descripcion = acta.Descripcion
-									ai.FechaInicio = acta.FechaInicio
-									ai.FechaFin = acta.FechaFin
-									ai.FechaFin = helpers.CalcularFechaFin(acta.FechaInicio, a.NumeroSemanas)
-									// If 3 - Acta_inicio creación
-									if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio", "POST", &response, &ai); err == nil {
-										var cd models.ContratoDisponibilidad
-										cd.NumeroContrato = aux1
-										cd.Vigencia = aux2
-										cd.Estado = true
-										cd.FechaRegistro = time.Now()
-										// If 2.5.2 - Get disponibildad_apropiacion
-										fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad))
-										if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil {
-											// If 2.5.1 - Get disponibildad
-											if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil {
-												cd.NumeroCdp = int(disponibilidad.NumeroDisponibilidad)
-												cd.VigenciaCdp = int(disponibilidad.Vigencia)
-												// If 2 - contrato_disponibilidad
-												if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad", "POST", &response, &cd); err == nil {
-													a.IdPuntoSalarial = vinculacion.VinculacionDocente.IdPuntoSalarial
-													a.IdSalarioMinimo = vinculacion.VinculacionDocente.IdSalarioMinimo
-													v := a
-													v.NumeroContrato.String = aux1
-													v.NumeroContrato.Valid = true
-													v.Vigencia.Int64 = int64(aux2)
-													v.Vigencia.Valid = true
-													v.FechaInicio = acta.FechaInicio
-													// If 1 - vinculacion_docente
-													if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(v.Id), "PUT", &response, &v); err == nil {
-														fmt.Println("Vinculacion docente actualizada y lista, vamos por la otra")
+									var response2 models.ContratoEstado
+									if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado", "POST", &response2, &ce); err == nil {
+										//var id2 = response
+										a := vinculacion.VinculacionDocente
+										var ai models.ActaInicio
+										ai.NumeroContrato = aux1
+										ai.Vigencia = aux2
+										ai.Descripcion = acta.Descripcion
+										ai.FechaInicio = acta.FechaInicio
+										ai.FechaFin = acta.FechaFin
+										ai.FechaFin = helpers.CalcularFechaFin(acta.FechaInicio, a.NumeroSemanas)
+										// If 3 - Acta_inicio creación
+										var response3 models.ActaInicio
+										if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio", "POST", &response3, &ai); err == nil {
+											//var id3 = response
+											var cd models.ContratoDisponibilidad
+											cd.NumeroContrato = aux1
+											cd.Vigencia = aux2
+											cd.Estado = true
+											cd.FechaRegistro = time.Now()
+											// If 2.5.2 - Get disponibildad_apropiacion
+											fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad))
+											if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil {
+												// If 2.5.1 - Get disponibildad
+												if err := helpers.GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil {
+													cd.NumeroCdp = int(disponibilidad.NumeroDisponibilidad)
+													cd.VigenciaCdp = int(disponibilidad.Vigencia)
+													// If 2 - contrato_disponibilidad
+													var response4 models.ContratoDisponibilidad
+													if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad", "POST", &response4, &cd); err == nil {
+														a.IdPuntoSalarial = vinculacion.VinculacionDocente.IdPuntoSalarial
+														a.IdSalarioMinimo = vinculacion.VinculacionDocente.IdSalarioMinimo
+														v := a
+														v.NumeroContrato.String = aux1
+														v.NumeroContrato.Valid = true
+														v.Vigencia.Int64 = int64(aux2)
+														v.Vigencia.Valid = true
+														v.FechaInicio = acta.FechaInicio
+														fmt.Println("CD es: ", response4.Id)
+														fmt.Println("AI es: ", response3.Id)
+														fmt.Println("CE es: ", response2.Id)
+														fmt.Println("CONTRATO GENERAL es: ", contrato.Id)
+														// If 1 - vinculacion_docente
+														if err := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(v.Id), "PUT", &response, &v); err == nil {
+															
+															fmt.Println()
+															fmt.Println("Vinculacion docente actualizada y lista, vamos por la otra")
 														} else { // If 1 - vinculacion_docente
-															fmt.Println("He fallado un poquito en If 1 - vinculacion_docente, solucioname!!! ", err)
+															// var response5 interface{}
+															// fmt.Println("He fallado un poquito en If 1 - vinculacion_docente, solucioname!!! ", err)
+															// fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/"+strconv.Itoa(response4.Id))
+															// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/"+strconv.Itoa(response4.Id), "DELETE", &response5, nil)
+															// fmt.Println("BORRADO 1: ", response5)
+															// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio/"+strconv.Itoa(response3.Id), "DELETE", &response5, nil)
+															// fmt.Println("BORRADO 2: ", response5)
+															// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(response2.Id), "DELETE", &response5, nil)
+															// fmt.Println("BORRADO 3: ", response5)
+															// erras := helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general/"+contrato.Id, "DELETE", &response5, nil)
+															// fmt.Println("BORRADO 4: ", response5)
+															// fmt.Println(erras)
 															logs.Error(v)
 															c.Data["system"] = v
 															c.Abort("400")
 														}
 													} else { // If 2 - contrato_disponibilidad
-														var response2 interface{}
+														//var response2 interface{}
 														fmt.Println("He fallado un poquito en  If 2 - contrato_disponibilidad, solucioname!!!", err)
-														helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/"+strconv.Itoa(cd.Id), "DELETE", &response2, nil)
-														helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio/"+strconv.Itoa(ai.Id), "DELETE", &response2, nil)
-														helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
+														// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/"+strconv.Itoa(cd.Id), "DELETE", &response2, nil)
+														// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio/"+strconv.Itoa(ai.Id), "DELETE", &response2, nil)
+														// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
 														logs.Error(cd)
 														c.Data["system"] = cd
 														c.Abort("400")
@@ -275,18 +282,18 @@ func (c *ExpedirResolucionController) Expedir() {
 												c.Abort("404")
 											}
 										} else { // If 3 - Acta_inicio
-											var response2 interface{}
+											//var response2 interface{}
 											fmt.Println("He fallado un poquito en If 3 - Acta_inicio, solucioname!!!", err)
-											helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio/"+strconv.Itoa(ai.Id), "DELETE", &response2, nil)
-											helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
+											// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/acta_inicio/"+strconv.Itoa(ai.Id), "DELETE", &response2, nil)
+											// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
 											logs.Error(ai)
 											c.Data["system"] = ai
 											c.Abort("400")
 										}
 									} else { // If 4 - contrato_estado
-										var response2 interface{}
+										//var response2 interface{}
 										fmt.Println("He fallado un poquito en If 4 - contrato_estado, solucioname!!!", err)
-										helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
+										// helpers.SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_estado/"+strconv.Itoa(ce.Id), "DELETE", &response2, nil)
 										logs.Error(ce)
 										c.Data["system"] = ce
 										c.Abort("400")
@@ -302,32 +309,32 @@ func (c *ExpedirResolucionController) Expedir() {
 									beego.Error(err)
 									}*/
 									return
+								}
+							} else { // Nuevo If
+								fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor nuevo, solucioname!!!", err)
+								// err = amazon.Rollback()
+								// if err != nil {
+								// 	beego.Error(err)
+								// }
+								// err = flyway.Rollback()
+								// if err != nil {
+								// 	beego.Error(err)
+								// }
+								c.Ctx.Output.SetStatus(233)
+								err = c.Ctx.Output.Body([]byte("No existe el docente con número de documento " + strconv.Itoa(contrato.Contratista) + " en Ágora"))
+								if err != nil {
+									beego.Error(err)
+								}
+								return
 							}
-								} else { // Nuevo If
-									fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor nuevo, solucioname!!!", err)
-									// err = amazon.Rollback()
-									// if err != nil {
-										// 	beego.Error(err)
-										// }
-										// err = flyway.Rollback()
-										// if err != nil {
-											// 	beego.Error(err)
-											// }
-											c.Ctx.Output.SetStatus(233)
-											err = c.Ctx.Output.Body([]byte("No existe el docente con número de documento " + strconv.Itoa(contrato.Contratista) + " en Ágora"))
-											if err != nil {
-												beego.Error(err)
-											}
-											return
-										}
-										} else { // If 5 - Informacion_Proveedor
-											fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor, solucioname!!!", err)
-											// err = amazon.Rollback()
-											// if err != nil {
-						// 	beego.Error(err)
-						// }
-						// err = flyway.Rollback()
-						// if err != nil {
+						} else { // If 5 - Informacion_Proveedor
+							fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor, solucioname!!!", err)
+							// err = amazon.Rollback()
+							// if err != nil {
+							// 	beego.Error(err)
+							// }
+							// err = flyway.Rollback()
+							// if err != nil {
 							// 	beego.Error(err)
 							// }
 							return
