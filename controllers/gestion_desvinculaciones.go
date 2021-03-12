@@ -62,6 +62,7 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 // AnularModificaciones ...
 // @Title AnularModificaciones
 // @Description create AnularModificaciones
+// @Param	body		body 	[]models.VinculacionDocente	true		"body for AnularModificaciones content"
 // @Success 201 {string}
 // @Failure 403 body is empty
 // @router /anular_modificaciones [post]

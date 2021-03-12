@@ -167,6 +167,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 // @Description Get RPs de la vinculacion docente
 // @Param num_vinculacion query string true "Número de la vinculación del docente"
 // @Param vigencia query string true "Vigencia de la vinculación del docente"
+// @Param identificacion query string true "Identificación del docente"
 // @Success 201 {object}  models.RpDocente
 // @Failure 403 :num_vinculacion is empty
 // @Failure 403 :vigencia is empty
