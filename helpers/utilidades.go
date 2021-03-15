@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/resoluciones_docentes_mid/models"
+	"github.com/udistrital/administrativa_mid_api/models"
 )
 
 func SendJson(url string, trequest string, target interface{}, datajson interface{}) error {
@@ -38,6 +38,20 @@ func SendJson(url string, trequest string, target interface{}, datajson interfac
 	return json.NewDecoder(r.Body).Decode(target)
 }
 
+func GetJsonTest(url string, target interface{}) (status int, err error) {
+	r, err := http.Get(url)
+	if err != nil {
+		return r.StatusCode, err
+	}
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			beego.Error(err)
+		}
+	}()
+
+	return r.StatusCode, json.NewDecoder(r.Body).Decode(target)
+}
+
 func GetJson(url string, target interface{}) error {
 	r, err := http.Get(url)
 	if err != nil {
@@ -51,6 +65,20 @@ func GetJson(url string, target interface{}) error {
 
 	return json.NewDecoder(r.Body).Decode(target)
 }
+
+// func getJsonTest(w http.ResponseWriter,r *http.Request){
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 	   log.Fatal("parse form error ",err)
+// 	}
+// 	// 初始化请求变量结构
+// 	formData := make(map[string]interface{})
+// 	// 调用json包的解析，解析请求body
+// 	json.NewDecoder(r.Body).Decode(&formData)
+// 	for key,value := range formData{
+// 	   log.Println("key:",key," => value :",value)
+// 	}
+//  }
 
 func GetXml(url string, target interface{}) error {
 	r, err := http.Get(url)
@@ -85,7 +113,26 @@ func GetJsonWSO2(urlp string, target interface{}) error {
 	return json.NewDecoder(r.Body).Decode(target)
 }
 
-func Diff(a, b time.Time) (year, month, day int) {
+func GetJsonWSO2Test(urlp string, target interface{}) (status int, err error) {
+	b := new(bytes.Buffer)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", urlp, b)
+	req.Header.Set("Accept", "application/json")
+	r, err := client.Do(req)
+	if err != nil {
+		beego.Error("error", err)
+		return r.StatusCode, err
+	}
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			beego.Error(nil, err)
+		}
+	}()
+
+	return r.StatusCode, json.NewDecoder(r.Body).Decode(target)
+}
+
+func diff(a, b time.Time) (year, month, day int) {
 	if a.Location() != b.Location() {
 		b = b.In(a.Location())
 	}
@@ -123,7 +170,7 @@ func CargarReglasBase(dominio string) (reglas string, err error) {
 	//carga de reglas desde el ruler
 	var reglasbase string = ``
 	var v []models.Predicado
-	err = GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("Urlruler")+"/"+beego.AppConfig.String("Nsruler")+"/predicado/?query=Dominio.Nombre:"+dominio+"&limit=-1", &v)
+	err = GetJson(beego.AppConfig.String("Urlruler")+"/predicado/?query=Dominio.Nombre:"+dominio+"&limit=-1", &v)
 	if err != nil {
 		return
 	}
@@ -195,10 +242,10 @@ func FormatNumber(value interface{}, precision int, thousand string, decimal str
 		panic("Unsupported type - " + v.Kind().String())
 	}
 
-	return FormatNumberString(x, precision, thousand, decimal)
+	return formatNumberString(x, precision, thousand, decimal)
 }
 
-func FormatNumberString(x string, precision int, thousand string, decimal string) string {
+func formatNumberString(x string, precision int, thousand string, decimal string) string {
 	lastIndex := strings.Index(x, ".") - 1
 	if lastIndex < 0 {
 		lastIndex = len(x) - 1
