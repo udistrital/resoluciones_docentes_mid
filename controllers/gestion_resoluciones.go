@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
@@ -30,16 +30,35 @@ func (c *GestionResolucionesController) URLMapping() {
 // @Failure 403 body is empty
 // @router /get_resoluciones_aprobadas [get]
 func (c *GestionResolucionesController) GetResolucionesAprobadas() {
-	var resolucion_vinculacion_aprobada []models.ResolucionVinculacion
-
 	query := c.GetString("query")
-	limit, _ := c.GetInt("limit")
-	offset, _ := c.GetInt("offset")
+	limit, err1 := c.GetInt("limit")
+	offset, err2 := c.GetInt("offset")
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+	var resolucion_vinculacion_aprobada []models.ResolucionVinculacion
+	var err3 map[string]interface{}
+	if (limit == 0) || (len(query) == 0) || (offset == 0) || (err1 != nil) || (err2 != nil) {
+		panic(map[string]interface{}{"funcion": "GetResolucionesAprobadas", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
 
-	resolucion_vinculacion_aprobada = helpers.GetResolucionesAprobadas(query, limit, offset)
+	if resolucion_vinculacion_aprobada, err3 = helpers.GetResolucionesAprobadas(query, limit, offset); err3 == nil {
+		c.Ctx.Output.SetStatus(200)
+		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": resolucion_vinculacion_aprobada}
+	} else {
+		panic(err3)
+	}
 
-	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = resolucion_vinculacion_aprobada
 	c.ServeJSON()
 }
 
@@ -51,17 +70,34 @@ func (c *GestionResolucionesController) GetResolucionesAprobadas() {
 // @Failure 403 body is empty
 // @router /get_resoluciones_inscritas [get]
 func (c *GestionResolucionesController) GetResolucionesInscritas() {
-	var resolucion_vinculacion []models.ResolucionVinculacion
 	var query []string
-
 	query = c.GetStrings("query")
-	limit, _ := c.GetInt("limit")
-	offset, _ := c.GetInt("offset")
-
-	resolucion_vinculacion = helpers.GetResolucionesInscritas(query, limit, offset)
-
-	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = resolucion_vinculacion
+	limit, err1 := c.GetInt("limit")
+	offset, err2 := c.GetInt("offset")
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "CertificacionController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+	var resolucion_vinculacion []models.ResolucionVinculacion
+	if (limit == 0) || (len(query) == 0) || (offset == 0) || (err1 != nil) || (err2 != nil) {
+		panic(map[string]interface{}{"funcion": "GetResolucionesInscritas", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
+	var err3 map[string]interface{}
+	if resolucion_vinculacion, err3 = helpers.GetResolucionesInscritas(query, limit, offset); err3 == nil {
+		c.Ctx.Output.SetStatus(200)
+		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": resolucion_vinculacion}
+	} else {
+		panic(err3)
+	}
 	c.ServeJSON()
 }
 
@@ -72,19 +108,29 @@ func (c *GestionResolucionesController) GetResolucionesInscritas() {
 // @Failure 403 body is empty
 // @router /insertar_resolucion_completa [post]
 func (c *GestionResolucionesController) InsertarResolucionCompleta() {
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "CertificacionController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
 	var v models.ObjetoResolucion
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		id_resolucion_creada, control := helpers.InsertarResolucionCompleta(v)
-		if control {
-			fmt.Println("okey")
-			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = id_resolucion_creada
+	if err1 := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err1 == nil {
+		if id_resolucion_creada, control, err2 := helpers.InsertarResolucionCompleta(v); err2 == nil || control == false {
+			c.Ctx.Output.SetStatus(200)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": id_resolucion_creada}
 		} else {
-			fmt.Println("not okey")
-			c.Data["json"] = "Error"
+			panic(err2)
 		}
 	} else {
-		fmt.Println("error al leer objeto resolucion", err)
+		panic(err1)
 	}
 
 	c.ServeJSON()

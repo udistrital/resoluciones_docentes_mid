@@ -1,13 +1,18 @@
 package helpers
 
 import (
-	"fmt"
-
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
-func BuscarTipoDocumento(Cedula string) (nombre_tipo_doc string) {
+func BuscarTipoDocumento(Cedula string) (nombre_tipo_doc string, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/BuscarTipoDocumento", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
 	var tipo_documento string
 	var temp []models.InformacionPersonaNatural
 	if err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_persona_natural/?limit=-1&query=Id:"+Cedula, &temp); err2 == nil {
@@ -17,10 +22,12 @@ func BuscarTipoDocumento(Cedula string) (nombre_tipo_doc string) {
 			tipo_documento = "N/A"
 		}
 	} else {
-		fmt.Println("error en json", err2)
 		tipo_documento = "N/A"
+		logs.Error(err2)
+		outputError = map[string]interface{}{"funcion": "/BuscarTipoDocumento2", "err2": err2.Error(), "status": "502"}
+		return tipo_documento, outputError
 	}
 
-	return tipo_documento
+	return tipo_documento, outputError
 
 }
