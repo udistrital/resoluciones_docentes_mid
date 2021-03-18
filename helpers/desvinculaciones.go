@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
@@ -72,7 +73,7 @@ func AnularModificaciones(v []models.VinculacionDocente) (outputError map[string
 			return outputError
 		}
 	}
-	return 
+	return
 }
 
 func AnularAdicionDocente(v models.Objeto_Desvinculacion) (outputError map[string]interface{}) {
@@ -117,7 +118,8 @@ func AnularAdicionDocente(v models.Objeto_Desvinculacion) (outputError map[strin
 	if err4 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/"+strconv.Itoa(respuesta_modificacion_vinculacion[0].Id), "DELETE", &respuesta_delete, respuesta_modificacion_vinculacion[0]); err4 == nil {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente2", "err": err4.Error(), "status": "404"}
-		return outputError	}
+		return outputError
+	}
 
 	//Se elimina vinculacion nueva
 	if err5 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(v.DocentesDesvincular[0].Id), "DELETE", &respuesta_delete_vin, v.DocentesDesvincular[0]); err5 == nil {
@@ -179,20 +181,26 @@ func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string,
 }
 
 func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
 	var respuesta_mod_vin models.ModificacionVinculacion
 	var vinculacion_nueva int
-	var err1 map[string]interface{}
 	var temp_vinculacion [1]models.VinculacionDocente
 
 	//CAMBIAR ESTADO DE VINCULACIÓN DOCENTE
 	for _, pos := range v.DocentesDesvincular {
 		pos.NumeroRp = 0
 		pos.VigenciaRp = 0
-		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(pos.Id), "PUT", &respuesta, pos); err == nil{
-		}else{
-			beego.Error(err)
-			outputError = map[string]interface{}{"funcion": "/AdicionarHoras1", "err": err.Error(), "status": "404"}
-			return "Error", outputError	
+		err1 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(pos.Id), "PUT", &respuesta, pos)
+		//TODO: unificar errores
+		if err1 != nil {
+			logs.Error(err1)
+			outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err1": err1.Error(), "status": "502"}
+			return respuesta, outputError
 		}
 		//TODO: unificar errores
 		beego.Info("respuesta", respuesta)
@@ -216,10 +224,12 @@ func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputErr
 		}
 
 		//CREAR NUEVA Vinculacion
-		vinculacion_nueva, err1 = InsertarDesvinculaciones(temp_vinculacion)
-		if err1 != nil {
-			beego.Error("error al realizar vinculacion nueva", err1)
-			return "Error", err1	
+		var err2 map[string]interface{}
+		vinculacion_nueva, err2 = InsertarDesvinculaciones(temp_vinculacion)
+		if err2 != nil {
+			logs.Error(err2)
+			outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err1": err2, "status": "502"}
+			return respuesta, outputError
 		}
 
 		//INSERCION  TABLA  DE TRAZA MODIFICACION VINCULACION
@@ -233,23 +243,28 @@ func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputErr
 			if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp); err == nil {
 				beego.Info("respuesta modificacion vin", respuesta_mod_vin)
 				respuesta = "OK"
-			}else{
+			} else {
 				beego.Error("error en actualizacion de modificacion vinculacion de modificacion vinculacion", err)
 				outputError = map[string]interface{}{"funcion": "/AdicionarHoras2", "err": err.Error(), "status": "404"}
-				return "Error", outputError	
+				return "Error", outputError
 			}
 
 		}
 	}
 
-	return respuesta, nil
+	return respuesta, outputError
 }
 
 func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respuesta string, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/ActualizarVinculacionesCancelacion", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
 	var respuesta_mod_vin models.ModificacionVinculacion
 	// var respuesta string
 	var vinculacion_nueva int
-	var err1 map[string]interface{}
 	var temp_vinculacion [1]models.VinculacionDocente
 
 	beego.Debug("para poner en false", v)
@@ -261,11 +276,11 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 
 		pos.NumeroRp = 0
 		pos.VigenciaRp = 0
-		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(pos.Id), "PUT", &respuesta, pos); err == nil{
-		}else{
-			beego.Error("error en json", err)
-			outputError = map[string]interface{}{"funcion": "/ActualizarVinculacionesCancelacion1", "err": err.Error(), "status": "404"}
-			return "Error", outputError
+		err1 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(pos.Id), "PUT", &respuesta, pos)
+		if err1 != nil {
+			logs.Error(err1)
+			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas1", "err1": err1.Error(), "status": "502"}
+			return respuesta, outputError
 		}
 		//Verificar objeto para crear nuevas resoluciones
 		temp_vinculacion[0] = models.VinculacionDocente{
@@ -286,10 +301,12 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 		}
 		fmt.Println("RP: ", temp_vinculacion[0].NumeroRp)
 		//CREAR NUEVA Vinculacion
-		vinculacion_nueva, err1 = InsertarDesvinculaciones(temp_vinculacion)
-		if err1 != nil {
-			beego.Error("error al realizar vinculacion nueva", err1)
-			return "Error", err1	
+		var err2 map[string]interface{}
+		vinculacion_nueva, err2 = InsertarDesvinculaciones(temp_vinculacion)
+		if err2 != nil {
+			logs.Error(err2)
+			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas2", "err2": err2, "status": "502"}
+			return respuesta, outputError
 		}
 
 		//INSERCION  TABLA  DE TRAZA MODIFICACION VINCULACION
@@ -299,13 +316,13 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 			VinculacionDocenteRegistrada: &models.VinculacionDocente{Id: vinculacion_nueva},
 			Horas:                        pos.NumeroHorasSemanales,
 		}
-		if errorMod := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp); errorMod == nil{
+		if errorMod := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp); errorMod == nil {
 			beego.Info("respuesta modificacion vin", respuesta_mod_vin)
 			respuesta = "OK"
-		}else{
+		} else {
 			beego.Error("error en actualizacion de modificacion vinculacion de modificacion vinculacion", errorMod)
 			outputError = map[string]interface{}{"funcion": "/ActualizarVinculacionesCancelacion2", "err": errorMod.Error(), "status": "404"}
-			return "Error", outputError	
+			return "Error", outputError
 		}
 	}
 
@@ -314,18 +331,24 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 }
 
 func InsertarDesvinculaciones(v [1]models.VinculacionDocente) (id int, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
 	var d []models.VinculacionDocente
 	json_ejemplo, err1 := json.Marshal(v)
 	if err1 != nil {
-		beego.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": "Error en codificación de datos", "status": "404"}
+		logs.Error(err1)
+		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones1", "err1": err1.Error(), "status": "404"}
 		return id, outputError
 	}
 	err2 := json.Unmarshal(json_ejemplo, &d)
 
 	if err2 != nil {
-		beego.Error(err2)
-		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": "Error en decodificación de datos", "status": "404"}
+		logs.Error(err2)
+		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones2", "err2": err2.Error(), "status": "404"}
 		return id, outputError
 	}
 
@@ -335,7 +358,7 @@ func InsertarDesvinculaciones(v [1]models.VinculacionDocente) (id int, outputErr
 		return id, err
 	}
 
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &id, &d); err == nil{
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &id, &d); err == nil {
 		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": err.Error(), "status": "404"}
 		return 0, outputError
 	}

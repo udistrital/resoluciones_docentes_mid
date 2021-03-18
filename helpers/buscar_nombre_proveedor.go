@@ -8,7 +8,12 @@ import (
 )
 
 func BuscarNombreProveedor(DocumentoIdentidad int) (nombre_prov string, outputError map[string]interface{}) {
-
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/BuscarNombreProveedor", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
 	var nom_proveedor string
 	queryInformacionProveedor := "?query=NumDocumento:" + strconv.Itoa(DocumentoIdentidad)
 	var informacion_proveedor []models.InformacionProveedor
@@ -18,7 +23,7 @@ func BuscarNombreProveedor(DocumentoIdentidad int) (nombre_prov string, outputEr
 		} else {
 			nom_proveedor = ""
 		}
-	}else{
+	} else {
 		outputError = map[string]interface{}{"funcion": "/BuscarNombreProveedor", "err": err2.Error(), "status": "404"}
 		return nom_proveedor, outputError
 	}
