@@ -88,34 +88,67 @@ func GetInformacionRpDocente(numero_cdp string, vigencia_cdp string, identificac
 	return informacion_rp_docente
 }
 
-func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.VinculacionDocente) {
+func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
+
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesDesvinculados", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
+
 	v := []models.VinculacionDocente{}
+
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
 
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &v); err == nil && response == 200 {
 		for x, pos := range v {
 			documento_identidad, _ := strconv.Atoi(pos.IdPersona)
-			v[x].NombreCompleto = BuscarNombreProveedor(documento_identidad)
-			v[x].NumeroDisponibilidad = BuscarNumeroDisponibilidad(pos.Disponibilidad)
-			v[x].Dedicacion = BuscarNombreDedicacion(pos.IdDedicacion.Id)
-			v[x].LugarExpedicionCedula = BuscarLugarExpedicion(pos.IdPersona)
+			v[x].NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
+			if err1 != nil {
+				return v, err1
+			}
+			v[x].NumeroDisponibilidad, err2 = BuscarNumeroDisponibilidad(pos.Disponibilidad)
+			if err2 != nil {
+				return v, err2
+			}
+			v[x].Dedicacion, err3 = BuscarNombreDedicacion(pos.IdDedicacion.Id)
+			if err3 != nil {
+				return v, err3
+			}
+			v[x].LugarExpedicionCedula, err4 = BuscarLugarExpedicion(pos.IdPersona)
+			if err4 != nil {
+				return v, err4
+			}
 		}
 		if v == nil {
 			v = []models.VinculacionDocente{}
 		}
-		return v
+		return v, nil
 	} else {
-		return nil
+		logs.Error(err)
+		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
+		return nil, outputError
 	}
 
 	return
 }
 
-func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente) {
+func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
 	var v []models.VinculacionDocente
 	var modRes []models.ModificacionResolucion
 	var modVin []models.ModificacionVinculacion
 	var cv models.VinculacionDocente
 	// if 3 - modificacion_resolucion
+
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
+
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNueva:"+id_resolucion, &modRes); err == nil && response == 200 {
 		// if 2 - modificacion_vinculacion
 		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAdmin") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion/?limit=-1&query=modificacion_resolucion:" + strconv.Itoa(modRes[0].Id)
@@ -127,24 +160,40 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 				// if 1 - vinculacion_docente
 				if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCancelada.Id), &cv); err == nil && response == 200 {
 					documento_identidad, _ := strconv.Atoi(vinculacion.VinculacionDocenteCancelada.IdPersona)
-					cv.NombreCompleto = BuscarNombreProveedor(documento_identidad)
-					cv.NumeroDisponibilidad = BuscarNumeroDisponibilidad(vinculacion.VinculacionDocenteCancelada.Disponibilidad)
-					cv.Dedicacion = BuscarNombreDedicacion(vinculacion.VinculacionDocenteCancelada.IdDedicacion.Id)
-					cv.LugarExpedicionCedula = BuscarLugarExpedicion(vinculacion.VinculacionDocenteCancelada.IdPersona)
+					cv.NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
+					if err1 != nil {
+						return v, err1
+					}
+					cv.NumeroDisponibilidad, err2 = BuscarNumeroDisponibilidad(vinculacion.VinculacionDocenteCancelada.Disponibilidad)
+					if err2 != nil {
+						return v, err2
+					}
+					cv.Dedicacion, err3 = BuscarNombreDedicacion(vinculacion.VinculacionDocenteCancelada.IdDedicacion.Id)
+					if err3 != nil {
+						return v, err3
+					}
+					cv.LugarExpedicionCedula, err4 = BuscarLugarExpedicion(vinculacion.VinculacionDocenteCancelada.IdPersona)
+					if err4 != nil {
+						return v, err4
+					}
 					cv.NumeroSemanasNuevas = vinculacion.VinculacionDocenteCancelada.NumeroSemanas - vinculacion.VinculacionDocenteRegistrada.NumeroSemanas
 				} else { // if 1 - vinculacion_docente
 					fmt.Println("Error de consulta en vinculacion, solucioname!!!, if 1 - vinculacion_docente: ", err)
+					outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados1", "err": err.Error(), "status": "404"}
+					return nil, outputError
 				}
 				v = append(v, cv)
 			} //fin for vinculaciones
-			return v
+			return v, nil
 		} else { // if 2 - modificacion_vinculacion
 			fmt.Println("Error de consulta en modificacion_vinculacion, solucioname!!!, if 2 - modificacion_vinculacion: ", err)
-			v = []models.VinculacionDocente{}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados2", "err": err.Error(), "status": "404"}
+			return nil, outputError
 		}
 	} else { // if 3 - modificacion_resolucion
 		fmt.Println("Error de consulta en modificacion_resolucion, solucioname!!!, if 3 - modificacion_resolucion: ", err)
-		return nil
+		outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados3", "err": err.Error(), "status": "404"}
+		return nil, outputError
 	}
 	return
 }
@@ -159,7 +208,7 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 	docentesXcargaHoraria, err1 := ListarDocentesHorasLectivas(vigencia, periodo, tipoVinculacion, facultad, nivelAcademico)
 	if err1 != nil {
 		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas1", "err1": err1.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas1", "err1": err1, "status": "404"}
 		return newDocentesXcargaHoraria, outputError
 	}
 
@@ -175,12 +224,11 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas2", "err2": err2, "status": "404"}
 			return newDocentesXcargaHoraria, outputError
 		}
-		var err3 error
-		pos.CategoriaNombre, pos.IDCategoria, err3 = Buscar_Categoria_Docente(vigencia, periodo, pos.DocDocente)
-		if err3 != nil {
-			logs.Error(err3)
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas3", "err3": err3, "status": "404"}
-			return newDocentesXcargaHoraria, outputError
+		var err1 map[string]interface{}
+		pos.CategoriaNombre, pos.IDCategoria, err1 = Buscar_Categoria_Docente(vigencia, periodo, pos.DocDocente)
+		fmt.Println(err1)
+		if err1 != nil {
+			beego.Error(err1)
 		}
 		if catDocente.CategoriaDocente != emptyCatDocente.CategoriaDocente {
 			newDocentesXcargaHoraria.CargasLectivas.CargaLectiva = append(newDocentesXcargaHoraria.CargasLectivas.CargaLectiva, pos)
@@ -253,6 +301,7 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 	var vinc []models.VinculacionDocente
 	var modvin []models.ModificacionVinculacion
 	var ValorModificacionContrato float64
+
 	//Devuelve el nivel académico, la dedicación y la facultad de la resolución
 	if response, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion_docente/"+idResolucion, &resvinc); err1 != nil && response != 200 {
 		logs.Error(err1)
@@ -589,7 +638,6 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 		pos.Periodo = res.Periodo
 		pos.VigenciaCarga = res.VigenciaCarga
 		pos.PeriodoCarga = res.PeriodoCarga
-
 		v[x] = pos
 	}
 	if v == nil {

@@ -10,7 +10,7 @@ import (
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
-func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorContrato) {
+func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorContrato, outputError map[string]interface{}) {
 	var r models.Resolucion
 	var j []models.JefeDependencia
 	var s []models.SupervisorContrato
@@ -25,18 +25,21 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 			fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/supervisor_contrato/?query=Documento:" + strconv.Itoa(j[0].TerceroId) + ",FechaFin__gte:" + fecha + ",FechaInicio__lte:" + fecha + "&CargoId.Cargo__startswith:DECANO|VICE")
 			if err := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/supervisor_contrato/?query=Documento:"+strconv.Itoa(j[0].TerceroId)+",FechaFin__gte:"+fecha+",FechaInicio__lte:"+fecha+"&CargoId.Cargo__startswith:DECANO|VICE", &s); err == nil {
 				fmt.Println(s[0])
-				return s[0]
+				return s[0], nil
 			} else { //If Jefe_dependencia (GET)
 				fmt.Println("He fallado un poquito en If Supervisor 1 (GET) en el método SupervisorActual, solucioname!!! ", err)
-				return
+				outputError = map[string]interface{}{"funcion": "/SupervisorActual3", "err": err.Error(), "status": "404"}
+				return s[0], outputError
 			}
 		} else { //If Jefe_dependencia (GET)
 			fmt.Println("He fallado un poquito en If Jefe_dependencia 2 (GET) en el método SupervisorActual, solucioname!!! ", err)
-			return
+			outputError = map[string]interface{}{"funcion": "/SupervisorActua2", "err": err.Error(), "status": "404"}
+			return s[0], outputError
 		}
 	} else { //If Resolucion (GET)
 		fmt.Println("He fallado un poquito en If Resolucion 3 (GET) en el método SupervisorActual, solucioname!!! ", err)
-		return
+		outputError = map[string]interface{}{"funcion": "/SupervisorActual", "err": err.Error(), "status": "404"}
+		return s[0], outputError
 	}
 	return
 }

@@ -56,7 +56,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 	salarioMinimo, err1 := CargarSalarioMinimo(vigencia)
 	if err1 != nil {
 		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion1", "err1": err1.Error(), "status": "502"}
+		outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion1", "err1": err1, "status": "502"}
 		return nil, outputError
 	}
 
@@ -64,7 +64,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		p, err2 := EsDocentePlanta(docente.IdPersona)
 		if err1 != nil {
 			logs.Error(err2)
-			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion2", "err2": err2.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion2", "err2": err2, "status": "502"}
 			return nil, outputError
 		}
 		if p && strings.ToLower(nivelAcademico) == "posgrado" {
@@ -81,7 +81,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 			a, err3 := CargarPuntoSalarial()
 			if err3 != nil {
 				logs.Error(err2)
-				outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion3", "err3": err3.Error(), "status": "502"}
+				outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion3", "err3": err3, "status": "502"}
 				return nil, outputError
 			}
 			predicados = "valor_punto(" + strconv.Itoa(a.ValorPunto) + ", " + vigencia + ")." + "\n"
@@ -94,7 +94,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		beego.Info("predicados: ", predicados, "a ", a)
 		if err4 != nil {
 			logs.Error(err4)
-			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion4", "err4": err4.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion4", "err4": err4, "status": "502"}
 			return nil, outputError
 		}
 		reglasbase = reglasbase + predicados
@@ -121,36 +121,38 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 
 }
 
-func CargarSalarioMinimo(vigencia string) (p models.SalarioMinimo, err error) {
+func CargarSalarioMinimo(vigencia string) (p models.SalarioMinimo, outputError map[string]interface{}) {
 	var v []models.SalarioMinimo
 
-	err = GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/salario_minimo/?limit=1&query=Vigencia:"+vigencia, &v)
-	if err != nil {
-		err = fmt.Errorf("He fallado en salario_minimo (get) función CargarSalarioMinimo, %s", err)
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/salario_minimo/?limit=1&query=Vigencia:"+vigencia, &v); err == nil && response == 200 {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/CargarSalarioMinimo", "err": err.Error(), "status": "404"}
+		return v[0], outputError
 	}
 
-	return v[0], err
+	return v[0], nil
 }
 
-func EsDocentePlanta(idPersona string) (docentePlanta bool, err error) {
+func EsDocentePlanta(idPersona string) (docentePlanta bool, outputError map[string]interface{}) {
 	var temp map[string]interface{}
 	var esDePlanta bool
 
-	err = GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudAcademica")+"/"+"consultar_datos_docente/"+idPersona, &temp)
-	if err != nil {
-		esDePlanta = false
-		return false, err
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudAcademica")+"/"+"consultar_datos_docente/"+idPersona, &temp); response == 200 && err == nil {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/EsDocentePlanta1", "err": err.Error(), "status": "404"}
+		return false, outputError
 	}
-	jsonDocentes, err := json.Marshal(temp)
-	if err != nil {
-		return false, err
+	jsonDocentes, err1 := json.Marshal(temp)
+	if err1 != nil {
+		outputError = map[string]interface{}{"funcion": "/EsDocentePlanta2", "err": "Error en codificación de datos", "status": "404"}
+		return false, outputError
 	}
 
 	var tempDocentes models.ObjetoDocentePlanta
-	err = json.Unmarshal(jsonDocentes, &tempDocentes)
-	if err != nil {
-		esDePlanta = false
-		return false, err
+	err2 := json.Unmarshal(jsonDocentes, &tempDocentes)
+	if err2 != nil {
+		outputError = map[string]interface{}{"funcion": "/EsDocentePlanta3", "err": "Error en decodificación de datos", "status": "404"}
+		return false, outputError
 	}
 
 	if tempDocentes.DocenteCollection.Docente[0].Planta == "true" {
@@ -162,14 +164,15 @@ func EsDocentePlanta(idPersona string) (docentePlanta bool, err error) {
 	return esDePlanta, nil
 }
 
-func CargarPuntoSalarial() (p models.PuntoSalarial, err error) {
+func CargarPuntoSalarial() (p models.PuntoSalarial, outputError map[string]interface{}) {
 	var v []models.PuntoSalarial
 
-	err = GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/punto_salarial/?sortby=Vigencia&order=desc&limit=1", &v)
-	if err != nil {
-		err = fmt.Errorf("He fallado en punto_salarial (get) función CargarPuntoSalarial, %s", err)
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/punto_salarial/?sortby=Vigencia&order=desc&limit=1", &v); response == 200 && err == nil {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/CargarPuntoSalarial", "err": err.Error(), "status": "404"}
+		return v[0], outputError
 	}
-	return v[0], err
+	return v[0], nil
 }
 
 func CalcularTotalSalario(v []models.VinculacionDocente) (total float64) {
@@ -215,4 +218,43 @@ func Calcular_totales_vinculacion_pdf_nueva(cedula, id_resolucion string, IdDedi
 	}
 
 	return total_horas, float64(total_contrato), temp[0].NumeroSemanas, outputError
+}
+
+// Calcula el valor del contrato a reversar en dos partes:
+// (1) las horas a reducir durante las semanas a reducir
+// (2) las horas a originales en las semanas restantes (si quedan después de la reducción)
+func CalcularValorContratoReduccion(v [1]models.VinculacionDocente, semanasRestantes int, horasOriginales int, nivelAcademico string) (salarioTotal float64, outputError map[string]interface{}) {
+	var d []models.VinculacionDocente
+	var salarioSemanasReducidas float64
+	var salarioSemanasRestantes float64
+
+	jsonEjemplo, err1 := json.Marshal(v)
+	if err1 != nil {
+		outputError = map[string]interface{}{"funcion": "/CalcularValorContratoReduccion1", "err": err1.Error(), "status": "404"}
+		return salarioTotal, outputError
+	}
+	err2 := json.Unmarshal(jsonEjemplo, &d)
+	if err2 != nil {
+		outputError = map[string]interface{}{"funcion": "/CalcularValorContratoReduccion2", "err": err2.Error(), "status": "404"}
+		return salarioTotal, outputError
+	}
+
+	docentes, err := CalcularSalarioPrecontratacion(d)
+	if err != nil {
+		return salarioTotal, err
+	}
+	salarioSemanasReducidas = docentes[0].ValorContrato
+	//Para posgrados no se deben tener en cuenta las semanas restantes
+	if semanasRestantes > 0 && nivelAcademico == "PREGRADO" {
+		d[0].NumeroSemanas = semanasRestantes
+		d[0].NumeroHorasSemanales = horasOriginales
+		docentes, err := CalcularSalarioPrecontratacion(d)
+		if err != nil {
+			return salarioTotal, err
+		}
+		salarioSemanasRestantes = docentes[0].ValorContrato
+	}
+	beego.Info("reducidas ", salarioSemanasReducidas, "restantes ", salarioSemanasRestantes)
+	salarioTotal = salarioSemanasReducidas + salarioSemanasRestantes
+	return salarioTotal, nil
 }

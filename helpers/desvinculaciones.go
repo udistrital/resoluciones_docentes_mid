@@ -10,7 +10,7 @@ import (
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
-func AnularModificaciones(v []models.VinculacionDocente) (respuesta_total string) {
+func AnularModificaciones(v []models.VinculacionDocente) (outputError map[string]interface{}) {
 	var modRes []models.ModificacionResolucion
 	var respuesta_vinculacion string
 	var vinculacion_cancelada []models.VinculacionDocente
@@ -19,30 +19,30 @@ func AnularModificaciones(v []models.VinculacionDocente) (respuesta_total string
 	var respuesta_modificacion_vinculacion []models.ModificacionVinculacion
 
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNueva:"+strconv.Itoa(v[0].IdResolucion.Id), &modRes); err == nil && response == 200 {
-		respuesta_total = "OK"
 	} else {
 		beego.Error(err)
-		respuesta_total = "Error"
+		outputError = map[string]interface{}{"funcion": "/AnularModificaciones6", "err": err.Error(), "status": "404"}
+		return outputError
 	}
 	for _, pos := range v {
 		//Se trae información de tabla de traza modificacion_vinculacion, para saber cuál vinculación hay que poner en true y cuál eliminar
 		query := "?limit=-1&query=ModificacionResolucion.Id:" + strconv.Itoa(modRes[0].Id) + ",VinculacionDocenteRegistrada.Id:" + strconv.Itoa(pos.Id)
 		if response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion"+query, &respuesta_modificacion_vinculacion); err2 == nil && response2 == 200 {
 			fmt.Println("modificacion_vinculacion", respuesta_modificacion_vinculacion)
-			respuesta_total = "OK"
 		} else {
 			beego.Error(err2)
-			respuesta_total = "Error"
+			outputError = map[string]interface{}{"funcion": "/AnularModificaciones5", "err": err2.Error(), "status": "404"}
+			return outputError
 		}
 
 		//se trae informacion de vinculación que fue cancelada
 		query2 := "?limit=-1&query=Id:" + strconv.Itoa(respuesta_modificacion_vinculacion[0].VinculacionDocenteCancelada.Id)
 		if response3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query2, &vinculacion_cancelada); err3 == nil && response3 == 200 {
 			fmt.Println("vinculacion_cancelada", vinculacion_cancelada)
-			respuesta_total = "OK"
 		} else {
 			beego.Error(err3)
-			respuesta_total = "Error"
+			outputError = map[string]interface{}{"funcion": "/AnularModificaciones4", "err": err3.Error(), "status": "404"}
+			return outputError
 		}
 		//se cambia a true vinculación que fue cancelada
 		vinculacion_cancelada[0].Estado = true
@@ -50,33 +50,33 @@ func AnularModificaciones(v []models.VinculacionDocente) (respuesta_total string
 		//Se le cambia estado en bd a vinculación cancelada
 		if err4 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion_cancelada[0].Id), "PUT", &respuesta_vinculacion, vinculacion_cancelada[0]); err4 == nil {
 			fmt.Println("respuesta_vinculacion", respuesta_vinculacion)
-			respuesta_total = "OK"
 		} else {
 			beego.Error(err4)
-			respuesta_total = "Error"
+			outputError = map[string]interface{}{"funcion": "/AnularModificaciones3", "err": err4.Error(), "status": "404"}
+			return outputError
 		}
 
 		//se elimina registro en modificacion_vinculacion
 		if err5 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/"+strconv.Itoa(respuesta_modificacion_vinculacion[0].Id), "DELETE", &respuesta_delete, respuesta_modificacion_vinculacion[0]); err5 == nil {
-			respuesta_total = "OK"
 		} else {
 			beego.Error(err5)
-			respuesta_total = "Error"
+			outputError = map[string]interface{}{"funcion": "/AnularModificaciones2", "err": err5.Error(), "status": "404"}
+			return outputError
 		}
 
 		//Se elimina vinculacion nueva
 		if err6 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(pos.Id), "DELETE", &respuesta_delete_vin, pos); err6 == nil {
 			fmt.Println("respuesta_eliminar_vin_nueva", respuesta_delete_vin)
-			respuesta_total = "OK"
 		} else {
 			beego.Error(err6)
-			respuesta_total = "Error"
+			outputError = map[string]interface{}{"funcion": "/AnularModificaciones1", "err": err6.Error(), "status": "404"}
+			return outputError
 		}
 	}
-	return respuesta_total
+	return
 }
 
-func AnularAdicionDocente(v models.Objeto_Desvinculacion) (respuesta_total string) {
+func AnularAdicionDocente(v models.Objeto_Desvinculacion) (outputError map[string]interface{}) {
 	var respuesta_vinculacion string
 	var vinculacion_cancelada []models.VinculacionDocente
 	var respuesta_delete_vin string
@@ -87,18 +87,18 @@ func AnularAdicionDocente(v models.Objeto_Desvinculacion) (respuesta_total strin
 	query := "?limit=-1&query=ModificacionResolucion.Id:" + strconv.Itoa(v.IdModificacionResolucion) + ",VinculacionDocenteRegistrada.Id:" + strconv.Itoa(v.DocentesDesvincular[0].Id)
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion"+query, &respuesta_modificacion_vinculacion); err == nil && response == 200 {
 		fmt.Println("modificacion_vinculacion", respuesta_modificacion_vinculacion)
-		respuesta_total = "OK"
 	} else {
-		respuesta_total = "error"
+		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente5", "err": err.Error(), "status": "404"}
+		return outputError
 	}
 
 	//se trae informacion de vinculacion que fue cancelada
 	query2 := "?limit=-1&query=Id:" + strconv.Itoa(respuesta_modificacion_vinculacion[0].VinculacionDocenteCancelada.Id)
 	if response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query2, &vinculacion_cancelada); err2 == nil && response2 == 200 {
 		fmt.Println("vinculacion_cancelada", vinculacion_cancelada)
-		respuesta_total = "OK"
 	} else {
-		respuesta_total = "error"
+		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente4", "err": err2.Error(), "status": "404"}
+		return outputError
 	}
 	//se cambia a true vinculacion que fue cancelada
 	vinculacion_cancelada[0].Estado = true
@@ -108,35 +108,35 @@ func AnularAdicionDocente(v models.Objeto_Desvinculacion) (respuesta_total strin
 
 	if err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion_cancelada[0].Id), "PUT", &respuesta_vinculacion, vinculacion_cancelada[0]); err3 == nil {
 		fmt.Println("respuesta_vinculacion", respuesta_vinculacion)
-		respuesta_total = "OK"
 	} else {
-		respuesta_total = "error"
+		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente3", "err": err3.Error(), "status": "404"}
+		return outputError
 	}
 
 	//se elimina registro en modificacion_vinculacion
 
 	if err4 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/"+strconv.Itoa(respuesta_modificacion_vinculacion[0].Id), "DELETE", &respuesta_delete, respuesta_modificacion_vinculacion[0]); err4 == nil {
-		respuesta_total = "OK"
 	} else {
-		respuesta_total = "error"
+		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente2", "err": err4.Error(), "status": "404"}
+		return outputError
 	}
 
 	//Se elimina vinculacion nueva
 	if err5 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(v.DocentesDesvincular[0].Id), "DELETE", &respuesta_delete_vin, v.DocentesDesvincular[0]); err5 == nil {
 		fmt.Println("respuesta_eliminar_vin_nueva", respuesta_delete_vin)
-		respuesta_total = "OK"
 	} else {
-		respuesta_total = "error"
+		outputError = map[string]interface{}{"funcion": "/AnularAdicionDocente1", "err": err5.Error(), "status": "404"}
+		return outputError
 	}
 
-	return respuesta_total
+	return
 }
 
-func ConsultarCategoria(v models.VinculacionDocente) (respuesta string) {
+func ConsultarCategoria(v models.VinculacionDocente) (respuesta string, outputError map[string]interface{}) {
 
 	categoria, _, err := Buscar_Categoria_Docente(strconv.Itoa(v.VigenciaCarga), strconv.Itoa(v.PeriodoCarga), v.IdPersona)
 	if err != nil {
-		beego.Error(err)
+		return respuesta, err
 	}
 
 	respuesta = "OK"
@@ -144,10 +144,10 @@ func ConsultarCategoria(v models.VinculacionDocente) (respuesta string) {
 		respuesta = "Sin categoría"
 	}
 
-	return respuesta
+	return respuesta, nil
 }
 
-func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string) {
+func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string, outputError map[string]interface{}) {
 
 	var respuestaApropiacion models.DatosApropiacion
 	var saldoDisponibilidad float64
@@ -160,6 +160,7 @@ func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string)
 		respuesta = "OK"
 	} else {
 		respuesta = "Error"
+		return respuesta, err
 	}
 
 	valorContrato := validacion.DocentesDesvincular[0].ValorContrato
@@ -169,12 +170,14 @@ func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string)
 		respuesta = "OK"
 	} else {
 		respuesta = "Error"
+		outputError = map[string]interface{}{"funcion": "/ValidarSaldoCDP", "err": err2.Error(), "status": "404"}
+		return respuesta, outputError
 	}
 
 	if saldoDisponibilidad-valorContrato < 0 {
 		respuesta = "Error CDP"
 	}
-	return respuesta
+	return respuesta, nil
 }
 
 func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputError map[string]interface{}) {
@@ -199,6 +202,7 @@ func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputErr
 			outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err1": err1.Error(), "status": "502"}
 			return respuesta, outputError
 		}
+		//TODO: unificar errores
 		beego.Info("respuesta", respuesta)
 		beego.Info("fechaAD", v.DocentesDesvincular[0].FechaInicioNueva)
 		temp_vinculacion[0] = models.VinculacionDocente{
@@ -236,16 +240,15 @@ func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputErr
 				VinculacionDocenteRegistrada: &models.VinculacionDocente{Id: vinculacion_nueva},
 				Horas:                        pos.NumeroHorasNuevas,
 			}
-			err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp)
-
-			if err3 != nil {
-				logs.Error(err3)
-				outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err3": err3.Error(), "status": "502"}
-				return respuesta, outputError
-			} else {
+			if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp); err == nil {
 				beego.Info("respuesta modificacion vin", respuesta_mod_vin)
 				respuesta = "OK"
+			} else {
+				beego.Error("error en actualizacion de modificacion vinculacion de modificacion vinculacion", err)
+				outputError = map[string]interface{}{"funcion": "/AdicionarHoras2", "err": err.Error(), "status": "404"}
+				return "Error", outputError
 			}
+
 		}
 	}
 
@@ -279,7 +282,6 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas1", "err1": err1.Error(), "status": "502"}
 			return respuesta, outputError
 		}
-
 		//Verificar objeto para crear nuevas resoluciones
 		temp_vinculacion[0] = models.VinculacionDocente{
 			IdPersona:            pos.IdPersona,
@@ -314,19 +316,17 @@ func ActualizarVinculacionesCancelacion(v models.Objeto_Desvinculacion) (respues
 			VinculacionDocenteRegistrada: &models.VinculacionDocente{Id: vinculacion_nueva},
 			Horas:                        pos.NumeroHorasSemanales,
 		}
-		errorMod := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp)
-
-		if errorMod != nil {
-			logs.Error(errorMod)
-			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas3", "errorMod": errorMod.Error(), "status": "502"}
-			return respuesta, outputError
-		} else {
+		if errorMod := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/", "POST", &respuesta_mod_vin, temp); errorMod == nil {
 			beego.Info("respuesta modificacion vin", respuesta_mod_vin)
 			respuesta = "OK"
+		} else {
+			beego.Error("error en actualizacion de modificacion vinculacion de modificacion vinculacion", errorMod)
+			outputError = map[string]interface{}{"funcion": "/ActualizarVinculacionesCancelacion2", "err": errorMod.Error(), "status": "404"}
+			return "Error", outputError
 		}
 	}
 
-	return respuesta, outputError
+	return respuesta, nil
 
 }
 
@@ -353,19 +353,14 @@ func InsertarDesvinculaciones(v [1]models.VinculacionDocente) (id int, outputErr
 	}
 
 	//TODO: unificar cont con error
-	var err3 map[string]interface{}
-	d, err3 = CalcularSalarioPrecontratacion(d)
-	if err3 != nil {
-		logs.Error(err3)
-		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones3", "err3": err3, "status": "404"}
-		return id, outputError
+	d, err := CalcularSalarioPrecontratacion(d)
+	if err != nil {
+		return id, err
 	}
 
-	err4 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &id, &d)
-	if err4 != nil {
-		logs.Error(err4)
-		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones4", "err4": err4, "status": "404"}
-		return id, outputError
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &id, &d); err == nil {
+		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": err.Error(), "status": "404"}
+		return 0, outputError
 	}
-	return id, outputError
+	return id, nil
 }
