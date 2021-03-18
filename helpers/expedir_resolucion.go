@@ -9,7 +9,7 @@ import (
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
-func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorContrato) {
+func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorContrato, outputError map[string]interface{}) {
 	var r models.Resolucion
 	var j []models.JefeDependencia
 	var s []models.SupervisorContrato
@@ -24,18 +24,21 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 			fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/supervisor_contrato/?query=Documento:"+strconv.Itoa(j[0].TerceroId)+",FechaFin__gte:"+fecha+",FechaInicio__lte:"+fecha+"&CargoId.Cargo__startswith:DECANO|VICE")
 			if err := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/supervisor_contrato/?query=Documento:"+strconv.Itoa(j[0].TerceroId)+",FechaFin__gte:"+fecha+",FechaInicio__lte:"+fecha+"&CargoId.Cargo__startswith:DECANO|VICE", &s); err == nil {
 				fmt.Println(s[0])
-				return s[0]
+				return s[0], nil
 			} else { //If Jefe_dependencia (GET)
 				fmt.Println("He fallado un poquito en If Supervisor 1 (GET) en el método SupervisorActual, solucioname!!! ", err)
-				return
+				outputError = map[string]interface{}{"funcion": "/SupervisorActual3", "err": err.Error(), "status": "404"}
+				return s[0], outputError
 			}
 		} else { //If Jefe_dependencia (GET)
 			fmt.Println("He fallado un poquito en If Jefe_dependencia 2 (GET) en el método SupervisorActual, solucioname!!! ", err)
-			return
+			outputError = map[string]interface{}{"funcion": "/SupervisorActua2", "err": err.Error(), "status": "404"}
+			return s[0], outputError
 		}
 	} else { //If Resolucion (GET)
 		fmt.Println("He fallado un poquito en If Resolucion 3 (GET) en el método SupervisorActual, solucioname!!! ", err)
-		return
+		outputError = map[string]interface{}{"funcion": "/SupervisorActual", "err": err.Error(), "status": "404"}
+		return s[0], outputError
 	}
 	return
 }
@@ -59,6 +62,8 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 
 	fmt.Println(id_resolucion)
 	fmt.Println(id_facultad)
+
+	var err map[string]interface{}
 
 	if request, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err == nil && request == 200 {
 		query = "?limit=-1&query=DependenciaId:" + id_facultad
@@ -88,7 +93,8 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 	fecha_actual := time.Now().Format("2006-01-02")
 	query = "?query=DependenciaId:" + id_facultad + ",FechaFin__gte:" + fecha_actual + ",FechaInicio__lte:" + fecha_actual
 	if request4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia/"+query, &jefe_dependencia); err4 == nil && request4 == 200 {
-		contenidoResolucion.OrdenadorGasto.NombreOrdenador = BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
+		contenidoResolucion.OrdenadorGasto.NombreOrdenador, err = BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
+		fmt.Println(err)
 	} else {
 		fmt.Println("Error al consultar contenido", err4)
 	}

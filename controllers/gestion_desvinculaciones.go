@@ -3,6 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/astaxie/beego/logs"
+	"strconv"
 
 	"github.com/astaxie/beego"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
@@ -26,18 +28,39 @@ func (c *GestionDesvinculacionesController) URLMapping() {
 // @Title ListarDocentesDesvinculados
 // @Description create ListarDocentesDesvinculados
 // @Param id_resolucion query string false "resolucion a consultar"
-// @Success 201 {int} models.VinculacionDocente
+// @Success 200 {int} models.VinculacionDocente
 // @Failure 403 body is empty
 // @router /docentes_desvinculados [get]
 func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
-	fmt.Println("docentes desvinculados")
 	id_resolucion := c.GetString("id_resolucion")
 	query := "?limit=-1&query=IdResolucion.Id:" + id_resolucion
 
-	lista_docentes := helpers.ListarDocentesDesvinculados(query)
+	_, err1 := strconv.Atoi(id_resolucion)
 
-	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = lista_docentes
+	if err1 != nil{
+		panic(map[string]interface{}{"funcion": "ListarDocentesDesvinculados", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+
+	if lista_docentes, err := helpers.ListarDocentesDesvinculados(query); err ==nil{
+		c.Ctx.Output.SetStatus(200)
+		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": lista_docentes}
+	}else{
+		panic(err)
+	}
 	c.ServeJSON()
 
 }
@@ -46,16 +69,38 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 // @Title ListarDocentesCancelados
 // @Description create ListarDocentesCancelados
 // @Param id_resolucion query string false "resolucion a consultar"
-// @Success 201 {int} models.VinculacionDocente
+// @Success 200 {int} models.VinculacionDocente
 // @Failure 403 body is empty
 // @router /docentes_cancelados [get]
 func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 	id_resolucion := c.GetString("id_resolucion")
 
-	lista_docentes := helpers.ListarDocentesCancelados(id_resolucion)
+	_, err1 := strconv.Atoi(id_resolucion)
 
-	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = lista_docentes
+	if err1 != nil{
+		panic(map[string]interface{}{"funcion": "ListarDocentesCancelados", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+
+	if lista_docentes, err := helpers.ListarDocentesCancelados(id_resolucion); err == nil{
+		c.Ctx.Output.SetStatus(200)
+		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": lista_docentes}
+	}else{
+		panic(err)
+	}
 	c.ServeJSON()
 }
 
@@ -68,16 +113,33 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 // @router /anular_modificaciones [post]
 // Se usa para cuando se anulan resoluciones modificatorias completas
 func (c *GestionDesvinculacionesController) AnularModificaciones() {
+
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+
 	var v []models.VinculacionDocente
-	var respuesta_total string
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		respuesta_total = helpers.AnularModificaciones(v)
+		if err := helpers.AnularModificaciones(v); err == nil{
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
+		}else{
+			panic(err)
+		}
 	} else {
-		respuesta_total = "error"
+		panic(map[string]interface{}{"funcion": "AnularModificaciones", "err": err.Error(), "status": "400"})
 	}
-
-	c.Data["json"] = respuesta_total
 	c.ServeJSON()
 }
 
@@ -89,17 +151,34 @@ func (c *GestionDesvinculacionesController) AnularModificaciones() {
 // @router /anular_adicion [post]
 // Se usa para adiciones, reducciones y cancelaciones
 func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
+	
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+
 	fmt.Println("anular adicion")
 	var v models.Objeto_Desvinculacion
-	var respuesta_total string
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		respuesta_total = helpers.AnularAdicionDocente(v)
+		if err := helpers.AnularAdicionDocente(v); err == nil{
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
+		}else{
+			panic(err)
+		}
 	} else {
-		respuesta_total = "error"
+		panic(map[string]interface{}{"funcion": "AnularAdicionDocente", "err": err.Error(), "status": "400"})
 	}
-
-	c.Data["json"] = respuesta_total
 	c.ServeJSON()
 }
 
@@ -111,16 +190,32 @@ func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
 // @router /consultar_categoria [post]
 // Consulta el servicio de categoría en académica para verificar si el docente tiene el semáforo completo
 func (c *GestionDesvinculacionesController) ConsultarCategoria() {
-	var v models.VinculacionDocente
-	var respuesta string
-	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		respuesta = helpers.ConsultarCategoria(v)
-	} else {
-		beego.Error(err)
-		c.Data["json"] = "Error al leer json para desvincular"
-	}
+	
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
 
-	c.Data["json"] = respuesta
+	var v models.VinculacionDocente
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
+		if respuesta, err := helpers.ConsultarCategoria(v); err == nil{
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
+		}else{
+			panic(err)
+		}
+	} else {
+		panic(map[string]interface{}{"funcion": "ConsultarCategoria", "err": err.Error(), "status": "400"})
+	}
 	c.ServeJSON()
 }
 
@@ -132,16 +227,33 @@ func (c *GestionDesvinculacionesController) ConsultarCategoria() {
 // @router /validar_saldo_cdp [post]
 // Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones
 func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
+	
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+
 	var validacion models.Objeto_Desvinculacion
-	var respuesta string
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &validacion); err == nil {
-		respuesta = helpers.ValidarSaldoCDP(validacion)
+		if respuesta, err := helpers.ValidarSaldoCDP(validacion); err == nil {
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
+		}else{
+			panic(err)
+		}
 	} else {
-		beego.Error(err)
-		c.Data["json"] = "Error al leer json para desvincular"
+		panic(map[string]interface{}{"funcion": "ValidarSaldoCDP", "err": err.Error(), "status": "400"})
 	}
-	c.Data["json"] = respuesta
 	c.ServeJSON()
 }
 
@@ -153,19 +265,33 @@ func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
 // @router /adicionar_horas [post]
 // Se usa tanto para adiciones como para reducciones de horas y semanas
 func (c *GestionDesvinculacionesController) AdicionarHoras() {
+	
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
 
 	var v models.Objeto_Desvinculacion
-	var respuesta string
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		respuesta = helpers.AdicionarHoras(v)
+		if respuesta, err := helpers.AdicionarHoras(v); err == nil {
+			c.Ctx.Output.SetStatus(201)
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
+		}else{
+			panic(err)
+		}
 	} else {
-		beego.Error(err)
-		c.Data["json"] = "Error al leer json para desvincular"
+		panic(map[string]interface{}{"funcion": "AdicionarHoras", "err": err.Error(), "status": "400"})
 	}
-
-	c.Data["json"] = respuesta
-
 	c.ServeJSON()
 
 }

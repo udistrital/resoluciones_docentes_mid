@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
@@ -74,34 +75,67 @@ func GetInformacionRpDocente(numero_cdp string, vigencia_cdp string, identificac
 	return informacion_rp_docente
 }
 
-func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.VinculacionDocente) {
+func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
+
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesDesvinculados", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
+
 	v := []models.VinculacionDocente{}
+
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
 
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &v); err == nil && response == 200 {
 		for x, pos := range v {
 			documento_identidad, _ := strconv.Atoi(pos.IdPersona)
-			v[x].NombreCompleto = BuscarNombreProveedor(documento_identidad)
-			v[x].NumeroDisponibilidad = BuscarNumeroDisponibilidad(pos.Disponibilidad)
-			v[x].Dedicacion = BuscarNombreDedicacion(pos.IdDedicacion.Id)
-			v[x].LugarExpedicionCedula = BuscarLugarExpedicion(pos.IdPersona)
+			v[x].NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
+			if err1 != nil{
+				return v, err1
+			}
+			v[x].NumeroDisponibilidad, err2 = BuscarNumeroDisponibilidad(pos.Disponibilidad)
+			if err2 != nil{
+				return v, err2
+			}
+			v[x].Dedicacion, err3 = BuscarNombreDedicacion(pos.IdDedicacion.Id)
+			if err3 != nil{
+				return v, err3
+			}
+			v[x].LugarExpedicionCedula, err4 = BuscarLugarExpedicion(pos.IdPersona)
+			if err4 != nil{
+				return v, err4
+			}
 		}
 		if v == nil {
 			v = []models.VinculacionDocente{}
 		}
-		return v
+		return v, nil
 	} else {
-		return nil
+		logs.Error(err)
+		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
+		return nil, outputError
 	}
 
 	return
 }
 
-func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente) {
+func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
 	var v []models.VinculacionDocente
 	var modRes []models.ModificacionResolucion
 	var modVin []models.ModificacionVinculacion
 	var cv models.VinculacionDocente
 	// if 3 - modificacion_resolucion
+
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
+
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNueva:"+id_resolucion, &modRes); err == nil && response == 200 {
 		// if 2 - modificacion_vinculacion
 		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAdmin") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion/?limit=-1&query=modificacion_resolucion:" + strconv.Itoa(modRes[0].Id)
@@ -113,24 +147,40 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 				// if 1 - vinculacion_docente
 				if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCancelada.Id), &cv); err == nil && response == 200 {
 					documento_identidad, _ := strconv.Atoi(vinculacion.VinculacionDocenteCancelada.IdPersona)
-					cv.NombreCompleto = BuscarNombreProveedor(documento_identidad)
-					cv.NumeroDisponibilidad = BuscarNumeroDisponibilidad(vinculacion.VinculacionDocenteCancelada.Disponibilidad)
-					cv.Dedicacion = BuscarNombreDedicacion(vinculacion.VinculacionDocenteCancelada.IdDedicacion.Id)
-					cv.LugarExpedicionCedula = BuscarLugarExpedicion(vinculacion.VinculacionDocenteCancelada.IdPersona)
+					cv.NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
+					if err1 != nil{
+						return v, err1
+					}
+					cv.NumeroDisponibilidad, err2 = BuscarNumeroDisponibilidad(vinculacion.VinculacionDocenteCancelada.Disponibilidad)
+					if err2 != nil{
+						return v, err2
+					}
+					cv.Dedicacion, err3 = BuscarNombreDedicacion(vinculacion.VinculacionDocenteCancelada.IdDedicacion.Id)
+					if err3 != nil{
+						return v, err3
+					}
+					cv.LugarExpedicionCedula, err4 = BuscarLugarExpedicion(vinculacion.VinculacionDocenteCancelada.IdPersona)
+					if err4 != nil{
+						return v, err4
+					}
 					cv.NumeroSemanasNuevas = vinculacion.VinculacionDocenteCancelada.NumeroSemanas - vinculacion.VinculacionDocenteRegistrada.NumeroSemanas
 				} else { // if 1 - vinculacion_docente
 					fmt.Println("Error de consulta en vinculacion, solucioname!!!, if 1 - vinculacion_docente: ", err)
+					outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados1", "err": err.Error(), "status": "404"}
+					return nil, outputError
 				}
 				v = append(v, cv)
 			} //fin for vinculaciones
-			return v
+			return v, nil
 		} else { // if 2 - modificacion_vinculacion
 			fmt.Println("Error de consulta en modificacion_vinculacion, solucioname!!!, if 2 - modificacion_vinculacion: ", err)
-			v = []models.VinculacionDocente{}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados2", "err": err.Error(), "status": "404"}
+			return nil, outputError
 		}
 	} else { // if 3 - modificacion_resolucion
 		fmt.Println("Error de consulta en modificacion_resolucion, solucioname!!!, if 3 - modificacion_resolucion: ", err)
-		return nil
+		outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados3", "err": err.Error(), "status": "404"}
+		return nil, outputError
 	}
 	return
 }
@@ -152,8 +202,9 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		if err != nil {
 			beego.Error(err)
 		}
-
-		pos.CategoriaNombre, pos.IDCategoria, err = Buscar_Categoria_Docente(vigencia, periodo, pos.DocDocente)
+		var err1 map[string]interface{}
+		pos.CategoriaNombre, pos.IDCategoria, err1 = Buscar_Categoria_Docente(vigencia, periodo, pos.DocDocente)
+		fmt.Println(err1)
 		if err != nil {
 			beego.Error(err)
 		}
@@ -207,6 +258,13 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 	var vinc []models.VinculacionDocente
 	var modvin []models.ModificacionVinculacion
 	var ValorModificacionContrato float64
+
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
+	var err5 map[string]interface{}
+
 	//Devuelve el nivel académico, la dedicación y la facultad de la resolución
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion_docente/"+idResolucion, &resvinc); err != nil && response != 200 {
 		beego.Error(err)
@@ -238,11 +296,11 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 
 	var llenarVinculacion = func(v *models.VinculacionDocente) {
 		documentoIdentidad, _ := strconv.Atoi(v.IdPersona)
-		v.NombreCompleto = BuscarNombreProveedor(documentoIdentidad)
-		v.Dedicacion = BuscarNombreDedicacion(v.IdDedicacion.Id)
-		v.LugarExpedicionCedula = BuscarLugarExpedicion(v.IdPersona)
-		v.TipoDocumento = BuscarTipoDocumento(v.IdPersona)
-		v.NumeroDisponibilidad = BuscarNumeroDisponibilidad(v.Disponibilidad)
+		v.NombreCompleto, err1 = BuscarNombreProveedor(documentoIdentidad)
+		v.Dedicacion, err2 = BuscarNombreDedicacion(v.IdDedicacion.Id)
+		v.LugarExpedicionCedula, err3 = BuscarLugarExpedicion(v.IdPersona)
+		v.TipoDocumento, err4 = BuscarTipoDocumento(v.IdPersona)
+		v.NumeroDisponibilidad, err5 = BuscarNumeroDisponibilidad(v.Disponibilidad)
 	}
 
 	switch res.IdTipoResolucion.Id {
@@ -385,6 +443,12 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 	var modres []models.ModificacionResolucion
 	var modvin []models.ModificacionVinculacion
 
+	var err1 map[string]interface{}
+	var err2 map[string]interface{}
+	var err3 map[string]interface{}
+	var err4 map[string]interface{}
+	var err5 map[string]interface{}
+
 	response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucion, &res)
 	if err != nil && response != 200 {
 		beego.Error(err)
@@ -421,17 +485,21 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 	for x, pos := range v {
 		documentoIdentidad, _ := strconv.Atoi(pos.IdPersona)
 
-		pos.NombreCompleto = BuscarNombreProveedor(documentoIdentidad)
-		pos.NumeroDisponibilidad = BuscarNumeroDisponibilidad(pos.Disponibilidad)
-		pos.Dedicacion = BuscarNombreDedicacion(pos.IdDedicacion.Id)
-		pos.LugarExpedicionCedula = BuscarLugarExpedicion(pos.IdPersona)
-		pos.TipoDocumento = BuscarTipoDocumento(pos.IdPersona)
+		pos.NombreCompleto, err1 = BuscarNombreProveedor(documentoIdentidad)
+		pos.NumeroDisponibilidad, err2 = BuscarNumeroDisponibilidad(pos.Disponibilidad)
+		pos.Dedicacion, err3 = BuscarNombreDedicacion(pos.IdDedicacion.Id)
+		pos.LugarExpedicionCedula, err4 = BuscarLugarExpedicion(pos.IdPersona)
+		pos.TipoDocumento, err5 = BuscarTipoDocumento(pos.IdPersona)
 		pos.ValorContratoFormato = FormatMoney(int(v[x].ValorContrato), 2)
 		pos.ProyectoNombre = BuscarNombreFacultad(int(v[x].IdProyectoCurricular))
 		pos.Periodo = res.Periodo
 		pos.VigenciaCarga = res.VigenciaCarga
 		pos.PeriodoCarga = res.PeriodoCarga
-
+		fmt.Println(err1)
+		fmt.Println(err2)
+		fmt.Println(err3)
+		fmt.Println(err4)
+		fmt.Println(err5)
 		v[x] = pos
 	}
 	if v == nil {
