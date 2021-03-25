@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
-	_ "resoluciones_docentes_mid/routers"
+	_ "github.com/udistrital/resoluciones_docentes_mid/routers"
 	"runtime"
 	"testing"
 

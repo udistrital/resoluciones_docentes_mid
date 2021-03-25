@@ -1,7 +1,14 @@
 package models
 
+import (
+	"time"
+)
+
 type TipoResolucion struct {
-	Descripcion          string
-	NombreTipoResolucion string
-	Id                   int
+	Id                   int       
+	NombreTipoResolucion string    
+	Descripcion          string    
+	Activo               bool      
+	FechaCreacion        time.Time 
+	FechaModificacion    time.Time 
 }

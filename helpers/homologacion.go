@@ -2,9 +2,9 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/administrativa_mid_api/models"
 )
 
@@ -48,12 +48,6 @@ func HomologarDedicacion_nombre(dedicacion string) (vinculacion_old []string) {
 }
 
 func HomologarFacultad(tipo, facultad string) (facultad_old string, outputError map[string]interface{}) {
-	defer func() {
-		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/HomologarFacultad", "err": err, "status": "502"}
-			panic(outputError)
-		}
-	}()
 	var id_facultad string
 	var temp map[string]interface{}
 	var string_consulta_servicio string
@@ -63,27 +57,24 @@ func HomologarFacultad(tipo, facultad string) (facultad_old string, outputError 
 	} else {
 		string_consulta_servicio = "facultad_oikos_gedep"
 	}
-
-	err1 := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+string_consulta_servicio+"/"+facultad, &temp)
-	if err1 != nil {
-		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/HomologarFacultad1", "err1": err1, "status": "502"}
+	fmt.Println("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+string_consulta_servicio+"/"+facultad)
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+string_consulta_servicio+"/"+facultad, &temp); err == nil && response == 200{
+	}else{
+		outputError = map[string]interface{}{"funcion": "/HomologarFacultad1", "err": err.Error(), "status": "502"}
 		return facultad_old, outputError
 	}
 	if temp != nil {
-		json_facultad, err2 := json.Marshal(temp)
+		json_facultad, err := json.Marshal(temp)
 
-		if err2 != nil {
-			logs.Error(err2)
-			outputError = map[string]interface{}{"funcion": "/HomologarFacultad2", "err2": err2, "status": "502"}
+		if err != nil {
+			outputError = map[string]interface{}{"funcion": "/HomologarFacultad2", "err": err.Error(), "status": "502"}
 			return facultad_old, outputError
 		}
 
 		var temp_proy models.ObjetoFacultad
-		err3 := json.Unmarshal(json_facultad, &temp_proy)
-		if err3 != nil {
-			logs.Error(err3)
-			outputError = map[string]interface{}{"funcion": "/HomologarFacultad3", "err3": err3, "status": "502"}
+		err1 := json.Unmarshal(json_facultad, &temp_proy)
+		if err != nil {
+			outputError = map[string]interface{}{"funcion": "/HomologarFacultad3", "err": err1.Error(), "status": "502"}
 			return facultad_old, outputError
 		}
 
@@ -94,21 +85,15 @@ func HomologarFacultad(tipo, facultad string) (facultad_old string, outputError 
 		}
 
 	} else {
-		outputError = map[string]interface{}{"funcion": "/HomologarFacultad3", "errTemp": "No hay datos de respuesta de las APIs", "status": "502"}
-		return facultad_old, outputError
+		outputError = map[string]interface{}{"funcion": "/HomologarFacultad4", "err": "No hay datos de respuesta de las APIs", "status": "502"}
+		return id_facultad, outputError
 	}
 
 	return id_facultad, nil
 
 }
 
-func HomologarDedicacion_ID(tipo, dedicacion string) (vinculacion_old, nombre_vinculacion string, outputError map[string]interface{}) {
-	defer func() {
-		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err, "status": "502"}
-			panic(outputError)
-		}
-	}()
+func HomologarDedicacion_ID(tipo, dedicacion string) (vinculacion_old, nombre_vinculacion string) {
 	var id_dedicacion_old string
 	var nombre_dedicacion string
 	var comparacion string
@@ -139,9 +124,6 @@ func HomologarDedicacion_ID(tipo, dedicacion string) (vinculacion_old, nombre_vi
 	var arreglo_homologacion []models.HomologacionDedicacion
 	if err := json.Unmarshal(byt, &arreglo_homologacion); err != nil {
 		panic(err) //nunca esperado
-		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
-		return vinculacion_old, nombre_vinculacion, outputError
 	}
 
 	for _, pos := range arreglo_homologacion {
@@ -159,38 +141,29 @@ func HomologarDedicacion_ID(tipo, dedicacion string) (vinculacion_old, nombre_vi
 		}
 	}
 
-	return id_dedicacion_old, nombre_dedicacion, outputError
+	return id_dedicacion_old, nombre_dedicacion
 }
 
 func HomologarProyectoCurricular(proyecto_old string) (proyecto string, outputError map[string]interface{}) {
-	defer func() {
-		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/CertificacionDocumentosAprobados3", "err": err, "status": "502"}
-			panic(outputError)
-		}
-	}()
 	var id_proyecto string
 	var temp map[string]interface{}
 
-	err1 := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+"proyecto_curricular_cod_proyecto/"+proyecto_old, &temp)
-	if err1 != nil {
-		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular1", "err1": err1.Error(), "status": "502"}
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+"proyecto_curricular_cod_proyecto/"+proyecto_old, &temp); err == nil && response == 200{
+	}else{
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular1", "err": err.Error(), "status": "502"}
 		return proyecto, outputError
 	}
 
-	json_proyecto_curricular, err2 := json.Marshal(temp)
+	json_proyecto_curricular, err := json.Marshal(temp)
 
-	if err2 != nil {
-		logs.Error(err2)
-		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular2", "err2": err2.Error(), "status": "502"}
+	if err != nil {
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular2", "err": err.Error(), "status": "502"}
 		return proyecto, outputError
 	}
 	var temp_proy models.ObjetoProyectoCurricular
-	err3 := json.Unmarshal(json_proyecto_curricular, &temp_proy)
-	if err3 != nil {
-		logs.Error(err3)
-		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular3", "err3": err3.Error(), "status": "502"}
+	err = json.Unmarshal(json_proyecto_curricular, &temp_proy)
+	if err != nil {
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular3", "err": err.Error(), "status": "502"}
 		return proyecto, outputError
 	}
 	id_proyecto = temp_proy.Homologacion.IDOikos

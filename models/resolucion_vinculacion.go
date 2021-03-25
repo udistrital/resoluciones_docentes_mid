@@ -5,20 +5,20 @@ import (
 )
 
 type ResolucionVinculacion struct {
-	Id                  int
-	Estado              string
-	Numero              string
-	Vigencia            int
-	Facultad            int
-	NivelAcademico      string
-	Dedicacion          string
-	FechaExpedicion     time.Time
-	NumeroSemanas       int
-	Periodo             int
-	TipoResolucion      string
-	FacultadNombre      string
-	IdDependenciaFirma  int
-	FacultadFirmaNombre string
-	VigenciaCarga       int
-	PeriodoCarga        int
+	Id                 	int       
+	Estado             	string    
+	Numero             	string    
+	Vigencia           	int       
+	Facultad           	int       
+	NivelAcademico     	string    
+	Dedicacion         	string    
+	FechaExpedicion    	time.Time 
+	NumeroSemanas      	int       
+	Periodo            	int       
+	TipoResolucion     	string    
+	IdDependenciaFirma 	int       
+	PeriodoCarga       	int       
+	VigenciaCarga      	int  
+	FacultadNombre 		string  
+	FacultadFirmaNombre	string   
 }

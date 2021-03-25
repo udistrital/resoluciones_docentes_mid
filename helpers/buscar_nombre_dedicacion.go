@@ -15,9 +15,11 @@ func BuscarNombreDedicacion(id_dedicacion int) (nombre_dedicacion string, output
 		}
 	}()
 	var nom_dedicacion string
+	var respuesta_peticion map[string]interface{}
 	query := "?limit=-1&query=Id:" + strconv.Itoa(id_dedicacion)
 	var dedicaciones []models.Dedicacion
-	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/dedicacion"+query, &dedicaciones); err2 == nil && response == 200 {
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/dedicacion"+query, &respuesta_peticion); err2 == nil && response == 200 {
+		LimpiezaRespuestaRefactor(respuesta_peticion, &dedicaciones)
 		if dedicaciones != nil {
 			nom_dedicacion = dedicaciones[0].Descripcion
 		} else {

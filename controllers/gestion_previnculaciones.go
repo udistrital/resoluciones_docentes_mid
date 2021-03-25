@@ -161,10 +161,10 @@ func (c *GestionPrevinculacionesController) ListarDocentesCargaHoraria() {
 	}()
 	vig, err1 := strconv.Atoi(vigencia)
 	per, err2 := strconv.Atoi(periodo)
-	_, err3 := strconv.Atoi(tipoVinculacion)
+	//_, err3 := strconv.Atoi(tipoVinculacion)
 	_, err4 := strconv.Atoi(facultad)
-	_, err5 := strconv.Atoi(nivelAcademico)
-	if (err1 != nil) || (err2 != nil) || (err3 != nil) || (err4 != nil) || (err5 != nil) || (vig == 0) || (per == 0) || (len(periodo) != 4) {
+	//_, err5 := strconv.Atoi(nivelAcademico)
+	if (err1 != nil) || (err2 != nil) || (err4 != nil) || (vig == 0) || (per == 0) || (len(vigencia) != 4) {
 		panic(map[string]interface{}{"funcion": "ListarDocentesCargaHoraria1", "err1": "Error en los parametros de ingreso", "status": "400"})
 	}
 
