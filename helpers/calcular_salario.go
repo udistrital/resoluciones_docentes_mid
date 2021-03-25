@@ -22,7 +22,7 @@ func CalculoSalarios(v []models.VinculacionDocente) (total int, outputError map[
 	var totalesDisponibilidad int
 	if v, err1 := CalcularSalarioPrecontratacion(v); err1 == nil {
 		totalesSalario := CalcularTotalSalario(v)
-		vigencia := strconv.Itoa(int(v[0].Vigencia.Int64))
+		vigencia := strconv.Itoa(int(v[0].Vigencia))
 		periodo := strconv.Itoa(v[0].Periodo)
 		disponibilidad := strconv.Itoa(v[0].Disponibilidad)
 
@@ -35,8 +35,8 @@ func CalculoSalarios(v []models.VinculacionDocente) (total int, outputError map[
 		}
 	} else {
 		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/CalculoSalarios1", "err1": err1, "status": "502"}
-		return total, outputError
+		//outputError = map[string]interface{}{"funcion": "/CalculoSalarios1", "err1": err1, "status": "502"}
+		return total, err1
 	}
 	return
 }
@@ -49,23 +49,23 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		}
 	}()
 	nivelAcademico := docentes_a_vincular[0].NivelAcademico
-	vigencia := strconv.Itoa(int(docentes_a_vincular[0].Vigencia.Int64))
+	vigencia := strconv.Itoa(int(docentes_a_vincular[0].Vigencia))
 	var a string
 	var categoria string
 
 	salarioMinimo, err1 := CargarSalarioMinimo(vigencia)
 	if err1 != nil {
 		logs.Error(err1)
-		outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion1", "err1": err1, "status": "502"}
-		return nil, outputError
+		//outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion1", "err1": err1, "status": "502"}
+		return docentes_a_insertar, err1
 	}
 
 	for x, docente := range docentes_a_vincular {
-		p, err2 := EsDocentePlanta(docente.IdPersona)
+		p, err2 := EsDocentePlanta(strconv.Itoa(docente.PersonaId))
 		if err1 != nil {
 			logs.Error(err2)
-			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion2", "err2": err2, "status": "502"}
-			return nil, outputError
+			//outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion2", "err2": err2, "status": "502"}
+			return docentes_a_insertar, err2
 		}
 		if p && strings.ToLower(nivelAcademico) == "posgrado" {
 			categoria = strings.TrimSpace(docente.Categoria) + "ud"
@@ -81,26 +81,26 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 			a, err3 := CargarPuntoSalarial()
 			if err3 != nil {
 				logs.Error(err2)
-				outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion3", "err3": err3, "status": "502"}
-				return nil, outputError
+				//outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion3", "err3": err3, "status": "502"}
+				return docentes_a_insertar, err3
 			}
 			predicados = "valor_punto(" + strconv.Itoa(a.ValorPunto) + ", " + vigencia + ")." + "\n"
 		}
 
-		predicados = predicados + "categoria(" + docente.IdPersona + "," + strings.ToLower(categoria) + ", " + vigencia + ")." + "\n"
-		predicados = predicados + "vinculacion(" + docente.IdPersona + "," + strings.ToLower(docente.Dedicacion) + ", " + vigencia + ")." + "\n"
-		predicados = predicados + "horas(" + docente.IdPersona + "," + strconv.Itoa(docente.NumeroHorasSemanales*docente.NumeroSemanas) + ", " + vigencia + ")." + "\n"
+		predicados = predicados + "categoria(" + strconv.Itoa(docente.PersonaId) + "," + strings.ToLower(categoria) + ", " + vigencia + ")." + "\n"
+		predicados = predicados + "vinculacion(" + strconv.Itoa(docente.PersonaId) + "," + strings.ToLower(docente.Dedicacion) + ", " + vigencia + ")." + "\n"
+		predicados = predicados + "horas(" + strconv.Itoa(docente.PersonaId) + "," + strconv.Itoa(docente.NumeroHorasSemanales*docente.NumeroSemanas) + ", " + vigencia + ")." + "\n"
 		reglasbase, err4 := CargarReglasBase("CDVE")
 		beego.Info("predicados: ", predicados, "a ", a)
 		if err4 != nil {
 			logs.Error(err4)
-			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion4", "err4": err4, "status": "502"}
-			return nil, outputError
+			//outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion4", "err4": err4, "status": "502"}
+			return docentes_a_insertar, err4
 		}
 		reglasbase = reglasbase + predicados
 		m := NewMachine().Consult(reglasbase)
 		beego.Info("m: ", m)
-		contratos := m.ProveAll("valor_contrato(" + strings.ToLower(nivelAcademico) + "," + docente.IdPersona + "," + vigencia + ",X).")
+		contratos := m.ProveAll("valor_contrato(" + strings.ToLower(nivelAcademico) + "," + strconv.Itoa(docente.PersonaId) + "," + vigencia + ",X).")
 		for _, solution := range contratos {
 			a = fmt.Sprintf("%s", solution.ByName_("X"))
 			beego.Info("a: ", a)
@@ -109,7 +109,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		if err5 != nil {
 			logs.Error(err5)
 			outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion5", "err5": err5.Error(), "status": "502"}
-			return nil, outputError
+			return docentes_a_vincular, outputError
 		}
 		salario := f
 		beego.Info("f: ", f, "salario: ", salario)
@@ -117,7 +117,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 
 	}
 
-	return
+	return docentes_a_vincular, nil
 
 }
 
@@ -195,10 +195,11 @@ func Calcular_totales_vinculacion_pdf_nueva(cedula, id_resolucion string, IdDedi
 	var temp []models.VinculacionDocente
 	var total_contrato int
 	var total_horas int
+	var respuesta_peticion map[string]interface{}
 
 	// Busca las vinculaciones del docente en la misma resolución (aplica para diferentes proyectos curriculares en vinculaciones y las de modificación)
-	if err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &temp); err2 == nil {
-
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &respuesta_peticion); err2 == nil && response == 200 {
+		LimpiezaRespuestaRefactor(respuesta_peticion, &temp)
 		if IdDedicacion != 3 && IdDedicacion != 4 {
 			for _, pos := range temp {
 				total_horas = total_horas + pos.NumeroHorasSemanales

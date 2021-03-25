@@ -5,7 +5,9 @@ import (
 )
 
 type EstadoResolucion struct {
-	Id            int
-	FechaRegistro time.Time
-	NombreEstado  string
+	Id                int       
+	NombreEstado      string    
+	Activo            bool      
+	FechaCreacion     time.Time 
+	FechaModificacion time.Time 
 }

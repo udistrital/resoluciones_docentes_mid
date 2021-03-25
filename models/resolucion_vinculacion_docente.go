@@ -1,8 +1,15 @@
 package models
 
+import (
+	"time"
+)
+
 type ResolucionVinculacionDocente struct {
-	NivelAcademico string
-	Dedicacion     string
-	IdFacultad     int
-	Id             int
+	Id                int      
+	FacultadId        int      
+	Dedicacion        string   
+	NivelAcademico    string   
+	Activo            bool     
+	FechaCreacion     time.Time
+	FechaModificacion time.Time
 }

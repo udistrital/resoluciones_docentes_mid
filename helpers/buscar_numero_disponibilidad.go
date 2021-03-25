@@ -17,7 +17,7 @@ func BuscarNumeroDisponibilidad(IdCDP int) (numero_disp int, outputError map[str
 	}()
 	var temp []models.Disponibilidad
 	var numero_disponibilidad int
-	if err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad?limit=-1&query=DisponibilidadApropiacion.Id:"+strconv.Itoa(IdCDP), &temp); err2 == nil {
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad?limit=-1&query=DisponibilidadApropiacion.Id:"+strconv.Itoa(IdCDP), &temp); err2 == nil && response == 200{
 		if temp != nil {
 			numero_disponibilidad = int(temp[0].NumeroDisponibilidad)
 

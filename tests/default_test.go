@@ -4,6 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+<<<<<<< HEAD
+=======
+	_ "github.com/udistrital/resoluciones_docentes_mid/routers"
+>>>>>>> origin/develop
 	"runtime"
 	"testing"
 

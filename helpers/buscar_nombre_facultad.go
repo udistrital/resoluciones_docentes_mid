@@ -17,7 +17,7 @@ func BuscarNombreFacultad(id_facultad int) (nombre_facultad string, outputError 
 	}()
 	var facultad []models.Facultad
 	var nom string
-	if err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudOikos")+"/"+beego.AppConfig.String("NscrudOikos")+"/dependencia?query=Id:"+strconv.Itoa(id_facultad), &facultad); err2 == nil {
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudOikos")+"/"+beego.AppConfig.String("NscrudOikos")+"/dependencia?query=Id:"+strconv.Itoa(id_facultad), &facultad); err2 == nil && response == 200{
 		nom = facultad[0].Nombre
 	} else {
 		nom = "N/A"
