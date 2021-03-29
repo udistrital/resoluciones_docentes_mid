@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 
+	//"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	//"github.com/astaxie/beego/orm"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
@@ -46,14 +46,13 @@ func (c *ExpedirResolucionController) Expedir() {
 		}
 	}()
 
-
 	var m models.ExpedicionResolucion
-	
+
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
-		if err := helpers.Expedir(m); err == nil{
+		if err := helpers.Expedir(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else { //If 13 - Unmarshal
@@ -88,15 +87,15 @@ func (c *ExpedirResolucionController) ValidarDatosExpedicion() {
 	var m models.ExpedicionResolucion
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
-		if err := helpers.ValidarDatosExpedicion(m); err == nil{
+		if err := helpers.ValidarDatosExpedicion(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
-	}else{
+	} else {
 		panic(map[string]interface{}{"funcion": "ValidarDatosExpedicion", "err": err.Error(), "status": "400"})
-	}	
+	}
 	c.ServeJSON()
 }
 
@@ -125,10 +124,10 @@ func (c *ExpedirResolucionController) ExpedirModificacion() {
 	var m models.ExpedicionResolucion
 	// If 13 - Unmarshal
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
-		if err := helpers.ExpedirModificacion(m); err == nil{
+		if err := helpers.ExpedirModificacion(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else { //If 13 - Unmarshal
@@ -160,12 +159,12 @@ func (c *ExpedirResolucionController) Cancelar() {
 	}()
 
 	var m models.ExpedicionCancelacion
-	
+
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
-		if err := helpers.Cancelar(m); err == nil{
+		if err := helpers.Cancelar(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else { //If 13 - Unmarshal
