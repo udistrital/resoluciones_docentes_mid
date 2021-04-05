@@ -49,7 +49,8 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 		}
 	}()
 	var respuesta_peticion map[string]interface{}
-
+	
+	fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
 	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
 	r.Param("offset", strconv.Itoa(offset))
 	r.Param("limit", strconv.Itoa(limit))

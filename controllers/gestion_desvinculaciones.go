@@ -33,7 +33,7 @@ func (c *GestionDesvinculacionesController) URLMapping() {
 // @router /docentes_desvinculados [get]
 func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 	id_resolucion := c.GetString("id_resolucion")
-	query := "?limit=-1&query=IdResolucion.Id:" + id_resolucion
+	query := "?limit=-1&query=ResolucionVinculacionDocenteId.Id:" + id_resolucion
 
 	_, err1 := strconv.Atoi(id_resolucion)
 
@@ -145,6 +145,7 @@ func (c *GestionDesvinculacionesController) AnularModificaciones() {
 
 // AnularAdicionDocente ...
 // @Title AnularAdicionDocente
+// @Param	body		body 	[]models.Objeto_Desvinculacion	true		"body for AnularModificaciones content"
 // @Description create AnularAdicionDocente
 // @Success 201 {string}
 // @Failure 403 body is empty
@@ -184,6 +185,7 @@ func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
 
 // ConsultarCategoria ...
 // @Title ConsultarCategoria
+// @Param	body		body 	[]models.VinculacionDocente	true		"body for AnularModificaciones content"
 // @Description create ConsultarCategoria
 // @Success 201 {string}
 // @Failure 403 body is empty

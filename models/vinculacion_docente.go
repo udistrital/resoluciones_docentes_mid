@@ -46,6 +46,4 @@ type VinculacionDocente struct {
 	NumeroMesesNuevos          	 	string
 	ValorContratoInicialFormato 	string
 	ProyectoNombre              	string
-	IdPuntoSalarial             	int
-	IdSalarioMinimo             	int
 }

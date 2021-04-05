@@ -107,6 +107,7 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 	var err3 map[string]interface{}
 	var err4 map[string]interface{}
 
+	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query)
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 		for x, pos := range v {
@@ -134,7 +135,7 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 		return v, nil
 	} else {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/ListarDocentesDesvinculados", "err": err.Error(), "status": "404"}
 		return nil, outputError
 	}
 
@@ -154,10 +155,11 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 	var err3 map[string]interface{}
 	var err4 map[string]interface{}
 
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNueva:"+id_resolucion, &respuesta_peticion); err == nil && response == 200 {
+	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNuevaId:"+id_resolucion)
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNuevaId:"+id_resolucion, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &modRes)
 		// if 2 - modificacion_vinculacion
-		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion/?limit=-1&query=modificacion_resolucion:" + strconv.Itoa(modRes[0].Id)
+		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion/?limit=-1&query=modificacion_resolucion_id:" + strconv.Itoa(modRes[0].Id)
 		beego.Info(t)
 		if response, err := GetJsonTest(t, &respuesta_peticion); err == nil && response == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modVin)
@@ -165,6 +167,7 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 			for _, vinculacion := range modVin {
 				beego.Info(fmt.Sprintf("%+v", vinculacion.VinculacionDocenteCanceladaId))
 				// if 1 - vinculacion_docente
+				fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCanceladaId.Id))
 				if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCanceladaId.Id), &respuesta_peticion); err == nil && response == 200 {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &cv)
 					documento_identidad := vinculacion.VinculacionDocenteCanceladaId.PersonaId

@@ -103,6 +103,7 @@ func (c *ExpedirResolucionController) ValidarDatosExpedicion() {
 // ExpedirModificacion ...
 // @Title ExpedirModificacion
 // @Description create ExpedirModificacion
+// @Param	body		body 	[]models.ExpedicionResolucion	true		"body for Validar Datos Expedición content"
 // @Success 201 {int} models.ExpedicionResolucion
 // @Failure 403 body is empty
 // @router /expedirModificacion [post]

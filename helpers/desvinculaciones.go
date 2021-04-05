@@ -19,7 +19,7 @@ func AnularModificaciones(v []models.VinculacionDocente) (outputError map[string
 	var respuesta_modificacion_vinculacion []models.ModificacionVinculacion
 	var respuesta_peticion map[string]interface{}
 
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNueva:"+strconv.Itoa(v[0].ResolucionVinculacionDocenteId.Id), &respuesta_peticion); err == nil && response == 200 {
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNuevaId:"+strconv.Itoa(v[0].ResolucionVinculacionDocenteId.Id), &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &modRes)
 	} else {
 		beego.Error(err)
@@ -28,7 +28,7 @@ func AnularModificaciones(v []models.VinculacionDocente) (outputError map[string
 	}
 	for _, pos := range v {
 		//Se trae información de tabla de traza modificacion_vinculacion, para saber cuál vinculación hay que poner en true y cuál eliminar
-		query := "?limit=-1&query=ModificacionResolucion.Id:" + strconv.Itoa(modRes[0].Id) + ",VinculacionDocenteRegistrada.Id:" + strconv.Itoa(pos.Id)
+		query := "?limit=-1&query=ModificacionResolucionId.Id:" + strconv.Itoa(modRes[0].Id) + ",VinculacionDocenteRegistradaId.Id:" + strconv.Itoa(pos.Id)
 		if response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion"+query, &respuesta_peticion); err2 == nil && response2 == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta_modificacion_vinculacion)
 			fmt.Println("modificacion_vinculacion", respuesta_modificacion_vinculacion)
@@ -92,7 +92,7 @@ func AnularAdicionDocente(v models.Objeto_Desvinculacion) (outputError map[strin
 	var respuesta_peticion map[string]interface{}
 
 	//Se trae información de tabla de traza modificacion_vinculacion, para saber cuál vinculación hay que poner en true y cuál eliminar
-	query := "?limit=-1&query=ModificacionResolucion.Id:" + strconv.Itoa(v.IdModificacionResolucion) + ",VinculacionDocenteRegistrada.Id:" + strconv.Itoa(v.DocentesDesvincular[0].Id)
+	query := "?limit=-1&query=ModificacionResolucionId.Id:" + strconv.Itoa(v.IdModificacionResolucion) + ",VinculacionDocenteRegistradaId.Id:" + strconv.Itoa(v.DocentesDesvincular[0].Id)
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion"+query, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta_modificacion_vinculacion)
 		fmt.Println("modificacion_vinculacion", respuesta_modificacion_vinculacion)
