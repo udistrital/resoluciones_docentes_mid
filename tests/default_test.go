@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
-	_ "github.com/udistrital/resoluciones_docentes_mid/routers"
 	"runtime"
 	"testing"
+
+	_ "github.com/udistrital/resoluciones_docentes_mid/routers"
 
 	"github.com/astaxie/beego"
 	"github.com/beego/beego/v2/core/logs"
