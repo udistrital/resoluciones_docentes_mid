@@ -38,7 +38,6 @@ func GetResolucionesAprobadas(query string, limit int, offset int) (resolucion_v
 		outputError = map[string]interface{}{"funcion": "/GetResolucionesAprobadas", "err1": err1.Error(), "status": "502"}
 		return nil, outputError
 	}
-	return resolucion_vinculacion_aprobada, nil
 }
 
 func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion_vinculacion []models.ResolucionVinculacion, outputError map[string]interface{}) {
@@ -49,8 +48,7 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 		}
 	}()
 	var respuesta_peticion map[string]interface{}
-	
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
+
 	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
 	r.Param("offset", strconv.Itoa(offset))
 	r.Param("limit", strconv.Itoa(limit))
@@ -79,7 +77,6 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 		return nil, outputError
 	}
 
-	return
 }
 
 func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada int, control bool, outputError map[string]interface{}) {
@@ -94,8 +91,10 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 	//****MANEJO DE TRANSACCIONES!***!//
 
 	//Se trae cuerpo de resolución según tipo
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/ResolucionTemplate/"+
-		v.ResolucionVinculacionDocente.Dedicacion+"/"+v.ResolucionVinculacionDocente.NivelAcademico+"/"+strconv.Itoa(v.Resolucion.Periodo)+"/"+strconv.Itoa(v.Resolucion.TipoResolucionId.Id), &respuesta_peticion); err == nil && response == 200 {
+	//Se retiran 2 parametros que en el CRUD no se usan
+	//"/"+strconv.Itoa(v.Resolucion.Periodo)+"/"+strconv.Itoa(v.Resolucion.TipoResolucionId.Id)
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/resolucion_template/"+
+		v.ResolucionVinculacionDocente.Dedicacion+"/"+v.ResolucionVinculacionDocente.NivelAcademico, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &texto_resolucion)
 		v.Resolucion.ConsideracionResolucion = texto_resolucion.Consideracion
 	} else {
@@ -135,9 +134,9 @@ func InsertarResolucionEstado(id_res int) (contr bool) {
 	var respuesta_peticion map[string]interface{}
 	var cont bool
 	temp := models.ResolucionEstado{
-		FechaCreacion: time.Now(),
-		EstadoResolucionId:        &models.EstadoResolucion{Id: 1},
-		ResolucionId:    &models.Resolucion{Id: id_res},
+		FechaCreacion:      time.Now(),
+		EstadoResolucionId: &models.EstadoResolucion{Id: 1},
+		ResolucionId:       &models.Resolucion{Id: id_res},
 	}
 
 	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_estado", "POST", &respuesta_peticion, &temp); err == nil {
@@ -184,10 +183,10 @@ func InsertarArticulos(id_resolucion int, articulos []models.Articulo) {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 			for y, pos2 := range pos.Paragrafos {
 				temp2 := models.ComponenteResolucion{
-					Numero:          y + 1,
-					ResolucionId:    &models.Resolucion{Id: id_resolucion},
-					Texto:           pos2.Texto,
-					TipoComponente:  "Paragrafo",
+					Numero:                    y + 1,
+					ResolucionId:              &models.Resolucion{Id: id_resolucion},
+					Texto:                     pos2.Texto,
+					TipoComponente:            "Paragrafo",
 					ComponenteResolucionPadre: &models.ComponenteResolucion{Id: respuesta.Id},
 				}
 				if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/componente_resolucion", "POST", &respuesta_peticion, &temp2); err == nil {
@@ -318,65 +317,34 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 }
 
 func cambiarString(original string) (cambiado string) {
-	switch {
+
 	//Periodos
-	case original == "1":
-		cambiado = "Primer"
+	// Meses
+	//Dedicación
+	stringmap := map[string]string{
+		"1":         "Primer",
+		"2":         "Segundo",
+		"3":         "Tercer",
+		"January":   "Enero",
+		"February":  "Febrero",
+		"March":     "Marzo",
+		"April":     "Abril",
+		"May":       "Mayo",
+		"June":      "Junio",
+		"July":      "Julio",
+		"August":    "Agosto",
+		"September": "Septiembre",
+		"October":   "Octubre",
+		"November":  "Noviembre",
+		"December":  "Diciembre",
+		"HCH":       "Hora Cátedra Honorarios",
+		"HCP":       "Hora Cátedra Salarios",
+		"TCO-MTO":   "Tiempo Completo Ocasional - Medio Tiempo Ocasional",
+	}
 
-	case original == "2":
-		cambiado = "Segundo"
-
-	case original == "3":
-		cambiado = "Tercer"
-
-		// Meses
-	case original == "January":
-		cambiado = "Enero"
-
-	case original == "February":
-		cambiado = "Febrero"
-
-	case original == "March":
-		cambiado = "Marzo"
-
-	case original == "April":
-		cambiado = "Abril"
-
-	case original == "May":
-		cambiado = "Mayo"
-
-	case original == "June":
-		cambiado = "Junio"
-
-	case original == "July":
-		cambiado = "Julio"
-
-	case original == "August":
-		cambiado = "Agosto"
-
-	case original == "September":
-		cambiado = "Septiembre"
-
-	case original == "October":
-		cambiado = "Octubre"
-
-	case original == "November":
-		cambiado = "Noviembre"
-
-	case original == "December":
-		cambiado = "Diciembre"
-
-		//Dedicación
-	case original == "HCH":
-		cambiado = "Hora Cátedra Honorarios"
-
-	case original == "HCP":
-		cambiado = "Hora Cátedra Salarios"
-
-	case original == "TCO-MTO":
-		cambiado = "Tiempo Completo Ocasional - Medio Tiempo Ocasional"
-
-	default:
+	if res, ok := stringmap[original]; ok {
+		cambiado = res
+	} else {
 		cambiado = original
 	}
 

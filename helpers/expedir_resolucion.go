@@ -18,7 +18,6 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 	//var fecha = time.Now().Format("2006-01-02")   -- Se debe dejar este una vez se suba
 	var fecha = "2018-01-01"
 	//If Resolucion (GET)
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(id_resolucion))
 	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(id_resolucion), &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &r)
 		//If Jefe_dependencia (GET)
@@ -44,7 +43,6 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 		outputError = map[string]interface{}{"funcion": "/SupervisorActual", "err": err.Error(), "status": "404"}
 		return s[0], outputError
 	}
-	return
 }
 
 func CalcularFechaFin(fecha_inicio time.Time, numero_semanas int) (fecha_fin time.Time) {

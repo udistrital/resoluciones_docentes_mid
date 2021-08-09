@@ -2,15 +2,14 @@ package helpers
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"time"
-	"math"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
-
 
 func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{}) {
 
@@ -33,7 +32,7 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 	//var vincDocente models.VinculacionDocente
 
 	v := m.Vinculaciones
-		//If 12 - Consecutivo contrato_general
+	//If 12 - Consecutivo contrato_general
 	if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general/maximo_dve", &cdve); err == nil && responseG == 201 {
 		numeroContratos := cdve
 		// for vinculaciones
@@ -42,15 +41,15 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 			v := vinculacion.VinculacionDocente
 			idvinculaciondocente := strconv.Itoa(v.Id)
 			//if 8 - Vinculacion_docente (GET)
-			fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente)
-			if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente, &respuesta_peticion); err == nil && responseG == 200{
+			q := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/vinculacion_docente/" + idvinculaciondocente
+			if responseG, err := GetJsonTest(q, &respuesta_peticion); err == nil && responseG == 200 {
 				fmt.Println("RESPUESTA ", respuesta_peticion)
 				//vincDocente = models.VinculacionDocente{}
 				LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 				fmt.Println("V ", v.DedicacionId)
 				contrato := vinculacion.ContratoGeneral
-				fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/tipo_contrato/"+ strconv.Itoa(contrato.TipoContrato.Id))
-				if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/tipo_contrato/"+ strconv.Itoa(contrato.TipoContrato.Id), &tipoCon); err == nil && responseG == 200 {
+				fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/tipo_contrato/" + strconv.Itoa(contrato.TipoContrato.Id))
+				if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/tipo_contrato/"+strconv.Itoa(contrato.TipoContrato.Id), &tipoCon); err == nil && responseG == 200 {
 					var sup models.SupervisorContrato
 					acta := vinculacion.ActaInicio
 					aux1 := 181
@@ -78,93 +77,92 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 					contrato.UnidadEjecutora = 1
 					fmt.Println("LLEGO ", v.ResolucionVinculacionDocenteId.Id)
 					sup, err := SupervisorActual(v.ResolucionVinculacionDocenteId.Id)
-					if err != nil{
+					if err != nil {
 						fmt.Println(err)
 						return err
 					}
 					contrato.Supervisor = &sup
 					contrato.Condiciones = "Sin condiciones"
-					
-					
+
 					// If 5 - Informacion_Proveedor
-					fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_proveedor/?query=NumDocumento:"+strconv.Itoa(contrato.Contratista))
+					fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/informacion_proveedor/?query=NumDocumento:" + strconv.Itoa(contrato.Contratista))
 					if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_proveedor/?query=NumDocumento:"+strconv.Itoa(contrato.Contratista), &proveedor); err == nil && responseG == 200 {
 						if proveedor != nil { //Nuevo If
 							temp = proveedor[0].Id
 							contratoGeneral := make(map[string]interface{})
 							contratoGeneral = map[string]interface{}{
-								"Id": contrato.Id,
+								"Id":               contrato.Id,
 								"VigenciaContrato": contrato.VigenciaContrato,
-								"ObjetoContrato": contrato.ObjetoContrato,
-								"PlazoEjecucion": contrato.PlazoEjecucion,
+								"ObjetoContrato":   contrato.ObjetoContrato,
+								"PlazoEjecucion":   contrato.PlazoEjecucion,
 								"FormaPago": map[string]interface{}{
-									"Id": 240,
-									"Descripcion": "TRANSACCIÓN",
+									"Id":                240,
+									"Descripcion":       "TRANSACCIÓN",
 									"CodigoContraloria": "'",
-        							"EstadoRegistro": true,
-        							"FechaRegistro": "2016-10-25T00:00:00Z",
+									"EstadoRegistro":    true,
+									"FechaRegistro":     "2016-10-25T00:00:00Z",
 								},
-								"OrdenadorGasto": contrato.OrdenadorGasto,
-								"SedeSolicitante": contrato.SedeSolicitante,
+								"OrdenadorGasto":         contrato.OrdenadorGasto,
+								"SedeSolicitante":        contrato.SedeSolicitante,
 								"DependenciaSolicitante": contrato.DependenciaSolicitante,
-								"Contratista": temp,
+								"Contratista":            temp,
 								"UnidadEjecucion": map[string]interface{}{
-									"Id": 269,
-        							"Descripcion": "Semana(s)",
-        							"CodigoContraloria": "'",
-        							"EstadoRegistro": true,
-        							"FechaRegistro": "2018-03-20T00:00:00Z",
+									"Id":                269,
+									"Descripcion":       "Semana(s)",
+									"CodigoContraloria": "'",
+									"EstadoRegistro":    true,
+									"FechaRegistro":     "2018-03-20T00:00:00Z",
 								},
-								"ValorContrato": int(contrato.ValorContrato),
-								"Justificacion": contrato.Justificacion,
+								"ValorContrato":        int(contrato.ValorContrato),
+								"Justificacion":        contrato.Justificacion,
 								"DescripcionFormaPago": contrato.DescripcionFormaPago,
-								"Condiciones": contrato.Condiciones,
-								"UnidadEjecutora": contrato.UnidadEjecutora,
-								"FechaRegistro": contrato.FechaRegistro.Format(time.RFC3339),
-								"TipologiaContrato": contrato.TipologiaContrato,
-								"TipoCompromiso": contrato.TipoCompromiso,
-								"ModalidadSeleccion": contrato.ModalidadSeleccion,
-								"Procedimiento": contrato.Procedimiento,
-								"RegimenContratacion": contrato.RegimenContratacion,
-								"TipoGasto": contrato.TipoGasto,
-								"TemaGastoInversion": contrato.TemaGastoInversion,
-								"OrigenPresupueso": contrato.OrigenPresupueso,
-								"OrigenRecursos": contrato.OrigenRecursos,
-								"TipoMoneda": contrato.TipoMoneda,
-								"TipoControl": contrato.TipoControl,
-								"Observaciones": contrato.Observaciones,
+								"Condiciones":          contrato.Condiciones,
+								"UnidadEjecutora":      contrato.UnidadEjecutora,
+								"FechaRegistro":        contrato.FechaRegistro.Format(time.RFC3339),
+								"TipologiaContrato":    contrato.TipologiaContrato,
+								"TipoCompromiso":       contrato.TipoCompromiso,
+								"ModalidadSeleccion":   contrato.ModalidadSeleccion,
+								"Procedimiento":        contrato.Procedimiento,
+								"RegimenContratacion":  contrato.RegimenContratacion,
+								"TipoGasto":            contrato.TipoGasto,
+								"TemaGastoInversion":   contrato.TemaGastoInversion,
+								"OrigenPresupueso":     contrato.OrigenPresupueso,
+								"OrigenRecursos":       contrato.OrigenRecursos,
+								"TipoMoneda":           contrato.TipoMoneda,
+								"TipoControl":          contrato.TipoControl,
+								"Observaciones":        contrato.Observaciones,
 								"Supervisor": map[string]interface{}{
-									"Id": sup.Id,
-									"Nombre": sup.Nombre,
-									"Documento": sup.Documento,
-									"Cargo": sup.Cargo,
-        							"SedeSupervisor": sup.SedeSupervisor,
-        							"DependenciaSupervisor": sup.DependenciaSupervisor,
-        							"Tipo": sup.Tipo,
-        							"Estado": sup.Estado,
-        							"DigitoVerificacion": sup.DigitoVerificacion,
-        							"FechaInicio": sup.FechaInicio,
-        							"FechaFin": sup.FechaFin,
+									"Id":                    sup.Id,
+									"Nombre":                sup.Nombre,
+									"Documento":             sup.Documento,
+									"Cargo":                 sup.Cargo,
+									"SedeSupervisor":        sup.SedeSupervisor,
+									"DependenciaSupervisor": sup.DependenciaSupervisor,
+									"Tipo":                  sup.Tipo,
+									"Estado":                sup.Estado,
+									"DigitoVerificacion":    sup.DigitoVerificacion,
+									"FechaInicio":           sup.FechaInicio,
+									"FechaFin":              sup.FechaFin,
 									"CargoId": map[string]interface{}{
 										"Id": sup.CargoId.Id,
 									},
 								},
 								"ClaseContratista": contrato.ClaseContratista,
 								"TipoContrato": map[string]interface{}{
-									"Id": 6,
-    								"TipoContrato": "Contrato de Prestación de Servicios Profesionales o Apoyo a la Gestión",
-    								"Estado": true,
+									"Id":           6,
+									"TipoContrato": "Contrato de Prestación de Servicios Profesionales o Apoyo a la Gestión",
+									"Estado":       true,
 								},
 								"LugarEjecucion": map[string]interface{}{
-									"Id": 4,
-        							"Direccion": "CALLE 40 A No 13-09",
-        							"Sede": "00IP",
-        							"Dependencia": "DEP39",
-        							"Ciudad": 96,
+									"Id":          4,
+									"Direccion":   "CALLE 40 A No 13-09",
+									"Sede":        "00IP",
+									"Dependencia": "DEP39",
+									"Ciudad":      96,
 								},
 							}
 							fmt.Println(contratoGeneral)
-							fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general")
+							fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/contrato_general")
 							//var response1 models.ContratoGeneral
 							if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general", "POST", &response, contratoGeneral); err == nil {
 								//var id1 = response
@@ -203,10 +201,10 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 										cd.Estado = true
 										cd.FechaRegistro = time.Now()
 										// If 2.5.2 - Get disponibildad_apropiacion
-										fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad))
-										if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil && responseG == 200{
+										fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudKronos") + "/" + beego.AppConfig.String("NscrudKronos") + "/disponibilidad_apropiacion/" + strconv.Itoa(v.Disponibilidad))
+										if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil && responseG == 200 {
 											// If 2.5.1 - Get disponibildad
-											if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil && responseG == 200{
+											if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil && responseG == 200 {
 												cd.NumeroCdp = int(disponibilidad.NumeroDisponibilidad)
 												cd.VigenciaCdp = int(disponibilidad.Vigencia)
 												// If 2 - contrato_disponibilidad
@@ -231,9 +229,9 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 														fmt.Println("Response ", response)
 														fmt.Println("Vinculacion docente actualizada y lista, vamos por la otra")
 													} else { // If 1 - vinculacion_docente
-														logs.Error(v)	
+														logs.Error(v)
 														outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
-														return outputError													
+														return outputError
 													}
 												} else { // If 2 - contrato_disponibilidad
 													fmt.Println("He fallado un poquito en  If 2 - contrato_disponibilidad, solucioname!!!", err)
@@ -280,7 +278,7 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 						outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
 						return outputError
 					}
-				} else{
+				} else {
 					fmt.Println("error")
 					outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
 					return outputError
@@ -296,8 +294,8 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 		r.Id = m.IdResolucion
 		idResolucionDVE := strconv.Itoa(m.IdResolucion)
 		//If 11 - Resolucion (GET)
-		fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucionDVE)
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucionDVE, &respuesta_peticion); err == nil && responseG == 200 {
+		s := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion/" + idResolucionDVE
+		if responseG, err := GetJsonTest(s, &respuesta_peticion); err == nil && responseG == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &r)
 			r.FechaExpedicion = m.FechaExpedicion
 			//If 10 - Resolucion (PUT)
@@ -361,9 +359,9 @@ func ValidarDatosExpedicion(m models.ExpedicionResolucion) (outputError map[stri
 		v := vinculacion.VinculacionDocente
 		idvinculaciondocente := strconv.Itoa(v.Id)
 
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente, &respuesta_peticion); responseG == 200 && err == nil{
+		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente, &respuesta_peticion); responseG == 200 && err == nil {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &v)
-		} else{
+		} else {
 			beego.Error("Previnculación no valida", err)
 			logs.Error(v)
 			//c.Data["system"] = v
@@ -375,8 +373,8 @@ func ValidarDatosExpedicion(m models.ExpedicionResolucion) (outputError map[stri
 		contrato := vinculacion.ContratoGeneral
 		var proveedor []models.InformacionProveedor
 
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_proveedor/?query=NumDocumento:"+strconv.Itoa(contrato.Contratista), &proveedor); responseG == 200 && err == nil{
-		} else{
+		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/informacion_proveedor/?query=NumDocumento:"+strconv.Itoa(contrato.Contratista), &proveedor); responseG == 200 && err == nil {
+		} else {
 			beego.Error("Docente no válido en Ágora, se encuentra identificado con el documento número ", strconv.Itoa(contrato.Contratista), err)
 			logs.Error(proveedor)
 			//c.Data["system"] = proveedor
@@ -386,7 +384,7 @@ func ValidarDatosExpedicion(m models.ExpedicionResolucion) (outputError map[stri
 		}
 
 		if proveedor == nil {
-			beego.Error("No existe el docente con número de documento "+strconv.Itoa(contrato.Contratista)+" en Ágora")
+			beego.Error("No existe el docente con número de documento " + strconv.Itoa(contrato.Contratista) + " en Ágora")
 			logs.Error(proveedor)
 			//c.Data["system"] = proveedor
 			//c.Abort("233")
@@ -396,8 +394,8 @@ func ValidarDatosExpedicion(m models.ExpedicionResolucion) (outputError map[stri
 
 		var dispoap []models.DisponibilidadApropiacion
 
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/?query=Id:"+strconv.Itoa(v.Disponibilidad), &dispoap); responseG == 200 && err == nil{
-		} else{
+		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/?query=Id:"+strconv.Itoa(v.Disponibilidad), &dispoap); responseG == 200 && err == nil {
+		} else {
 			beego.Error("Disponibilidad no válida asociada al docente identificado con número de documento "+strconv.Itoa(contrato.Contratista)+" en Ágora", err)
 			logs.Error(dispoap)
 			//c.Data["system"] = dispoap
@@ -417,8 +415,8 @@ func ValidarDatosExpedicion(m models.ExpedicionResolucion) (outputError map[stri
 
 		var proycur []models.Dependencia
 
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudOikos")+"/"+beego.AppConfig.String("NscrudOikos")+"/dependencia/?query=Id:"+strconv.Itoa(v.ProyectoCurricularId), &proycur); responseG == 200 && err == nil{
-		} else{
+		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudOikos")+"/"+beego.AppConfig.String("NscrudOikos")+"/dependencia/?query=Id:"+strconv.Itoa(v.ProyectoCurricularId), &proycur); responseG == 200 && err == nil {
+		} else {
 			beego.Error("Dependencia incorrectamente homologada asociada al docente identificado con número de documento "+strconv.Itoa(contrato.Contratista)+" en Ágora", err)
 			logs.Error(proycur)
 			//c.Data["system"] = proycur
@@ -463,7 +461,7 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 	v := m.Vinculaciones
 
 	// If 12 - Consecutivo contrato_general
-	if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general/maximo_dve", &cdve); err == nil && responseG == 201{
+	if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_general/maximo_dve", &cdve); err == nil && responseG == 201 {
 		numeroContratos := cdve
 		// for vinculaciones
 		for _, vinculacion := range *v {
@@ -472,8 +470,8 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 			fmt.Println("V es ", v)
 			idvinculaciondocente := strconv.Itoa(v.Id)
 			// if 8 - Vinculacion_docente (GET)
-			fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente)
-			if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+idvinculaciondocente, &respuesta_peticion); err == nil && responseG == 200 {
+			q := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/vinculacion_docente/" + idvinculaciondocente
+			if responseG, err := GetJsonTest(q, &respuesta_peticion); err == nil && responseG == 200 {
 				LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 				contrato := vinculacion.ContratoGeneral
 				var sup models.SupervisorContrato
@@ -501,7 +499,7 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 				contrato.FechaRegistro = time.Now()
 				contrato.UnidadEjecutora = 1
 				sup, err := SupervisorActual(v.ResolucionVinculacionDocenteId.Id)
-				if err != nil{
+				if err != nil {
 					return err
 				}
 				contrato.Supervisor = &sup
@@ -511,81 +509,81 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 					if proveedor != nil { //Nuevo If
 						temp = proveedor[0].Id
 						contratoGeneral := make(map[string]interface{})
-							contratoGeneral = map[string]interface{}{
-								"Id": contrato.Id,
-								"VigenciaContrato": contrato.VigenciaContrato,
-								"ObjetoContrato": contrato.ObjetoContrato,
-								"PlazoEjecucion": contrato.PlazoEjecucion,
-								"FormaPago": map[string]interface{}{
-									"Id": 240,
-									"Descripcion": "TRANSACCIÓN",
-									"CodigoContraloria": "'",
-        							"EstadoRegistro": true,
-        							"FechaRegistro": "2016-10-25T00:00:00Z",
+						contratoGeneral = map[string]interface{}{
+							"Id":               contrato.Id,
+							"VigenciaContrato": contrato.VigenciaContrato,
+							"ObjetoContrato":   contrato.ObjetoContrato,
+							"PlazoEjecucion":   contrato.PlazoEjecucion,
+							"FormaPago": map[string]interface{}{
+								"Id":                240,
+								"Descripcion":       "TRANSACCIÓN",
+								"CodigoContraloria": "'",
+								"EstadoRegistro":    true,
+								"FechaRegistro":     "2016-10-25T00:00:00Z",
+							},
+							"OrdenadorGasto":         contrato.OrdenadorGasto,
+							"SedeSolicitante":        contrato.SedeSolicitante,
+							"DependenciaSolicitante": contrato.DependenciaSolicitante,
+							"Contratista":            temp,
+							"UnidadEjecucion": map[string]interface{}{
+								"Id":                269,
+								"Descripcion":       "Semana(s)",
+								"CodigoContraloria": "'",
+								"EstadoRegistro":    true,
+								"FechaRegistro":     "2018-03-20T00:00:00Z",
+							},
+							"ValorContrato":        int(contrato.ValorContrato),
+							"Justificacion":        contrato.Justificacion,
+							"DescripcionFormaPago": contrato.DescripcionFormaPago,
+							"Condiciones":          contrato.Condiciones,
+							"UnidadEjecutora":      contrato.UnidadEjecutora,
+							"FechaRegistro":        contrato.FechaRegistro.Format(time.RFC3339),
+							"TipologiaContrato":    contrato.TipologiaContrato,
+							"TipoCompromiso":       contrato.TipoCompromiso,
+							"ModalidadSeleccion":   contrato.ModalidadSeleccion,
+							"Procedimiento":        contrato.Procedimiento,
+							"RegimenContratacion":  contrato.RegimenContratacion,
+							"TipoGasto":            contrato.TipoGasto,
+							"TemaGastoInversion":   contrato.TemaGastoInversion,
+							"OrigenPresupueso":     contrato.OrigenPresupueso,
+							"OrigenRecursos":       contrato.OrigenRecursos,
+							"TipoMoneda":           contrato.TipoMoneda,
+							"TipoControl":          contrato.TipoControl,
+							"Observaciones":        contrato.Observaciones,
+							"Supervisor": map[string]interface{}{
+								"Id":                    sup.Id,
+								"Nombre":                sup.Nombre,
+								"Documento":             sup.Documento,
+								"Cargo":                 sup.Cargo,
+								"SedeSupervisor":        sup.SedeSupervisor,
+								"DependenciaSupervisor": sup.DependenciaSupervisor,
+								"Tipo":                  sup.Tipo,
+								"Estado":                sup.Estado,
+								"DigitoVerificacion":    sup.DigitoVerificacion,
+								"FechaInicio":           sup.FechaInicio,
+								"FechaFin":              sup.FechaFin,
+								"CargoId": map[string]interface{}{
+									"Id": sup.CargoId.Id,
 								},
-								"OrdenadorGasto": contrato.OrdenadorGasto,
-								"SedeSolicitante": contrato.SedeSolicitante,
-								"DependenciaSolicitante": contrato.DependenciaSolicitante,
-								"Contratista": temp,
-								"UnidadEjecucion": map[string]interface{}{
-									"Id": 269,
-        							"Descripcion": "Semana(s)",
-        							"CodigoContraloria": "'",
-        							"EstadoRegistro": true,
-        							"FechaRegistro": "2018-03-20T00:00:00Z",
-								},
-								"ValorContrato": int(contrato.ValorContrato),
-								"Justificacion": contrato.Justificacion,
-								"DescripcionFormaPago": contrato.DescripcionFormaPago,
-								"Condiciones": contrato.Condiciones,
-								"UnidadEjecutora": contrato.UnidadEjecutora,
-								"FechaRegistro": contrato.FechaRegistro.Format(time.RFC3339),
-								"TipologiaContrato": contrato.TipologiaContrato,
-								"TipoCompromiso": contrato.TipoCompromiso,
-								"ModalidadSeleccion": contrato.ModalidadSeleccion,
-								"Procedimiento": contrato.Procedimiento,
-								"RegimenContratacion": contrato.RegimenContratacion,
-								"TipoGasto": contrato.TipoGasto,
-								"TemaGastoInversion": contrato.TemaGastoInversion,
-								"OrigenPresupueso": contrato.OrigenPresupueso,
-								"OrigenRecursos": contrato.OrigenRecursos,
-								"TipoMoneda": contrato.TipoMoneda,
-								"TipoControl": contrato.TipoControl,
-								"Observaciones": contrato.Observaciones,
-								"Supervisor": map[string]interface{}{
-									"Id": sup.Id,
-									"Nombre": sup.Nombre,
-									"Documento": sup.Documento,
-									"Cargo": sup.Cargo,
-        							"SedeSupervisor": sup.SedeSupervisor,
-        							"DependenciaSupervisor": sup.DependenciaSupervisor,
-        							"Tipo": sup.Tipo,
-        							"Estado": sup.Estado,
-        							"DigitoVerificacion": sup.DigitoVerificacion,
-        							"FechaInicio": sup.FechaInicio,
-        							"FechaFin": sup.FechaFin,
-									"CargoId": map[string]interface{}{
-										"Id": sup.CargoId.Id,
-									},
-								},
-								"ClaseContratista": contrato.ClaseContratista,
-								"TipoContrato": map[string]interface{}{
-									"Id": 6,
-    								"TipoContrato": "Contrato de Prestación de Servicios Profesionales o Apoyo a la Gestión",
-    								"Estado": true,
-								},
-								"LugarEjecucion": map[string]interface{}{
-									"Id": 4,
-        							"Direccion": "CALLE 40 A No 13-09",
-        							"Sede": "00IP",
-        							"Dependencia": "DEP39",
-        							"Ciudad": 96,
-								},
-							}
-							fmt.Println(contratoGeneral)
+							},
+							"ClaseContratista": contrato.ClaseContratista,
+							"TipoContrato": map[string]interface{}{
+								"Id":           6,
+								"TipoContrato": "Contrato de Prestación de Servicios Profesionales o Apoyo a la Gestión",
+								"Estado":       true,
+							},
+							"LugarEjecucion": map[string]interface{}{
+								"Id":          4,
+								"Direccion":   "CALLE 40 A No 13-09",
+								"Sede":        "00IP",
+								"Dependencia": "DEP39",
+								"Ciudad":      96,
+							},
+						}
+						fmt.Println(contratoGeneral)
 						// If modificacion_vinculacion
-						fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/?query=VinculacionDocenteRegistradaId:"+strconv.Itoa(v.Id))
-						if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/?query=VinculacionDocenteRegistradaId:"+strconv.Itoa(v.Id), &respuesta_peticion); err == nil && responseG == 200 {
+						s := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion?query=VinculacionDocenteRegistradaId.Id:" + strconv.Itoa(v.Id)
+						if responseG, err := GetJsonTest(s, &respuesta_peticion); err == nil && responseG == 200 {
 							LimpiezaRespuestaRefactor(respuesta_peticion, &modVin)
 							fmt.Println("1")
 							fmt.Println(respuesta_peticion)
@@ -594,9 +592,8 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 							vinculacionModificacion := modVin[0].VinculacionDocenteRegistradaId
 							vinculacionOriginal := modVin[0].VinculacionDocenteCanceladaId
 							if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(v.ResolucionVinculacionDocenteId.Id), &respuesta_peticion); err == nil && responseG == 200 {
-								fmt.Println("2")
 								LimpiezaRespuestaRefactor(respuesta_peticion, &resolucion)
-							} else{
+							} else {
 								logs.Error(err)
 								outputError = map[string]interface{}{"funcion": "/ExpedirModificacion19", "err": err.Error(), "status": "502"}
 								return outputError
@@ -641,17 +638,17 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 									horasTotales = horasIniciales - vinculacionModificacion.NumeroHorasSemanales
 									var vinc [1]models.VinculacionDocente
 									vinc[0] = models.VinculacionDocente{
-										ResolucionVinculacionDocenteId:         &models.ResolucionVinculacionDocente{Id: m.IdResolucion},
-										PersonaId:            v.PersonaId,
-										NumeroHorasSemanales: horasTotales,
-										NumeroSemanas:        semanasModificar,
-										DedicacionId:         v.DedicacionId,
-										ProyectoCurricularId: v.ProyectoCurricularId,
-										Categoria:            v.Categoria,
-										Dedicacion:           v.Dedicacion,
-										NivelAcademico:       v.NivelAcademico,
-										Vigencia:             v.Vigencia,
-										Disponibilidad:       v.Disponibilidad,
+										ResolucionVinculacionDocenteId: &models.ResolucionVinculacionDocente{Id: m.IdResolucion},
+										PersonaId:                      v.PersonaId,
+										NumeroHorasSemanales:           horasTotales,
+										NumeroSemanas:                  semanasModificar,
+										DedicacionId:                   v.DedicacionId,
+										ProyectoCurricularId:           v.ProyectoCurricularId,
+										Categoria:                      v.Categoria,
+										Dedicacion:                     v.Dedicacion,
+										NivelAcademico:                 v.NivelAcademico,
+										Vigencia:                       v.Vigencia,
+										Disponibilidad:                 v.Disponibilidad,
 									}
 									salario, err := CalcularValorContratoReduccion(vinc, semanasRestantes, horasIniciales, v.NivelAcademico)
 									if err != nil {
@@ -700,10 +697,10 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 												cd.Estado = true
 												cd.FechaRegistro = time.Now()
 												// If 2.5.2 - Get disponibildad_apropiacion
-												fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad))
-												if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil && responseG == 200{
+												fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudKronos") + "/" + beego.AppConfig.String("NscrudKronos") + "/disponibilidad_apropiacion/" + strconv.Itoa(v.Disponibilidad))
+												if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad_apropiacion/"+strconv.Itoa(v.Disponibilidad), &dispoap); err == nil && responseG == 200 {
 													// If 2.5.1 - Get disponibildad
-													if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil && responseG == 200{
+													if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudKronos")+"/"+beego.AppConfig.String("NscrudKronos")+"/disponibilidad/"+strconv.Itoa(dispoap.Disponibilidad.Id), &disponibilidad); err == nil && responseG == 200 {
 														cd.NumeroCdp = int(disponibilidad.NumeroDisponibilidad)
 														cd.VigenciaCdp = int(disponibilidad.Vigencia)
 														// If 2 - contrato_disponibilidad
@@ -774,7 +771,7 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 						//c.Ctx.Output.SetStatus(233)
 						//err = c.Ctx.Output.Body([]byte("No existe el docente con número de documento " + strconv.Itoa(contrato.Contratista) + " en Ágora"))
 						// if err != nil {
-							// beego.Error(err)
+						// beego.Error(err)
 						// }
 						outputError = map[string]interface{}{"funcion": "/ExpedirModificacion7", "err": err.Error(), "status": "502"}
 						return outputError
@@ -796,7 +793,7 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 		r.Id = m.IdResolucion
 		idResolucionDVE := strconv.Itoa(m.IdResolucion)
 		// If 11 - Resolucion (GET)
-		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucionDVE, &respuesta_peticion); err == nil && responseG == 200{
+		if responseG, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucionDVE, &respuesta_peticion); err == nil && responseG == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &r)
 			r.FechaExpedicion = m.FechaExpedicion
 			// If 10 - Resolucion (PUT)

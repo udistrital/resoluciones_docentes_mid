@@ -65,7 +65,9 @@ func (c *GestionResolucionesController) GetResolucionesAprobadas() {
 // GestionResolucionesController ...
 // @Title getResolucionesInscritas
 // @Description create  getResolucionesInscritas
-// @Param vigencia query string false "año a consultar"
+// @Param limit query int false "Limit the size of result set. Must be an integer"
+// @Param offset query int false "Start position of result set. Must be an integer"
+// @Param query query string false "Filter. e.g. col1:v1,col2:v2 ..."
 // @Success 201 {object} []models.ResolucionVinculacion
 // @Failure 403 body is empty
 // @router /get_resoluciones_inscritas [get]
