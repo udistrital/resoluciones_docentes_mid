@@ -26,7 +26,7 @@ func CalculoSalarios(v []models.VinculacionDocente) (total int, outputError map[
 		periodo := strconv.Itoa(v[0].Periodo)
 		disponibilidad := strconv.Itoa(v[0].Disponibilidad)
 
-		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAdmin")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/get_valores_totales_x_disponibilidad/"+vigencia+"/"+periodo+"/"+disponibilidad+"", &totalesDisponibilidad); err2 == nil && request2 == 200 {
+		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente/get_valores_totales_x_disponibilidad/"+vigencia+"/"+periodo+"/"+disponibilidad+"", &totalesDisponibilidad); err2 == nil && request2 == 200 {
 			total = int(totalesSalario) + totalesDisponibilidad
 		} else {
 			logs.Error(err2)
@@ -124,7 +124,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 func CargarSalarioMinimo(vigencia string) (p models.SalarioMinimo, outputError map[string]interface{}) {
 	var v []models.SalarioMinimo
 
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/salario_minimo/?limit=1&query=Vigencia:"+vigencia, &v); err == nil && response == 200 {
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/salario_minimo?limit=1&query=Vigencia:"+vigencia, &v); err == nil && response == 200 {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/CargarSalarioMinimo", "err": err.Error(), "status": "404"}
 		return v[0], outputError
@@ -167,7 +167,7 @@ func EsDocentePlanta(idPersona string) (docentePlanta bool, outputError map[stri
 func CargarPuntoSalarial() (p models.PuntoSalarial, outputError map[string]interface{}) {
 	var v []models.PuntoSalarial
 
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/punto_salarial/?sortby=Vigencia&order=desc&limit=1", &v); response == 200 && err == nil {
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/punto_salarial?sortby=Vigencia&order=desc&limit=1", &v); response == 200 && err == nil {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/CargarPuntoSalarial", "err": err.Error(), "status": "404"}
 		return v[0], outputError
@@ -198,7 +198,7 @@ func Calcular_totales_vinculacion_pdf_nueva(cedula, id_resolucion string, IdDedi
 	var respuesta_peticion map[string]interface{}
 
 	// Busca las vinculaciones del docente en la misma resolución (aplica para diferentes proyectos curriculares en vinculaciones y las de modificación)
-	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &respuesta_peticion); err2 == nil && response == 200 {
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente"+query, &respuesta_peticion); err2 == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &temp)
 		if IdDedicacion != 3 && IdDedicacion != 4 {
 			for _, pos := range temp {

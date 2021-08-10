@@ -22,7 +22,7 @@ func InsertarPrevinculaciones(v []models.VinculacionDocente) (respuesta int, out
 		return respuesta, outputError
 	}
 
-	if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &respuesta_peticion, &v); err2 == nil {
+	if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &respuesta_peticion, &v); err2 == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &idRespuesta)
 		respuesta = idRespuesta
 	} else {

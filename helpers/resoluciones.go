@@ -19,7 +19,7 @@ func GetResolucionesAprobadas(query string, limit int, offset int) (resolucion_v
 		}
 	}()
 	var respuesta_peticion map[string]interface{}
-	if response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion/Aprobada"+"?query="+query+"&offset="+strconv.Itoa(offset)+"&limit="+strconv.Itoa(limit), &respuesta_peticion); err1 == nil && response1 == 200 {
+	if response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_vinculacion/Aprobada"+"?query="+query+"&offset="+strconv.Itoa(offset)+"&limit="+strconv.Itoa(limit), &respuesta_peticion); err1 == nil && response1 == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &resolucion_vinculacion_aprobada)
 		var err2, err3 map[string]interface{}
 		for x, pos := range resolucion_vinculacion_aprobada {
@@ -49,7 +49,7 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 	}()
 	var respuesta_peticion map[string]interface{}
 
-	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
+	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/resolucion_vinculacion")
 	r.Param("offset", strconv.Itoa(offset))
 	r.Param("limit", strconv.Itoa(limit))
 	for _, v := range query {
@@ -93,7 +93,7 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 	//Se trae cuerpo de resolución según tipo
 	//Se retiran 2 parametros que en el CRUD no se usan
 	//"/"+strconv.Itoa(v.Resolucion.Periodo)+"/"+strconv.Itoa(v.Resolucion.TipoResolucionId.Id)
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/resolucion_template/"+
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/contenido_resolucion/resolucion_template/"+
 		v.ResolucionVinculacionDocente.Dedicacion+"/"+v.ResolucionVinculacionDocente.NivelAcademico, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &texto_resolucion)
 		v.Resolucion.ConsideracionResolucion = texto_resolucion.Consideracion
@@ -139,7 +139,7 @@ func InsertarResolucionEstado(id_res int) (contr bool) {
 		ResolucionId:       &models.Resolucion{Id: id_res},
 	}
 
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_estado", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_estado", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		cont = true
 	} else {
@@ -156,7 +156,7 @@ func InsertarResolucionVinDocente(id_res int, resvindoc *models.ResolucionVincul
 	var cont bool
 	temp.Id = id_res
 
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion_docente", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_vinculacion_docente", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		cont = true
 	} else {
@@ -179,7 +179,7 @@ func InsertarArticulos(id_resolucion int, articulos []models.Articulo) {
 			ResolucionId:   &models.Resolucion{Id: id_resolucion},
 			Texto:          pos.Texto,
 			TipoComponente: "Articulo"}
-		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/componente_resolucion", "POST", &respuesta_peticion, &temp); err == nil {
+		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/componente_resolucion", "POST", &respuesta_peticion, &temp); err == nil {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 			for y, pos2 := range pos.Paragrafos {
 				temp2 := models.ComponenteResolucion{
@@ -189,7 +189,7 @@ func InsertarArticulos(id_resolucion int, articulos []models.Articulo) {
 					TipoComponente:            "Paragrafo",
 					ComponenteResolucionPadre: &models.ComponenteResolucion{Id: respuesta.Id},
 				}
-				if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/componente_resolucion", "POST", &respuesta_peticion, &temp2); err == nil {
+				if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/componente_resolucion", "POST", &respuesta_peticion, &temp2); err == nil {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta2)
 				} else {
 					fmt.Println("error al insertar parágrafos", err2)
@@ -275,7 +275,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 	if temp.TipoResolucionId.Id != 1 {
 		temp.VigenciaCarga = resVieja.VigenciaCarga
 		temp.PeriodoCarga = resVieja.PeriodoCarga
-		if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(resolucion.ResolucionVieja), &respuesta_peticion); err2 == nil && response == 200 {
+		if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+strconv.Itoa(resolucion.ResolucionVieja), &respuesta_peticion); err2 == nil && response == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &resVieja)
 			temp.Titulo = "“Por la cual se Modifica la resolución " + resVieja.NumeroResolucion + " de " + cambiarString(resVieja.FechaExpedicion.Month().String()) + " del " + strconv.Itoa(resVieja.FechaExpedicion.Year()) + " en cuanto a carga académica y valor del vínculo para el " + cambiarString(strconv.Itoa(temp.PeriodoCarga)) + " Periodo Académico de " + strconv.Itoa(temp.VigenciaCarga) + " en la modalidad de Docentes de " + cambiarString(resolucion.ResolucionVinculacionDocente.Dedicacion) + " (Vinculación Especial) para la " + resolucion.NomDependencia + " en " + resolucion.ResolucionVinculacionDocente.NivelAcademico + ".”"
 		} else {
@@ -285,7 +285,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 		}
 	}
 	temp.PreambuloResolucion = "El Decano de la " + resolucion.NomDependencia + " de la Universidad Distrital Francisco José de Caldas, en uso de sus facultades legales y estatutarias, en particular, de las conferidas por el artículo " + articulo + "  de la Resolución de Rectoría Nro. xxx de enero xxx de 2021, y"
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		id_creada = respuesta.Id
 		cont = true
@@ -301,7 +301,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 			ResolucionAnteriorId: &models.Resolucion{Id: resolucion.ResolucionVieja},
 			ResolucionNuevaId:    &models.Resolucion{Id: id_creada},
 		}
-		if err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion", "POST", &respuesta_peticion, &objeto_modificacion_res); err3 == nil {
+		if err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_resolucion", "POST", &respuesta_peticion, &objeto_modificacion_res); err3 == nil {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta_modificacion_res)
 			cont = true
 		} else {
