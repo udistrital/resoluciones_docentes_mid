@@ -226,8 +226,8 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		emptyCatDocente := models.ObjetoCategoriaDocente{}
 		//TODO: quitar el hardconding para WSO2 cuando ya soporte https:
 		q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudUrano") + "/categoria_docente/" + vigencia + "/" + periodo + "/" + pos.DocDocente
-		err2 := GetXml(q, &catDocente.CategoriaDocente)
-		if err2 != nil {
+		response, err2 := GetJsonWSO2Test(q, &catDocente.CategoriaDocente)
+		if err2 != nil && response == 200 {
 			logs.Error(err2)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria", "err2": err2, "status": "404"}
 			return newDocentesXcargaHoraria, outputError
