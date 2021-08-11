@@ -1,5 +1,5 @@
 // @APIVersion 1.0.0
-// @Title Resoluciones Dcentes API MID
+// @Title Resoluciones Docentes API MID
 // @Description Middleware para la gestión de la información de resoluciones
 // @Contact computo@udistrital.edu.co
 // @License Apache 2.0

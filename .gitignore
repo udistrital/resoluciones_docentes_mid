@@ -1,6 +1,7 @@
 lastupdate.tmp
 .vscode/
-resoluciones_docentes_mid.exe
+*.exe
+*.exe~
 main
 swagger.zip
 .scannerwork/

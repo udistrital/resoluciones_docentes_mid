@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: Resoluciones Dcentes API MID
+  title: Resoluciones Docentes API MID
   description: Middleware para la gestión de la información de resoluciones
   version: 1.0.0
   contact:
@@ -518,7 +518,7 @@ definitions:
   5705.<nil>.ContratoVinculacion:
     title: ContratoVinculacion
     type: object
-  15433.0xc0006b40c0.false:
+  16054.0xc000697380.false:
     title: "false"
     type: object
   models.ApropiacionRubro:
@@ -800,7 +800,7 @@ definitions:
     type: object
     properties:
       cdp_rp_docente:
-        $ref: '#/definitions/15433.0xc0006b40c0.false'
+        $ref: '#/definitions/16054.0xc000697380.false'
   models.Rubro:
     title: Rubro
     type: object
