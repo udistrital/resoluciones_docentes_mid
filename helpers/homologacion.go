@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/administrativa_mid_api/models"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 func HomologarDedicacion_nombre(dedicacion string) (vinculacion_old []string) {
