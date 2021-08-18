@@ -22,7 +22,7 @@ func BuscarTipoDocumento(Cedula string) (nombre_tipo_doc string, outputError map
 		}
 	} else {
 		tipo_documento = "N/A"
-		outputError = map[string]interface{}{"funcion": "/BuscarTipoDocumento", "err": err2.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/BuscarTipoDocumento1", "err": err2.Error(), "status": "404"}
 		return tipo_documento, outputError
 	}
 

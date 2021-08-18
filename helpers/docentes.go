@@ -264,7 +264,7 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		pos.IDFacultad, err5 = HomologarFacultad("old", pos.IDFacultad)
 		if err5 != nil {
 			logs.Error(err5)
-			//outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas5", "err5": err5, "status": "404"}
+			//outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria5", "err5": err5, "status": "404"}
 			return newDocentesXcargaHoraria, err5
 		}
 		newDocentesXcargaHoraria.CargasLectivas.CargaLectiva[x] = pos
@@ -275,14 +275,14 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		pos.DependenciaAcademica, err6 = strconv.Atoi(pos.IDProyecto)
 		if err6 != nil {
 			logs.Error(err6)
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas6", "err6": err6.Error(), "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria6", "err6": err6.Error(), "status": "404"}
 			return newDocentesXcargaHoraria, outputError
 		}
 		var err7 map[string]interface{}
 		pos.IDProyecto, err7 = HomologarProyectoCurricular(pos.IDProyecto)
 		if err7 != nil {
 			logs.Error(err7)
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas7", "err7": err7, "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria7", "err7": err7, "status": "404"}
 			return newDocentesXcargaHoraria, outputError
 		}
 		newDocentesXcargaHoraria.CargasLectivas.CargaLectiva[x] = pos
@@ -600,7 +600,7 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 		response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_resolucion?query=ResolucionNuevaId.Id:"+idResolucion, &respuesta_peticion)
 		if err2 != nil && response2 != 200 {
 			logs.Error(err2)
-			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados2", "err2": err2.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados2.1", "err2": err2.Error(), "status": "502"}
 			return nil, outputError
 		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modres)

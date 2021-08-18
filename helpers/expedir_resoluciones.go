@@ -230,63 +230,63 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 														fmt.Println("Vinculacion docente actualizada y lista, vamos por la otra")
 													} else { // If 1 - vinculacion_docente
 														logs.Error(v)
-														outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+														outputError = map[string]interface{}{"funcion": "/Expedir1.0", "err": err.Error(), "status": "502"}
 														return outputError
 													}
 												} else { // If 2 - contrato_disponibilidad
 													fmt.Println("He fallado un poquito en  If 2 - contrato_disponibilidad, solucioname!!!", err)
 													logs.Error(cd)
-													outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+													outputError = map[string]interface{}{"funcion": "/Expedir2", "err": err.Error(), "status": "502"}
 													return outputError
 												}
 											} else { // If 2.5.1 - Get disponibildad
 												fmt.Println("He fallado un poquito en If 2.5.1 - Get disponibildad, solucioname!!!", err)
 												logs.Error(disponibilidad)
-												outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+												outputError = map[string]interface{}{"funcion": "/Expedir2.5.1", "err": err.Error(), "status": "502"}
 												return outputError
 											}
 										} else { // If 2.5.2 - Get disponibildad_apropiacion
 											fmt.Println("He fallado un poquito en If 2.5.2 - Get disponibildad_apropiacion, solucioname!!!", err)
 											logs.Error(dispoap)
-											outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+											outputError = map[string]interface{}{"funcion": "/Expedir2.5.2", "err": err.Error(), "status": "502"}
 											return outputError
 										}
 									} else { // If 3 - Acta_inicio
 										fmt.Println("He fallado un poquito en If 3 - Acta_inicio, solucioname!!!", err)
 										logs.Error(ai)
-										outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+										outputError = map[string]interface{}{"funcion": "/Expedir3", "err": err.Error(), "status": "502"}
 										return outputError
 									}
 								} else { // If 4 - contrato_estado
 									fmt.Println("He fallado un poquito en If 4 - contrato_estado, solucioname!!!", err)
 									logs.Error(ce)
-									outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+									outputError = map[string]interface{}{"funcion": "/Expedir4", "err": err.Error(), "status": "502"}
 									return outputError
 								}
 							} else { //If insert contrato_general
 								fmt.Println("He fallado un poquito en insert contrato_general, solucioname!!!", err)
-								outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+								outputError = map[string]interface{}{"funcion": "/Expedir4.1", "err": err.Error(), "status": "502"}
 								return outputError
 							}
 						} else { // Nuevo If
 							fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor nuevo, solucioname!!!", err)
-							outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+							outputError = map[string]interface{}{"funcion": "/Expedir4.2", "err": err.Error(), "status": "502"}
 							return outputError
 						}
 					} else { // If 5 - Informacion_Proveedor
 						fmt.Println("He fallado un poquito en If 5 - Informacion_Proveedor, solucioname!!!", err)
-						outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+						outputError = map[string]interface{}{"funcion": "/Expedir5 ", "err": err.Error(), "status": "502"}
 						return outputError
 					}
 				} else {
 					fmt.Println("error")
-					outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+					outputError = map[string]interface{}{"funcion": "/Expedir7 ", "err": err.Error(), "status": "502"}
 					return outputError
 				}
 			} else { //If 8 - Vinculacion_docente (GET)
 				fmt.Println("He fallado un poquito en If 8 - Vinculacion_docente (GET), solucioname!!!", err)
 				logs.Error(v)
-				outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+				outputError = map[string]interface{}{"funcion": "/Expedir8 ", "err": err.Error(), "status": "502"}
 				return outputError
 			}
 		} // for vinculaciones
@@ -317,25 +317,25 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 				} else { //If 9 - Resolucion_estado
 					fmt.Println("He fallado un poquito en If 9 - Resolucion_estado, solucioname!!!", err)
 					logs.Error(e)
-					outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+					outputError = map[string]interface{}{"funcion": "/Expedir9 ", "err": err.Error(), "status": "502"}
 					return outputError
 				}
 			} else { //If 10 - Resolucion (PUT)
 				fmt.Println("He fallado un poquito en If 10 - Resolucion (PUT), solucioname!!! ", err)
 				logs.Error(r)
-				outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+				outputError = map[string]interface{}{"funcion": "/Expedir10 ", "err": err.Error(), "status": "502"}
 				return outputError
 			}
 		} else { //If 11 - Resolucion (GET)
 			fmt.Println("He fallado un poquito en If 11 - Resolucion (GET), solucioname!!! ", err)
 			logs.Error(r)
-			outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/Expedir11 ", "err": err.Error(), "status": "502"}
 			return outputError
 		}
 	} else { //If 12 - Consecutivo contrato_general
 		fmt.Println("He fallado un poquito en If 12 - Consecutivo contrato_general, solucioname!!! ", err)
 		logs.Error(cdve)
-		outputError = map[string]interface{}{"funcion": "/SolicitudesOrdenadorContratistas1 ", "err": err.Error(), "status": "502"}
+		outputError = map[string]interface{}{"funcion": "/Expedir12 ", "err": err.Error(), "status": "502"}
 		return outputError
 	}
 	return nil

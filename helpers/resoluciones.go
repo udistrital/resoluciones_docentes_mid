@@ -43,7 +43,7 @@ func GetResolucionesAprobadas(query string, limit int, offset int) (resolucion_v
 func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion_vinculacion []models.ResolucionVinculacion, outputError map[string]interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/GetResolucionesAprobadas", "err": err, "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/GetResolucionesInscritas", "err": err, "status": "502"}
 			panic(outputError)
 		}
 	}()
@@ -82,7 +82,7 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada int, control bool, outputError map[string]interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err, "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta", "err": err, "status": "502"}
 			panic(outputError)
 		}
 	}()
@@ -99,7 +99,7 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 		v.Resolucion.ConsideracionResolucion = texto_resolucion.Consideracion
 	} else {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta1", "err": err.Error(), "status": "404"}
 		return id_resolucion_creada, control, outputError
 	}
 
@@ -108,7 +108,7 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 	control, id_resolucion_creada, err2 = InsertarResolucion(v)
 	if err2 != nil {
 		logs.Error(err2)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas2", "err2": err2, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta2", "err2": err2, "status": "404"}
 		return id_resolucion_creada, control, outputError
 	}
 	if control {
@@ -307,7 +307,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 		} else {
 			cont = false
 			logs.Error(err3)
-			outputError = map[string]interface{}{"funcion": "/InsertarResolucion3", "err3": err3.Error(), "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/InsertarResolucion4", "err3": err3.Error(), "status": "404"}
 			return cont, id_cre, outputError
 		}
 

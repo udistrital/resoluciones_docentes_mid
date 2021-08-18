@@ -24,7 +24,7 @@ func BuscarNombreProveedor(DocumentoIdentidad int) (nombre_prov string, outputEr
 			nom_proveedor = ""
 		}
 	} else {
-		outputError = map[string]interface{}{"funcion": "/BuscarNombreProveedor", "err": err2.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/BuscarNombreProveedor2", "err": err2.Error(), "status": "404"}
 		return nom_proveedor, outputError
 	}
 

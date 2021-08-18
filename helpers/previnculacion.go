@@ -18,7 +18,7 @@ func InsertarPrevinculaciones(v []models.VinculacionDocente) (respuesta int, out
 	v, err := CalcularSalarioPrecontratacion(v)
 	if err != nil {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones", "err": err, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones1", "err": err, "status": "404"}
 		return respuesta, outputError
 	}
 
@@ -27,7 +27,7 @@ func InsertarPrevinculaciones(v []models.VinculacionDocente) (respuesta int, out
 		respuesta = idRespuesta
 	} else {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones", "err2": err2, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones2", "err2": err2, "status": "404"}
 		return respuesta, outputError
 	}
 

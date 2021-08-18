@@ -172,7 +172,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesCargaHoraria() {
 	_, err4 := strconv.Atoi(facultad)
 	//_, err5 := strconv.Atoi(nivelAcademico)
 	if (err1 != nil) || (err2 != nil) || (err4 != nil) || (vig == 0) || (per == 0) || (len(vigencia) != 4) {
-		panic(map[string]interface{}{"funcion": "ListarDocentesCargaHoraria1", "err1": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "ListarDocentesCargaHoraria", "err1": "Error en los parametros de ingreso", "status": "400"})
 	}
 
 	if respuesta, err6 := helpers.ListarDocentesCargaHoraria(vigencia, periodo, tipoVinculacion, facultad, nivelAcademico); err6 == nil {
@@ -218,7 +218,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculadosAll() {
 	}()
 	idRes, err1 := strconv.Atoi(idResolucion)
 	if (idRes == 0) || (err1 != nil) {
-		panic(map[string]interface{}{"funcion": "ListarDocentesPrevinculadosAll1", "err1": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "ListarDocentesPrevinculadosAll", "err1": "Error en los parametros de ingreso", "status": "400"})
 	}
 	if v, err2 := helpers.ListarDocentesPrevinculadosAll(idResolucion, tipoVinculacion, tipoCancelacion, tipoAdicion, tipoReduccion); err2 == nil {
 		c.Ctx.Output.SetStatus(200)
@@ -246,7 +246,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "ListarDocentesPrevinculados" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -301,7 +301,7 @@ func (c *GestionPrevinculacionesController) GetCdpRpDocente() {
 	vigen, err2 := strconv.Atoi(vigencia)
 	ident, err3 := strconv.Atoi(identificacion)
 	if (err1 != nil) || (err2 != nil) || (err3 != nil) || (numV == 0) || (vigen == 0) || (ident == 0) {
-		panic(map[string]interface{}{"funcion": "GetCertificacionDocumentosAprobados", "err": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "GetCdpRpDocente", "err": "Error en los parametros de ingreso", "status": "400"})
 	}
 	if rpdocente, err4 := helpers.GetCdpRpDocente(identificacion, num_vinculacion, vigencia); err4 == nil {
 		c.Ctx.Output.SetStatus(200)

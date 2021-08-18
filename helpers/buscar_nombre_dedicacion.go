@@ -26,7 +26,7 @@ func BuscarNombreDedicacion(id_dedicacion int) (nombre_dedicacion string, output
 			nom_dedicacion = ""
 		}
 	} else {
-		outputError = map[string]interface{}{"funcion": "/BuscarNombreDedicacion", "err": err2.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/BuscarNombreDedicacion2", "err": err2.Error(), "status": "404"}
 		return nom_dedicacion, outputError
 	}
 

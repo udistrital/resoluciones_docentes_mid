@@ -196,7 +196,7 @@ func ValidarSaldoCDP(validacion models.Objeto_Desvinculacion) (respuesta string,
 func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputError map[string]interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/AprobacionPagosContratistas", "err": err, "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err": err, "status": "502"}
 			panic(outputError)
 		}
 	}()
@@ -214,7 +214,7 @@ func AdicionarHoras(v models.Objeto_Desvinculacion) (respuesta string, outputErr
 		//TODO: unificar errores
 		if err1 != nil {
 			logs.Error(err1)
-			outputError = map[string]interface{}{"funcion": "/AdicionarHoras", "err1": err1.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/AdicionarHoras1", "err1": err1.Error(), "status": "502"}
 			return respuesta, outputError
 		}
 		//TODO: unificar errores
@@ -379,7 +379,7 @@ func InsertarDesvinculaciones(v [1]models.VinculacionDocente) (id int, outputErr
 	}
 
 	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &respuesta_peticion, &d); err != nil {
-		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones", "err": err.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarDesvinculaciones3", "err": err.Error(), "status": "404"}
 		return 0, outputError
 	} else {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &id)
