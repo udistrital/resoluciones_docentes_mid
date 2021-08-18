@@ -44,9 +44,7 @@ paths:
         description: body for Expedicion Resolucion content
         required: true
         schema:
-          type: array
-          items:
-            $ref: '#/definitions/models.ExpedicionResolucion'
+          $ref: '#/definitions/models.ExpedicionResolucion'
       responses:
         "201":
           description: '{int} models.ExpedicionResolucion'
@@ -104,6 +102,13 @@ paths:
       - gestion_desvinculaciones
       description: create ActualizarVinculacionesCancelacion
       operationId: GestionDesvinculacionesController.ActualizarVinculacionesCancelacion
+      parameters:
+      - in: body
+        name: body
+        description: body for Objeto Desvinculacion content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Objeto_Desvinculacion'
       responses:
         "201":
           description: '{string}'
@@ -117,6 +122,13 @@ paths:
       - gestion_desvinculaciones
       description: Se usa tanto para adiciones como para reducciones de horas y semanas
       operationId: GestionDesvinculacionesController.AdicionarHoras
+      parameters:
+      - in: body
+        name: body
+        description: body for Objeto Desvinculacion content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Objeto_Desvinculacion'
       responses:
         "201":
           description: '{string}'
@@ -133,12 +145,10 @@ paths:
       parameters:
       - in: body
         name: body
-        description: body for AnularModificaciones content
+        description: body for Anular Adiciones content
         required: true
         schema:
-          type: array
-          items:
-            $ref: '#/definitions/models.Objeto_Desvinculacion'
+          $ref: '#/definitions/models.Objeto_Desvinculacion'
       responses:
         "201":
           description: '{string}'
@@ -177,12 +187,10 @@ paths:
       parameters:
       - in: body
         name: body
-        description: body for AnularModificaciones content
+        description: body for Consultar Categoria content
         required: true
         schema:
-          type: array
-          items:
-            $ref: '#/definitions/models.VinculacionDocente'
+          $ref: '#/definitions/models.VinculacionDocente'
       responses:
         "201":
           description: '{string}'
@@ -232,6 +240,13 @@ paths:
       - gestion_desvinculaciones
       description: Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones
       operationId: GestionDesvinculacionesController.ValidarSaldoCDP
+      parameters:
+      - in: body
+        name: body
+        description: body for Objeto Desvinculacion content
+        required: true
+        schema:
+          $ref: '#/definitions/models.Objeto_Desvinculacion'
       responses:
         "201":
           description: '{string}'
@@ -504,6 +519,13 @@ paths:
       - gestion_resoluciones
       description: create InsertarResolucionCompleta
       operationId: GestionResolucionesController.InsertarResolucionCompleta
+      parameters:
+      - in: body
+        name: body
+        description: body for Objeto Resolucion content
+        required: true
+        schema:
+          $ref: '#/definitions/models.ObjetoResolucion'
       responses:
         "201":
           description: '{int} models.Resolucion'
@@ -518,7 +540,7 @@ definitions:
   5705.<nil>.ContratoVinculacion:
     title: ContratoVinculacion
     type: object
-  16054.0xc000697380.false:
+  16054.0xc000692c90.false:
     title: "false"
     type: object
   models.ApropiacionRubro:
@@ -676,6 +698,19 @@ definitions:
         format: int64
       TipoDesvinculacion:
         type: string
+  models.ObjetoResolucion:
+    title: ObjetoResolucion
+    type: object
+    properties:
+      NomDependencia:
+        type: string
+      Resolucion:
+        $ref: '#/definitions/models.Resolucion'
+      ResolucionVieja:
+        type: integer
+        format: int64
+      ResolucionVinculacionDocente:
+        $ref: '#/definitions/models.ResolucionVinculacionDocente'
   models.OrdenadorGasto:
     title: OrdenadorGasto
     type: object
@@ -702,6 +737,55 @@ definitions:
         format: int64
       Texto:
         type: string
+  models.Resolucion:
+    title: Resolucion
+    type: object
+    properties:
+      Activo:
+        type: boolean
+      ConsideracionResolucion:
+        type: string
+      DependenciaFirmaId:
+        type: integer
+        format: int64
+      DependenciaId:
+        type: integer
+        format: int64
+      FechaCreacion:
+        type: string
+        format: datetime
+      FechaExpedicion:
+        type: string
+        format: datetime
+      FechaModificacion:
+        type: string
+        format: datetime
+      Id:
+        type: integer
+        format: int64
+      NumeroResolucion:
+        type: string
+      NumeroSemanas:
+        type: integer
+        format: int64
+      Periodo:
+        type: integer
+        format: int64
+      PeriodoCarga:
+        type: integer
+        format: int64
+      PreambuloResolucion:
+        type: string
+      TipoResolucionId:
+        $ref: '#/definitions/models.TipoResolucion'
+      Titulo:
+        type: string
+      Vigencia:
+        type: integer
+        format: int64
+      VigenciaCarga:
+        type: integer
+        format: int64
   models.ResolucionCompleta:
     title: ResolucionCompleta
     type: object
@@ -800,7 +884,7 @@ definitions:
     type: object
     properties:
       cdp_rp_docente:
-        $ref: '#/definitions/16054.0xc000697380.false'
+        $ref: '#/definitions/16054.0xc000692c90.false'
   models.Rubro:
     title: Rubro
     type: object
@@ -838,6 +922,25 @@ definitions:
       NumeroOrden:
         type: integer
         format: int64
+  models.TipoResolucion:
+    title: TipoResolucion
+    type: object
+    properties:
+      Activo:
+        type: boolean
+      Descripcion:
+        type: string
+      FechaCreacion:
+        type: string
+        format: datetime
+      FechaModificacion:
+        type: string
+        format: datetime
+      Id:
+        type: integer
+        format: int64
+      NombreTipoResolucion:
+        type: string
   models.VinculacionDocente:
     title: VinculacionDocente
     type: object

@@ -149,7 +149,7 @@ func (c *GestionDesvinculacionesController) AnularModificaciones() {
 
 // AnularAdicionDocente ...
 // @Title AnularAdicionDocente
-// @Param	body		body 	[]models.Objeto_Desvinculacion	true		"body for AnularModificaciones content"
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Anular Adiciones content"
 // @Description Se usa para adiciones, reducciones y cancelaciones
 // @Success 201 {string}
 // @Failure 400 bad request
@@ -189,7 +189,7 @@ func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
 
 // ConsultarCategoria ...
 // @Title ConsultarCategoria
-// @Param	body		body 	[]models.VinculacionDocente	true		"body for AnularModificaciones content"
+// @Param	body		body 	models.VinculacionDocente	true		"body for Consultar Categoria content"
 // @Description Consulta el servicio de categoría en académica para verificar si el docente tiene el semáforo completo
 // @Success 201 {string}
 // @Failure 400 bad request
@@ -228,6 +228,7 @@ func (c *GestionDesvinculacionesController) ConsultarCategoria() {
 // ValidarSaldoCDP ...
 // @Title ValidarSaldoCDP
 // @Description Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
 // @Failure 400 bad request
 // @Failure 404 aborted by server
@@ -266,6 +267,7 @@ func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
 // AdicionarHoras ...
 // @Title AdicionarHoras
 // @Description Se usa tanto para adiciones como para reducciones de horas y semanas
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
 // @Failure 400 bad request
 // @Failure 404 aborted by server
@@ -305,6 +307,7 @@ func (c *GestionDesvinculacionesController) AdicionarHoras() {
 // ActualizarVinculacionesCancelacion ...
 // @Title ActualizarVinculacionesCancelacion
 // @Description create ActualizarVinculacionesCancelacion
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
 // @Failure 400 bad request
 // @Failure 404 aborted by server

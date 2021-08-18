@@ -62,10 +62,7 @@
                         "description": "body for Expedicion Resolucion content",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ExpedicionResolucion"
-                            }
+                            "$ref": "#/definitions/models.ExpedicionResolucion"
                         }
                     }
                 ],
@@ -157,6 +154,17 @@
                 ],
                 "description": "create ActualizarVinculacionesCancelacion",
                 "operationId": "GestionDesvinculacionesController.ActualizarVinculacionesCancelacion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "{string}"
@@ -177,6 +185,17 @@
                 ],
                 "description": "Se usa tanto para adiciones como para reducciones de horas y semanas",
                 "operationId": "GestionDesvinculacionesController.AdicionarHoras",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "{string}"
@@ -201,13 +220,10 @@
                     {
                         "in": "body",
                         "name": "body",
-                        "description": "body for AnularModificaciones content",
+                        "description": "body for Anular Adiciones content",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Objeto_Desvinculacion"
-                            }
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
                         }
                     }
                 ],
@@ -269,13 +285,10 @@
                     {
                         "in": "body",
                         "name": "body",
-                        "description": "body for AnularModificaciones content",
+                        "description": "body for Consultar Categoria content",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.VinculacionDocente"
-                            }
+                            "$ref": "#/definitions/models.VinculacionDocente"
                         }
                     }
                 ],
@@ -355,6 +368,17 @@
                 ],
                 "description": "Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones",
                 "operationId": "GestionDesvinculacionesController.ValidarSaldoCDP",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "{string}"
@@ -770,6 +794,17 @@
                 ],
                 "description": "create InsertarResolucionCompleta",
                 "operationId": "GestionResolucionesController.InsertarResolucionCompleta",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Resolucion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ObjetoResolucion"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "{int} models.Resolucion"
@@ -785,7 +820,7 @@
         }
     },
     "definitions": {
-        "16054.0xc000697380.false": {
+        "16054.0xc000692c90.false": {
             "title": "false",
             "type": "object"
         },
@@ -992,6 +1027,25 @@
                 }
             }
         },
+        "models.ObjetoResolucion": {
+            "title": "ObjetoResolucion",
+            "type": "object",
+            "properties": {
+                "NomDependencia": {
+                    "type": "string"
+                },
+                "Resolucion": {
+                    "$ref": "#/definitions/models.Resolucion"
+                },
+                "ResolucionVieja": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ResolucionVinculacionDocente": {
+                    "$ref": "#/definitions/models.ResolucionVinculacionDocente"
+                }
+            }
+        },
         "models.Objeto_Desvinculacion": {
             "title": "Objeto_Desvinculacion",
             "type": "object",
@@ -1052,6 +1106,74 @@
                 },
                 "Texto": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Resolucion": {
+            "title": "Resolucion",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "ConsideracionResolucion": {
+                    "type": "string"
+                },
+                "DependenciaFirmaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DependenciaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaExpedicion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroResolucion": {
+                    "type": "string"
+                },
+                "NumeroSemanas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Periodo": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PeriodoCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PreambuloResolucion": {
+                    "type": "string"
+                },
+                "TipoResolucionId": {
+                    "$ref": "#/definitions/models.TipoResolucion"
+                },
+                "Titulo": {
+                    "type": "string"
+                },
+                "Vigencia": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "VigenciaCarga": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -1192,7 +1314,7 @@
             "type": "object",
             "properties": {
                 "cdp_rp_docente": {
-                    "$ref": "#/definitions/16054.0xc000697380.false"
+                    "$ref": "#/definitions/16054.0xc000692c90.false"
                 }
             }
         },
@@ -1246,6 +1368,33 @@
                 "NumeroOrden": {
                     "type": "integer",
                     "format": "int64"
+                }
+            }
+        },
+        "models.TipoResolucion": {
+            "title": "TipoResolucion",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NombreTipoResolucion": {
+                    "type": "string"
                 }
             }
         },

@@ -26,7 +26,7 @@ func (c *ExpedirResolucionController) URLMapping() {
 // Expedir ...
 // @Title Expedir
 // @Description create Expedir
-// @Param	body		body 	[]models.ExpedicionResolucion	true		"body for Expedicion Resolucion content"
+// @Param	body		body 	models.ExpedicionResolucion	true		"body for Expedicion Resolucion content"
 // @Success 201 {int} models.ExpedicionResolucion
 // @Failure 400 bad request
 // @Failure 404 aborted by server
