@@ -26,9 +26,10 @@ func (c *ExpedirResolucionController) URLMapping() {
 // Expedir ...
 // @Title Expedir
 // @Description create Expedir
-// @Param	body		body 	[]models.ExpedicionResolucion	true		"body for Expedicion Resolucion content"
+// @Param	body		body 	models.ExpedicionResolucion	true		"body for Expedicion Resolucion content"
 // @Success 201 {int} models.ExpedicionResolucion
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /expedir [post]
 func (c *ExpedirResolucionController) Expedir() {
 
@@ -36,7 +37,7 @@ func (c *ExpedirResolucionController) Expedir() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -51,7 +52,7 @@ func (c *ExpedirResolucionController) Expedir() {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
 		if err := helpers.Expedir(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": m}
 		} else {
 			panic(err)
 		}
@@ -65,8 +66,9 @@ func (c *ExpedirResolucionController) Expedir() {
 // @Title ValidarDatosExpedicion
 // @Description create ValidarDatosExpedicion
 // @Param	body		body 	[]models.ExpedicionResolucion	true		"body for Validar Datos Expedición content"
-// @Success 201 {int}
-// @Failure 403 body is empty
+// @Success 201 {string}
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /validar_datos_expedicion [post]
 func (c *ExpedirResolucionController) ValidarDatosExpedicion() {
 
@@ -74,7 +76,7 @@ func (c *ExpedirResolucionController) ValidarDatosExpedicion() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -104,7 +106,8 @@ func (c *ExpedirResolucionController) ValidarDatosExpedicion() {
 // @Description create ExpedirModificacion
 // @Param	body		body 	[]models.ExpedicionResolucion	true		"body for Validar Datos Expedición content"
 // @Success 201 {int} models.ExpedicionResolucion
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /expedirModificacion [post]
 func (c *ExpedirResolucionController) ExpedirModificacion() {
 
@@ -112,7 +115,7 @@ func (c *ExpedirResolucionController) ExpedirModificacion() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -127,7 +130,7 @@ func (c *ExpedirResolucionController) ExpedirModificacion() {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
 		if err := helpers.ExpedirModificacion(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": m}
 		} else {
 			panic(err)
 		}
@@ -140,8 +143,10 @@ func (c *ExpedirResolucionController) ExpedirModificacion() {
 // Cancelar ...
 // @Title Cancelar
 // @Description create Cancelar
+// @Param	body		body 	[]models.ExpedicionCancelacion	true		"body for Expedición a cancelar content"
 // @Success 201 {int} models.ExpedicionCancelacion
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /cancelar [post]
 func (c *ExpedirResolucionController) Cancelar() {
 
@@ -149,7 +154,7 @@ func (c *ExpedirResolucionController) Cancelar() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "ExpedirResolucionController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -164,7 +169,7 @@ func (c *ExpedirResolucionController) Cancelar() {
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &m); err == nil {
 		if err := helpers.Cancelar(m); err == nil {
 			c.Ctx.Output.SetStatus(201)
-			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
+			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": m}
 		} else {
 			panic(err)
 		}

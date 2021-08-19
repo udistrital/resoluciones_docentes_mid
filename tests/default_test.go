@@ -10,7 +10,7 @@ import (
 	_ "github.com/udistrital/resoluciones_docentes_mid/routers"
 
 	"github.com/astaxie/beego"
-	"github.com/beego/beego/v2/core/logs"
+	"github.com/astaxie/beego/logs"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

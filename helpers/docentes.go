@@ -30,11 +30,11 @@ func ListarDocentesHorasLectivas(vigencia, periodo, tipo_vinculacion, facultad, 
 	var docentesXCarga models.ObjetoCargaLectiva
 
 	for _, pos := range tipoVinculacionOld {
-		t := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudAcademica") + "/" + "carga_lectiva/" + vigencia + "/" + periodo + "/" + pos + "/" + facultadOld + "/" + nivel_academico
+		t := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudAcademica") + "/carga_lectiva/" + vigencia + "/" + periodo + "/" + pos + "/" + facultadOld + "/" + nivel_academico
 		fmt.Println(t)
-		if response, err2 := GetJsonWSO2Test(t, &temp); response == 200 && err2 == nil{
+		if response, err2 := GetJsonWSO2Test(t, &temp); response == 200 && err2 == nil {
 
-		}else{
+		} else {
 			logs.Error(err2)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesHorasLectivas2", "err2": err2.Error(), "status": "404"}
 			return docentesXCarga, outputError
@@ -66,7 +66,7 @@ func GetInformacionRpDocente(numero_cdp string, vigencia_cdp string, identificac
 
 	var temp map[string]interface{}
 	fmt.Println(numero_cdp + " " + vigencia_cdp + " " + identificacion)
-	if err := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudFinanciera")+"/"+"cdprpdocente/"+numero_cdp+"/"+vigencia_cdp+"/"+identificacion, &temp); err == nil {
+	if err := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudFinanciera")+"/cdprpdocente/"+numero_cdp+"/"+vigencia_cdp+"/"+identificacion, &temp); err == nil {
 		json_cdp_rp, error_json := json.Marshal(temp)
 
 		if error_json == nil {
@@ -107,8 +107,8 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 	var err3 map[string]interface{}
 	var err4 map[string]interface{}
 
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query)
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &respuesta_peticion); err == nil && response == 200 {
+	r := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/vinculacion_docente" + query
+	if response, err := GetJsonTest(r, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 		for x, pos := range v {
 			documento_identidad := pos.PersonaId
@@ -138,8 +138,6 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 		outputError = map[string]interface{}{"funcion": "/ListarDocentesDesvinculados", "err": err.Error(), "status": "404"}
 		return nil, outputError
 	}
-
-	return
 }
 
 func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
@@ -155,11 +153,11 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 	var err3 map[string]interface{}
 	var err4 map[string]interface{}
 
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNuevaId:"+id_resolucion)
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=resolucionNuevaId:"+id_resolucion, &respuesta_peticion); err == nil && response == 200 {
+	r := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/modificacion_resolucion?query=ResolucionNuevaId.Id:" + id_resolucion
+	if response, err := GetJsonTest(r, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &modRes)
 		// if 2 - modificacion_vinculacion
-		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/modificacion_vinculacion/?limit=-1&query=modificacion_resolucion_id:" + strconv.Itoa(modRes[0].Id)
+		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/modificacion_vinculacion?limit=-1&query=ModificacionResolucionId.Id:" + strconv.Itoa(modRes[0].Id)
 		beego.Info(t)
 		if response, err := GetJsonTest(t, &respuesta_peticion); err == nil && response == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modVin)
@@ -167,8 +165,8 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 			for _, vinculacion := range modVin {
 				beego.Info(fmt.Sprintf("%+v", vinculacion.VinculacionDocenteCanceladaId))
 				// if 1 - vinculacion_docente
-				fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCanceladaId.Id))
-				if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/"+strconv.Itoa(vinculacion.VinculacionDocenteCanceladaId.Id), &respuesta_peticion); err == nil && response == 200 {
+				s := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/vinculacion_docente/" + strconv.Itoa(vinculacion.VinculacionDocenteCanceladaId.Id)
+				if response, err := GetJsonTest(s, &respuesta_peticion); err == nil && response == 200 {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &cv)
 					documento_identidad := vinculacion.VinculacionDocenteCanceladaId.PersonaId
 					cv.NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
@@ -206,7 +204,6 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 		outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados3", "err": err.Error(), "status": "404"}
 		return nil, outputError
 	}
-	return
 }
 
 func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion string, facultad string, nivelAcademico string) (newDocentesXcargaHoraria models.ObjetoCargaLectiva, outputError map[string]interface{}) {
@@ -229,8 +226,8 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		emptyCatDocente := models.ObjetoCategoriaDocente{}
 		//TODO: quitar el hardconding para WSO2 cuando ya soporte https:
 		q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudUrano") + "/categoria_docente/" + vigencia + "/" + periodo + "/" + pos.DocDocente
-		err2 := GetXml(q, &catDocente.CategoriaDocente)
-		if err2 != nil {
+		response, err2 := GetJsonWSO2Test(q, &catDocente.CategoriaDocente)
+		if err2 != nil && response == 200 {
 			logs.Error(err2)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria", "err2": err2, "status": "404"}
 			return newDocentesXcargaHoraria, outputError
@@ -267,7 +264,7 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		pos.IDFacultad, err5 = HomologarFacultad("old", pos.IDFacultad)
 		if err5 != nil {
 			logs.Error(err5)
-			//outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas5", "err5": err5, "status": "404"}
+			//outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria5", "err5": err5, "status": "404"}
 			return newDocentesXcargaHoraria, err5
 		}
 		newDocentesXcargaHoraria.CargasLectivas.CargaLectiva[x] = pos
@@ -278,14 +275,14 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		pos.DependenciaAcademica, err6 = strconv.Atoi(pos.IDProyecto)
 		if err6 != nil {
 			logs.Error(err6)
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas6", "err6": err6.Error(), "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria6", "err6": err6.Error(), "status": "404"}
 			return newDocentesXcargaHoraria, outputError
 		}
 		var err7 map[string]interface{}
 		pos.IDProyecto, err7 = HomologarProyectoCurricular(pos.IDProyecto)
 		if err7 != nil {
 			logs.Error(err7)
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas7", "err7": err7, "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCargaHoraria7", "err7": err7, "status": "404"}
 			return newDocentesXcargaHoraria, outputError
 		}
 		newDocentesXcargaHoraria.CargasLectivas.CargaLectiva[x] = pos
@@ -310,50 +307,50 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 	var respuesta_peticion map[string]interface{}
 
 	//Devuelve el nivel académico, la dedicación y la facultad de la resolución
-	if response, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion_docente/"+idResolucion, &respuesta_peticion); err1 != nil && response != 200 {
+	if response, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_vinculacion_docente/"+idResolucion, &respuesta_peticion); err1 != nil && response != 200 {
 		logs.Error(err1)
 		outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll1", "err1": err1.Error(), "status": "502"}
 		return nil, outputError
-	}else{
+	} else {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &resvinc)
 	}
 
 	//Devuelve la información básica de la resolución que se está consultando
-	if response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucion, &respuesta_peticion); err2 != nil && response2 != 200 {
+	if response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+idResolucion, &respuesta_peticion); err2 != nil && response2 != 200 {
 		logs.Error(err2)
 		outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll2", "err2": err2.Error(), "status": "502"}
 		return nil, outputError
-	}else{
+	} else {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &res)
 	}
 
 	if res.TipoResolucionId.Id != tipoVinculacion {
 		//Busca el id de la modificación donde se relacionan la resolución original y la de modificación asociada
-		if response3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=ResolucionNueva:"+idResolucion, &respuesta_peticion); err3 != nil && response3 != 200 {
+		if response3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_resolucion?query=ResolucionNuevaId.Id:"+idResolucion, &respuesta_peticion); err3 != nil && response3 != 200 {
 			logs.Error(err3)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll3", "err3": err3.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modres)
 		}
 	}
 
 	//Devuelve las vinculaciones presentes en la resolución consultada, agrupadas o no, según el nivel académico
 	if resvinc.NivelAcademico == "POSGRADO" {
-		if response4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente?limit=-1&query=IdResolucion.Id:"+idResolucion, &respuesta_peticion); err4 != nil && response4 != 200 {
+		if response4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente?limit=-1&query=ResolucionVinculacionDocenteId.Id:"+idResolucion, &respuesta_peticion); err4 != nil && response4 != 200 {
 			logs.Error(err4)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll4", "err4": err4.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &vinc)
 		}
 	}
 	if resvinc.NivelAcademico == "PREGRADO" {
-		if response5, err5 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/get_vinculaciones_agrupadas/"+idResolucion, &respuesta_peticion); err5 != nil && response5 != 200 {
+		if response5, err5 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente/get_vinculaciones_agrupadas/"+idResolucion, &respuesta_peticion); err5 != nil && response5 != 200 {
 			logs.Error(err5)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll5", "err5": err5.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &vinc)
 		}
 	}
@@ -437,13 +434,13 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 				ValorModificacionContrato = pos.ValorContrato
 
 				//Busca la vinculación original a la que está asociada la modificación
-				response5, err10 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+
-					"/modificacion_vinculacion/?query=VinculacionDocenteRegistrada:"+strconv.Itoa(pos.Id), &respuesta_peticion)
+				response5, err10 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+
+					"/modificacion_vinculacion?query=VinculacionDocenteRegistradaId.Id:"+strconv.Itoa(pos.Id), &respuesta_peticion)
 				if err10 != nil && response5 != 200 {
 					logs.Error(err10)
 					outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll10", "err10": err10.Error(), "status": "502"}
 					return nil, outputError
-				}else{
+				} else {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &modvin)
 				}
 				var vincOriginal = modvin[0].VinculacionDocenteCanceladaId
@@ -488,13 +485,13 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 				pos.NumeroMesesNuevos = strconv.FormatFloat(float64(pos.NumeroSemanas)/4, 'f', 2, 64) + " meses"
 				ValorModificacionContrato = pos.ValorContrato
 				//Busca la vinculación original a la que está asociada la modificación
-				response6, err13 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+
-					"/modificacion_vinculacion/?query=ModificacionResolucion:"+strconv.Itoa(modres[0].Id)+",VinculacionDocenteRegistrada:"+strconv.Itoa(pos.Id), &respuesta_peticion)
+				response6, err13 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+
+					"/modificacion_vinculacion?query=ModificacionResolucionId.Id:"+strconv.Itoa(modres[0].Id)+",VinculacionDocenteRegistradaId.Id:"+strconv.Itoa(pos.Id), &respuesta_peticion)
 				if err13 != nil && response6 != 200 {
 					logs.Error(err13)
 					outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll13", "err13": err13.Error(), "status": "502"}
 					return nil, outputError
-				}else{
+				} else {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &modvin)
 				}
 				var vincOriginal = modvin[0].VinculacionDocenteCanceladaId
@@ -540,13 +537,13 @@ func ListarDocentesPrevinculadosAll(idResolucion string, tipoVinculacion int, ti
 				pos.NumeroMesesNuevos = strconv.FormatFloat(float64(pos.NumeroSemanas)/4, 'f', 2, 64) + " meses"
 				ValorModificacionContrato = pos.ValorContrato
 				//Busca la vinculación original a la que está asociada la modificación
-				response7, err16 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+
-					"/modificacion_vinculacion/?query=VinculacionDocenteRegistrada:"+strconv.Itoa(pos.Id), &respuesta_peticion)
+				response7, err16 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+
+					"/modificacion_vinculacion?query=VinculacionDocenteRegistradaId.Id:"+strconv.Itoa(pos.Id), &respuesta_peticion)
 				if err16 != nil && response7 != 200 {
 					logs.Error(err16)
 					outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculadosAll16", "err16": err16.Error(), "status": "502"}
 					return nil, outputError
-				}else{
+				} else {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &modvin)
 				}
 				var vincOriginal = modvin[0].VinculacionDocenteCanceladaId
@@ -575,45 +572,45 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 			panic(outputError)
 		}
 	}()
-	query := "?limit=-1&query=IdResolucion.Id:" + idResolucion + ",Estado:true"
+	query := "?limit=-1&query=ResolucionVinculacionDocenteId.Id:" + idResolucion + ",Activo:true"
 	var res models.Resolucion
 	var modres []models.ModificacionResolucion
 	var modvin []models.ModificacionVinculacion
 	var respuesta_peticion map[string]interface{}
 
-	response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+idResolucion, &respuesta_peticion)
+	response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+idResolucion, &respuesta_peticion)
 	if err1 != nil && response1 != 200 {
 		logs.Error(err1)
 		outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados1", "err1": err1.Error(), "status": "502"}
 		return nil, outputError
-	}else{
+	} else {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &res)
 	}
 
 	if res.TipoResolucionId.Id == tipoVinculacion {
-		response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente"+query, &respuesta_peticion)
+		response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente"+query, &respuesta_peticion)
 		if err2 != nil && response2 != 200 {
 			logs.Error(err2)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados2", "err2": err2.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 		}
 	} else {
-		response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion/?query=ResolucionNueva:"+idResolucion, &respuesta_peticion)
+		response2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_resolucion?query=ResolucionNuevaId.Id:"+idResolucion, &respuesta_peticion)
 		if err2 != nil && response2 != 200 {
 			logs.Error(err2)
-			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados2", "err2": err2.Error(), "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados2.1", "err2": err2.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modres)
 		}
-		response3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_vinculacion/?query=ModificacionResolucion:"+strconv.Itoa(modres[0].Id), &respuesta_peticion)
+		response3, err3 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_vinculacion?query=ModificacionResolucionId.Id:"+strconv.Itoa(modres[0].Id), &respuesta_peticion)
 		if err3 != nil && response3 != 200 {
 			logs.Error(err3)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados3", "err3": err3.Error(), "status": "502"}
 			return nil, outputError
-		}else{
+		} else {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &modvin)
 		}
 		if len(modvin) != 0 {
@@ -622,12 +619,12 @@ func ListarDocentesPrevinculados(idResolucion string, tipoVinculacion int) (v []
 				arreglo[x] = strconv.Itoa(pos.VinculacionDocenteRegistradaId.Id)
 			}
 			identificadoresvinc := strings.Join(arreglo, "|")
-			response4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/?query=Estado:True,Id__in:"+identificadoresvinc+"&limit=-1", &respuesta_peticion)
+			response4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente?query=Activo:True,Id__in:"+identificadoresvinc+"&limit=-1", &respuesta_peticion)
 			if err4 != nil && response4 != 200 {
 				logs.Error(err4)
 				outputError = map[string]interface{}{"funcion": "/ListarDocentesPrevinculados4", "err4": err4.Error(), "status": "502"}
 				return nil, outputError
-			}else{
+			} else {
 				LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 			}
 		} else {
@@ -690,7 +687,7 @@ func GetCdpRpDocente(identificacion string, num_vinculacion string, vigencia str
 	}()
 	var contratoDisponibilidad []models.ContratoDisponibilidad
 	//If 1 contrato_disponibilidad (get)
-	if response1, err1 := GetJsonTest("http://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad/?query=NumeroContrato:"+num_vinculacion+",Vigencia:"+vigencia, &contratoDisponibilidad); err1 == nil && response1 == 200 { //If 2  (get)
+	if response1, err1 := GetJsonTest("http://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/contrato_disponibilidad?query=NumeroContrato:"+num_vinculacion+",Vigencia:"+vigencia, &contratoDisponibilidad); err1 == nil && response1 == 200 { //If 2  (get)
 		//for contrato_disponibilidad
 		for _, pos := range contratoDisponibilidad {
 			rpdocente = GetInformacionRpDocente(strconv.Itoa(pos.NumeroCdp), strconv.Itoa(pos.VigenciaCdp), identificacion)

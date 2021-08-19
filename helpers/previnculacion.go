@@ -18,16 +18,16 @@ func InsertarPrevinculaciones(v []models.VinculacionDocente) (respuesta int, out
 	v, err := CalcularSalarioPrecontratacion(v)
 	if err != nil {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones", "err": err, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones1", "err": err, "status": "404"}
 		return respuesta, outputError
 	}
 
-	if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &respuesta_peticion, &v); err2 == nil {
+	if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/vinculacion_docente/InsertarVinculaciones/", "POST", &respuesta_peticion, &v); err2 == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &idRespuesta)
 		respuesta = idRespuesta
 	} else {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones", "err2": err2, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones2", "err2": err2, "status": "404"}
 		return respuesta, outputError
 	}
 

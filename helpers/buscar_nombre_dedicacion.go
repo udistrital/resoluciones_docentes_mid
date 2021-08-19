@@ -18,7 +18,7 @@ func BuscarNombreDedicacion(id_dedicacion int) (nombre_dedicacion string, output
 	var respuesta_peticion map[string]interface{}
 	query := "?limit=-1&query=Id:" + strconv.Itoa(id_dedicacion)
 	var dedicaciones []models.Dedicacion
-	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/dedicacion"+query, &respuesta_peticion); err2 == nil && response == 200 {
+	if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/dedicacion"+query, &respuesta_peticion); err2 == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &dedicaciones)
 		if dedicaciones != nil {
 			nom_dedicacion = dedicaciones[0].Descripcion
@@ -26,7 +26,7 @@ func BuscarNombreDedicacion(id_dedicacion int) (nombre_dedicacion string, output
 			nom_dedicacion = ""
 		}
 	} else {
-		outputError = map[string]interface{}{"funcion": "/BuscarNombreDedicacion", "err": err2.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/BuscarNombreDedicacion2", "err": err2.Error(), "status": "404"}
 		return nom_dedicacion, outputError
 	}
 

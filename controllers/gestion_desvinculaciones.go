@@ -3,8 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astaxie/beego/logs"
 	"strconv"
+
+	"github.com/astaxie/beego/logs"
 
 	"github.com/astaxie/beego"
 	"github.com/udistrital/resoluciones_docentes_mid/helpers"
@@ -21,6 +22,7 @@ func (c *GestionDesvinculacionesController) URLMapping() {
 
 	//c.Mapping("ActualizarVinculaciones", c.ActualizarVinculaciones)
 	c.Mapping("AdicionarHoras", c.AdicionarHoras)
+	c.Mapping("ListarDocentesCancelados", c.ListarDocentesCancelados)
 
 }
 
@@ -28,8 +30,9 @@ func (c *GestionDesvinculacionesController) URLMapping() {
 // @Title ListarDocentesDesvinculados
 // @Description create ListarDocentesDesvinculados
 // @Param id_resolucion query string false "resolucion a consultar"
-// @Success 200 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Success 200 {int} []models.VinculacionDocente
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /docentes_desvinculados [get]
 func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 	id_resolucion := c.GetString("id_resolucion")
@@ -37,7 +40,7 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 
 	_, err1 := strconv.Atoi(id_resolucion)
 
-	if err1 != nil{
+	if err1 != nil {
 		panic(map[string]interface{}{"funcion": "ListarDocentesDesvinculados", "err": "Error en los parametros de ingreso", "status": "400"})
 	}
 
@@ -45,7 +48,7 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -55,10 +58,10 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 		}
 	}()
 
-	if lista_docentes, err := helpers.ListarDocentesDesvinculados(query); err ==nil{
+	if lista_docentes, err := helpers.ListarDocentesDesvinculados(query); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": lista_docentes}
-	}else{
+	} else {
 		panic(err)
 	}
 	c.ServeJSON()
@@ -69,15 +72,16 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 // @Title ListarDocentesCancelados
 // @Description create ListarDocentesCancelados
 // @Param id_resolucion query string false "resolucion a consultar"
-// @Success 200 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Success 200 {int} []models.VinculacionDocente
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /docentes_cancelados [get]
 func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 	id_resolucion := c.GetString("id_resolucion")
 
 	_, err1 := strconv.Atoi(id_resolucion)
 
-	if err1 != nil{
+	if err1 != nil {
 		panic(map[string]interface{}{"funcion": "ListarDocentesCancelados", "err": "Error en los parametros de ingreso", "status": "400"})
 	}
 
@@ -85,7 +89,7 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -95,10 +99,10 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 		}
 	}()
 
-	if lista_docentes, err := helpers.ListarDocentesCancelados(id_resolucion); err == nil{
+	if lista_docentes, err := helpers.ListarDocentesCancelados(id_resolucion); err == nil {
 		c.Ctx.Output.SetStatus(200)
 		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": lista_docentes}
-	}else{
+	} else {
 		panic(err)
 	}
 	c.ServeJSON()
@@ -106,19 +110,19 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 
 // AnularModificaciones ...
 // @Title AnularModificaciones
-// @Description create AnularModificaciones
+// @Description Se usa para cuando se anulan resoluciones modificatorias completas
 // @Param	body		body 	[]models.VinculacionDocente	true		"body for AnularModificaciones content"
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /anular_modificaciones [post]
-// Se usa para cuando se anulan resoluciones modificatorias completas
 func (c *GestionDesvinculacionesController) AnularModificaciones() {
 
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -131,10 +135,10 @@ func (c *GestionDesvinculacionesController) AnularModificaciones() {
 	var v []models.VinculacionDocente
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := helpers.AnularModificaciones(v); err == nil{
+		if err := helpers.AnularModificaciones(v); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {
@@ -145,19 +149,19 @@ func (c *GestionDesvinculacionesController) AnularModificaciones() {
 
 // AnularAdicionDocente ...
 // @Title AnularAdicionDocente
-// @Param	body		body 	[]models.Objeto_Desvinculacion	true		"body for AnularModificaciones content"
-// @Description create AnularAdicionDocente
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Anular Adiciones content"
+// @Description Se usa para adiciones, reducciones y cancelaciones
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /anular_adicion [post]
-// Se usa para adiciones, reducciones y cancelaciones
 func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
-	
+
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -171,10 +175,10 @@ func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
 	var v models.Objeto_Desvinculacion
 
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := helpers.AnularAdicionDocente(v); err == nil{
+		if err := helpers.AnularAdicionDocente(v); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": "OK"}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {
@@ -185,19 +189,19 @@ func (c *GestionDesvinculacionesController) AnularAdicionDocente() {
 
 // ConsultarCategoria ...
 // @Title ConsultarCategoria
-// @Param	body		body 	[]models.VinculacionDocente	true		"body for AnularModificaciones content"
-// @Description create ConsultarCategoria
+// @Param	body		body 	models.VinculacionDocente	true		"body for Consultar Categoria content"
+// @Description Consulta el servicio de categoría en académica para verificar si el docente tiene el semáforo completo
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /consultar_categoria [post]
-// Consulta el servicio de categoría en académica para verificar si el docente tiene el semáforo completo
 func (c *GestionDesvinculacionesController) ConsultarCategoria() {
-	
+
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -209,10 +213,10 @@ func (c *GestionDesvinculacionesController) ConsultarCategoria() {
 
 	var v models.VinculacionDocente
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if respuesta, err := helpers.ConsultarCategoria(v); err == nil{
+		if respuesta, err := helpers.ConsultarCategoria(v); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {
@@ -223,18 +227,19 @@ func (c *GestionDesvinculacionesController) ConsultarCategoria() {
 
 // ValidarSaldoCDP ...
 // @Title ValidarSaldoCDP
-// @Description create ValidarSaldoCDP
+// @Description Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /validar_saldo_cdp [post]
-// Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones
 func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
-	
+
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -250,7 +255,7 @@ func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
 		if respuesta, err := helpers.ValidarSaldoCDP(validacion); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {
@@ -261,18 +266,19 @@ func (c *GestionDesvinculacionesController) ValidarSaldoCDP() {
 
 // AdicionarHoras ...
 // @Title AdicionarHoras
-// @Description create AdicionarHoras
+// @Description Se usa tanto para adiciones como para reducciones de horas y semanas
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /adicionar_horas [post]
-// Se usa tanto para adiciones como para reducciones de horas y semanas
 func (c *GestionDesvinculacionesController) AdicionarHoras() {
-	
+
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -288,7 +294,7 @@ func (c *GestionDesvinculacionesController) AdicionarHoras() {
 		if respuesta, err := helpers.AdicionarHoras(v); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {
@@ -301,8 +307,10 @@ func (c *GestionDesvinculacionesController) AdicionarHoras() {
 // ActualizarVinculacionesCancelacion ...
 // @Title ActualizarVinculacionesCancelacion
 // @Description create ActualizarVinculacionesCancelacion
+// @Param	body		body 	models.Objeto_Desvinculacion	true		"body for Objeto Desvinculacion content"
 // @Success 201 {string}
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /actualizar_vinculaciones_cancelacion [post]
 func (c *GestionDesvinculacionesController) ActualizarVinculacionesCancelacion() {
 
@@ -310,7 +318,7 @@ func (c *GestionDesvinculacionesController) ActualizarVinculacionesCancelacion()
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionDesvinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -326,7 +334,7 @@ func (c *GestionDesvinculacionesController) ActualizarVinculacionesCancelacion()
 		if respuesta, err := helpers.ActualizarVinculacionesCancelacion(v); err == nil {
 			c.Ctx.Output.SetStatus(201)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "201", "Message": "Successful", "Data": respuesta}
-		}else{
+		} else {
 			panic(err)
 		}
 	} else {

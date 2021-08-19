@@ -27,15 +27,17 @@ func (c *GestionPrevinculacionesController) URLMapping() {
 // Calcular_total_de_salarios_seleccionados ...
 // @Title Calcular_total_de_salarios_seleccionados
 // @Description createCalcular_total_de_salarios_seleccionados
+// @Param	body		body 	[]models.VinculacionDocente	true		"body for Vinculaciones docentes content"
 // @Success 201 {int} int
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /Precontratacion/calcular_valor_contratos_seleccionados [post]
 func (c *GestionPrevinculacionesController) Calcular_total_de_salarios_seleccionados() {
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -63,15 +65,17 @@ func (c *GestionPrevinculacionesController) Calcular_total_de_salarios_seleccion
 // InsertarPrevinculaciones ...
 // @Title InsetarPrevinculaciones
 // @Description create InsertarPrevinculaciones
+// @Param	body		body 	[]models.VinculacionDocente	true		"body for Vinculaciones docentes content"
 // @Success 201 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /Precontratacion/calcular_valor_contratos [post]
 func (c *GestionPrevinculacionesController) CalcularTotalSalarios() {
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -98,15 +102,17 @@ func (c *GestionPrevinculacionesController) CalcularTotalSalarios() {
 // InsertarPrevinculaciones ...
 // @Title InsetarPrevinculaciones
 // @Description create InsertarPrevinculaciones
+// @Param	body		body 	[]models.VinculacionDocente	true		"body for Vinculaciones docentes content"
 // @Success 201 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /Precontratacion/insertar_previnculaciones [post]
 func (c *GestionPrevinculacionesController) InsertarPrevinculaciones() {
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -138,7 +144,8 @@ func (c *GestionPrevinculacionesController) InsertarPrevinculaciones() {
 // @Param facultad query string false "facultad"
 // @Param nivel_academico query string false "nivel_academico"
 // @Success 201 {object} models.Docentes_x_Carga
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /Precontratacion/docentes_x_carga_horaria [get]
 func (c *GestionPrevinculacionesController) ListarDocentesCargaHoraria() {
 	vigencia := c.GetString("vigencia")
@@ -150,7 +157,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesCargaHoraria() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -165,7 +172,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesCargaHoraria() {
 	_, err4 := strconv.Atoi(facultad)
 	//_, err5 := strconv.Atoi(nivelAcademico)
 	if (err1 != nil) || (err2 != nil) || (err4 != nil) || (vig == 0) || (per == 0) || (len(vigencia) != 4) {
-		panic(map[string]interface{}{"funcion": "ListarDocentesCargaHoraria1", "err1": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "ListarDocentesCargaHoraria", "err1": "Error en los parametros de ingreso", "status": "400"})
 	}
 
 	if respuesta, err6 := helpers.ListarDocentesCargaHoraria(vigencia, periodo, tipoVinculacion, facultad, nivelAcademico); err6 == nil {
@@ -191,7 +198,8 @@ const (
 // @Description create ListarDocentesPrevinculadosAll
 // @Param id_resolucion query string false "resolucion a consultar"
 // @Success 201 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /docentes_previnculados_all [get]
 func (c *GestionPrevinculacionesController) ListarDocentesPrevinculadosAll() {
 	idResolucion := c.GetString("id_resolucion")
@@ -199,7 +207,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculadosAll() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -210,7 +218,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculadosAll() {
 	}()
 	idRes, err1 := strconv.Atoi(idResolucion)
 	if (idRes == 0) || (err1 != nil) {
-		panic(map[string]interface{}{"funcion": "ListarDocentesPrevinculadosAll1", "err1": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "ListarDocentesPrevinculadosAll", "err1": "Error en los parametros de ingreso", "status": "400"})
 	}
 	if v, err2 := helpers.ListarDocentesPrevinculadosAll(idResolucion, tipoVinculacion, tipoCancelacion, tipoAdicion, tipoReduccion); err2 == nil {
 		c.Ctx.Output.SetStatus(200)
@@ -229,7 +237,8 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculadosAll() {
 // @Description create ListarDocentesPrevinculados
 // @Param id_resolucion query string false "resolucion a consultar"
 // @Success 201 {int} models.VinculacionDocente
-// @Failure 403 body is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /docentes_previnculados [get]
 func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 	idResolucion := c.GetString("id_resolucion")
@@ -237,7 +246,7 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "ListarDocentesPrevinculados" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -268,6 +277,8 @@ func (c *GestionPrevinculacionesController) ListarDocentesPrevinculados() {
 // @Success 201 {object}  models.RpDocente
 // @Failure 403 :num_vinculacion is empty
 // @Failure 403 :vigencia is empty
+// @Failure 400 bad request
+// @Failure 404 aborted by server
 // @router /rp_docente/:num_vinculacion/:vigencia/:identificacion [get]
 func (c *GestionPrevinculacionesController) GetCdpRpDocente() {
 	num_vinculacion := c.Ctx.Input.Param(":num_vinculacion")
@@ -277,7 +288,7 @@ func (c *GestionPrevinculacionesController) GetCdpRpDocente() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionPrevinculacionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -290,7 +301,7 @@ func (c *GestionPrevinculacionesController) GetCdpRpDocente() {
 	vigen, err2 := strconv.Atoi(vigencia)
 	ident, err3 := strconv.Atoi(identificacion)
 	if (err1 != nil) || (err2 != nil) || (err3 != nil) || (numV == 0) || (vigen == 0) || (ident == 0) {
-		panic(map[string]interface{}{"funcion": "GetCertificacionDocumentosAprobados", "err": "Error en los parametros de ingreso", "status": "400"})
+		panic(map[string]interface{}{"funcion": "GetCdpRpDocente", "err": "Error en los parametros de ingreso", "status": "400"})
 	}
 	if rpdocente, err4 := helpers.GetCdpRpDocente(identificacion, num_vinculacion, vigencia); err4 == nil {
 		c.Ctx.Output.SetStatus(200)

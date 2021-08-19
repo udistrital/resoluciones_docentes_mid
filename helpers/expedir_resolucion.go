@@ -18,15 +18,14 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 	//var fecha = time.Now().Format("2006-01-02")   -- Se debe dejar este una vez se suba
 	var fecha = "2018-01-01"
 	//If Resolucion (GET)
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(id_resolucion))
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(id_resolucion), &respuesta_peticion); err == nil && response == 200 {
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+strconv.Itoa(id_resolucion), &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &r)
 		//If Jefe_dependencia (GET)
-		fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudCore") + "/" + beego.AppConfig.String("NscrudCore") + "/jefe_dependencia/?query=DependenciaId:" + strconv.Itoa(r.DependenciaId) + ",FechaFin__gte:" + fecha + ",FechaInicio__lte:" + fecha)
-		if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia/?query=DependenciaId:"+strconv.Itoa(r.DependenciaId)+",FechaFin__gte:"+fecha+",FechaInicio__lte:"+fecha, &j); err == nil && response == 200 {
+		q := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudCore") + "/" + beego.AppConfig.String("NscrudCore") + "/jefe_dependencia?query=DependenciaId:" + strconv.Itoa(r.DependenciaId) + ",FechaFin__gte:" + fecha + ",FechaInicio__lte:" + fecha
+		if response, err := GetJsonTest(q, &j); err == nil && response == 200 {
 			//If Supervisor (GET)
-			fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/supervisor_contrato/?query=Documento:" + strconv.Itoa(j[0].TerceroId) + ",FechaFin__gte:" + fecha + ",FechaInicio__lte:" + fecha + "&CargoId.Cargo__startswith:DECANO|VICE")
-			if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudAgora")+"/"+beego.AppConfig.String("NscrudAgora")+"/supervisor_contrato/?query=Documento:"+strconv.Itoa(j[0].TerceroId)+",FechaFin__gte:"+fecha+",FechaInicio__lte:"+fecha+"&CargoId.Cargo__startswith:DECANO|VICE", &s); err == nil && response == 200 {
+			t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlcrudAgora") + "/" + beego.AppConfig.String("NscrudAgora") + "/supervisor_contrato?query=Documento:" + strconv.Itoa(j[0].TerceroId) + ",FechaFin__gte:" + fecha + ",FechaInicio__lte:" + fecha + "&CargoId.Cargo__startswith:DECANO|VICE"
+			if response, err := GetJsonTest(t, &s); err == nil && response == 200 {
 				fmt.Println(s[0])
 				return s[0], nil
 			} else { //If Jefe_dependencia (GET)
@@ -44,7 +43,6 @@ func SupervisorActual(id_resolucion int) (supervisor_actual models.SupervisorCon
 		outputError = map[string]interface{}{"funcion": "/SupervisorActual", "err": err.Error(), "status": "404"}
 		return s[0], outputError
 	}
-	return
 }
 
 func CalcularFechaFin(fecha_inicio time.Time, numero_semanas int) (fecha_fin time.Time) {
@@ -73,7 +71,7 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 	var query string
 	var respuesta_peticion map[string]interface{}
 
-	if request, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err1 == nil && request == 200 {
+	if request, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err1 == nil && request == 200 {
 		query = "?limit=-1&query=DependenciaId:" + id_facultad
 		LimpiezaRespuestaRefactor(respuesta_peticion, &contenidoResolucion)
 		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/"+query, &ordenador_gasto); err2 == nil && request2 == 200 {
@@ -104,7 +102,7 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 	fecha_actual := time.Now().Format("2006-01-02")
 	query = "?query=DependenciaId:" + id_facultad + ",FechaFin__gte:" + fecha_actual + ",FechaInicio__lte:" + fecha_actual
 	var err5 map[string]interface{}
-	if request4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia/"+query, &jefe_dependencia); err4 == nil && request4 == 200 {
+	if request4, err4 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/jefe_dependencia"+query, &jefe_dependencia); err4 == nil && request4 == 200 {
 		contenidoResolucion.OrdenadorGasto.NombreOrdenador, err5 = BuscarNombreProveedor(jefe_dependencia[0].TerceroId)
 		if err5 != nil {
 			logs.Error(err4)

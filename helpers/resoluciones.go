@@ -19,7 +19,7 @@ func GetResolucionesAprobadas(query string, limit int, offset int) (resolucion_v
 		}
 	}()
 	var respuesta_peticion map[string]interface{}
-	if response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion/Aprobada"+"?query="+query+"&offset="+strconv.Itoa(offset)+"&limit="+strconv.Itoa(limit), &respuesta_peticion); err1 == nil && response1 == 200 {
+	if response1, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_vinculacion/Aprobada"+"?query="+query+"&offset="+strconv.Itoa(offset)+"&limit="+strconv.Itoa(limit), &respuesta_peticion); err1 == nil && response1 == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &resolucion_vinculacion_aprobada)
 		var err2, err3 map[string]interface{}
 		for x, pos := range resolucion_vinculacion_aprobada {
@@ -38,20 +38,18 @@ func GetResolucionesAprobadas(query string, limit int, offset int) (resolucion_v
 		outputError = map[string]interface{}{"funcion": "/GetResolucionesAprobadas", "err1": err1.Error(), "status": "502"}
 		return nil, outputError
 	}
-	return resolucion_vinculacion_aprobada, nil
 }
 
 func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion_vinculacion []models.ResolucionVinculacion, outputError map[string]interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/GetResolucionesAprobadas", "err": err, "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/GetResolucionesInscritas", "err": err, "status": "502"}
 			panic(outputError)
 		}
 	}()
 	var respuesta_peticion map[string]interface{}
-	
-	fmt.Println(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
-	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudAdmin") + "/resolucion_vinculacion")
+
+	r := httplib.Get(beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/resolucion_vinculacion")
 	r.Param("offset", strconv.Itoa(offset))
 	r.Param("limit", strconv.Itoa(limit))
 	for _, v := range query {
@@ -79,13 +77,12 @@ func GetResolucionesInscritas(query []string, limit int, offset int) (resolucion
 		return nil, outputError
 	}
 
-	return
 }
 
 func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada int, control bool, outputError map[string]interface{}) {
 	defer func() {
 		if err := recover(); err != nil {
-			outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err, "status": "502"}
+			outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta", "err": err, "status": "502"}
 			panic(outputError)
 		}
 	}()
@@ -94,13 +91,15 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 	//****MANEJO DE TRANSACCIONES!***!//
 
 	//Se trae cuerpo de resolución según tipo
-	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/contenido_resolucion/ResolucionTemplate/"+
-		v.ResolucionVinculacionDocente.Dedicacion+"/"+v.ResolucionVinculacionDocente.NivelAcademico+"/"+strconv.Itoa(v.Resolucion.Periodo)+"/"+strconv.Itoa(v.Resolucion.TipoResolucionId.Id), &respuesta_peticion); err == nil && response == 200 {
+	//Se retiran 2 parametros que en el CRUD no se usan
+	//"/"+strconv.Itoa(v.Resolucion.Periodo)+"/"+strconv.Itoa(v.Resolucion.TipoResolucionId.Id)
+	if response, err := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/contenido_resolucion/resolucion_template/"+
+		v.ResolucionVinculacionDocente.Dedicacion+"/"+v.ResolucionVinculacionDocente.NivelAcademico, &respuesta_peticion); err == nil && response == 200 {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &texto_resolucion)
 		v.Resolucion.ConsideracionResolucion = texto_resolucion.Consideracion
 	} else {
 		logs.Error(err)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas", "err": err.Error(), "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta1", "err": err.Error(), "status": "404"}
 		return id_resolucion_creada, control, outputError
 	}
 
@@ -109,7 +108,7 @@ func InsertarResolucionCompleta(v models.ObjetoResolucion) (id_resolucion_creada
 	control, id_resolucion_creada, err2 = InsertarResolucion(v)
 	if err2 != nil {
 		logs.Error(err2)
-		outputError = map[string]interface{}{"funcion": "/CertificacionCumplidosContratistas2", "err2": err2, "status": "404"}
+		outputError = map[string]interface{}{"funcion": "/InsertarResolucionCompleta2", "err2": err2, "status": "404"}
 		return id_resolucion_creada, control, outputError
 	}
 	if control {
@@ -135,12 +134,12 @@ func InsertarResolucionEstado(id_res int) (contr bool) {
 	var respuesta_peticion map[string]interface{}
 	var cont bool
 	temp := models.ResolucionEstado{
-		FechaCreacion: time.Now(),
-		EstadoResolucionId:        &models.EstadoResolucion{Id: 1},
-		ResolucionId:    &models.Resolucion{Id: id_res},
+		FechaCreacion:      time.Now(),
+		EstadoResolucionId: &models.EstadoResolucion{Id: 1},
+		ResolucionId:       &models.Resolucion{Id: id_res},
 	}
 
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_estado", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_estado", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		cont = true
 	} else {
@@ -157,7 +156,7 @@ func InsertarResolucionVinDocente(id_res int, resvindoc *models.ResolucionVincul
 	var cont bool
 	temp.Id = id_res
 
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion_vinculacion_docente", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_vinculacion_docente", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		cont = true
 	} else {
@@ -180,17 +179,17 @@ func InsertarArticulos(id_resolucion int, articulos []models.Articulo) {
 			ResolucionId:   &models.Resolucion{Id: id_resolucion},
 			Texto:          pos.Texto,
 			TipoComponente: "Articulo"}
-		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/componente_resolucion", "POST", &respuesta_peticion, &temp); err == nil {
+		if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/componente_resolucion", "POST", &respuesta_peticion, &temp); err == nil {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 			for y, pos2 := range pos.Paragrafos {
 				temp2 := models.ComponenteResolucion{
-					Numero:          y + 1,
-					ResolucionId:    &models.Resolucion{Id: id_resolucion},
-					Texto:           pos2.Texto,
-					TipoComponente:  "Paragrafo",
+					Numero:                    y + 1,
+					ResolucionId:              &models.Resolucion{Id: id_resolucion},
+					Texto:                     pos2.Texto,
+					TipoComponente:            "Paragrafo",
 					ComponenteResolucionPadre: &models.ComponenteResolucion{Id: respuesta.Id},
 				}
-				if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/componente_resolucion", "POST", &respuesta_peticion, &temp2); err == nil {
+				if err2 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/componente_resolucion", "POST", &respuesta_peticion, &temp2); err == nil {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta2)
 				} else {
 					fmt.Println("error al insertar parágrafos", err2)
@@ -276,7 +275,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 	if temp.TipoResolucionId.Id != 1 {
 		temp.VigenciaCarga = resVieja.VigenciaCarga
 		temp.PeriodoCarga = resVieja.PeriodoCarga
-		if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion/"+strconv.Itoa(resolucion.ResolucionVieja), &respuesta_peticion); err2 == nil && response == 200 {
+		if response, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+strconv.Itoa(resolucion.ResolucionVieja), &respuesta_peticion); err2 == nil && response == 200 {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &resVieja)
 			temp.Titulo = "“Por la cual se Modifica la resolución " + resVieja.NumeroResolucion + " de " + cambiarString(resVieja.FechaExpedicion.Month().String()) + " del " + strconv.Itoa(resVieja.FechaExpedicion.Year()) + " en cuanto a carga académica y valor del vínculo para el " + cambiarString(strconv.Itoa(temp.PeriodoCarga)) + " Periodo Académico de " + strconv.Itoa(temp.VigenciaCarga) + " en la modalidad de Docentes de " + cambiarString(resolucion.ResolucionVinculacionDocente.Dedicacion) + " (Vinculación Especial) para la " + resolucion.NomDependencia + " en " + resolucion.ResolucionVinculacionDocente.NivelAcademico + ".”"
 		} else {
@@ -286,7 +285,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 		}
 	}
 	temp.PreambuloResolucion = "El Decano de la " + resolucion.NomDependencia + " de la Universidad Distrital Francisco José de Caldas, en uso de sus facultades legales y estatutarias, en particular, de las conferidas por el artículo " + articulo + "  de la Resolución de Rectoría Nro. xxx de enero xxx de 2021, y"
-	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/resolucion", "POST", &respuesta_peticion, &temp); err == nil {
+	if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion", "POST", &respuesta_peticion, &temp); err == nil {
 		LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta)
 		id_creada = respuesta.Id
 		cont = true
@@ -302,13 +301,13 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 			ResolucionAnteriorId: &models.Resolucion{Id: resolucion.ResolucionVieja},
 			ResolucionNuevaId:    &models.Resolucion{Id: id_creada},
 		}
-		if err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudAdmin")+"/modificacion_resolucion", "POST", &respuesta_peticion, &objeto_modificacion_res); err3 == nil {
+		if err3 := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/modificacion_resolucion", "POST", &respuesta_peticion, &objeto_modificacion_res); err3 == nil {
 			LimpiezaRespuestaRefactor(respuesta_peticion, &respuesta_modificacion_res)
 			cont = true
 		} else {
 			cont = false
 			logs.Error(err3)
-			outputError = map[string]interface{}{"funcion": "/InsertarResolucion3", "err3": err3.Error(), "status": "404"}
+			outputError = map[string]interface{}{"funcion": "/InsertarResolucion4", "err3": err3.Error(), "status": "404"}
 			return cont, id_cre, outputError
 		}
 
@@ -318,65 +317,34 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 }
 
 func cambiarString(original string) (cambiado string) {
-	switch {
+
 	//Periodos
-	case original == "1":
-		cambiado = "Primer"
+	// Meses
+	//Dedicación
+	stringmap := map[string]string{
+		"1":         "Primer",
+		"2":         "Segundo",
+		"3":         "Tercer",
+		"January":   "Enero",
+		"February":  "Febrero",
+		"March":     "Marzo",
+		"April":     "Abril",
+		"May":       "Mayo",
+		"June":      "Junio",
+		"July":      "Julio",
+		"August":    "Agosto",
+		"September": "Septiembre",
+		"October":   "Octubre",
+		"November":  "Noviembre",
+		"December":  "Diciembre",
+		"HCH":       "Hora Cátedra Honorarios",
+		"HCP":       "Hora Cátedra Salarios",
+		"TCO-MTO":   "Tiempo Completo Ocasional - Medio Tiempo Ocasional",
+	}
 
-	case original == "2":
-		cambiado = "Segundo"
-
-	case original == "3":
-		cambiado = "Tercer"
-
-		// Meses
-	case original == "January":
-		cambiado = "Enero"
-
-	case original == "February":
-		cambiado = "Febrero"
-
-	case original == "March":
-		cambiado = "Marzo"
-
-	case original == "April":
-		cambiado = "Abril"
-
-	case original == "May":
-		cambiado = "Mayo"
-
-	case original == "June":
-		cambiado = "Junio"
-
-	case original == "July":
-		cambiado = "Julio"
-
-	case original == "August":
-		cambiado = "Agosto"
-
-	case original == "September":
-		cambiado = "Septiembre"
-
-	case original == "October":
-		cambiado = "Octubre"
-
-	case original == "November":
-		cambiado = "Noviembre"
-
-	case original == "December":
-		cambiado = "Diciembre"
-
-		//Dedicación
-	case original == "HCH":
-		cambiado = "Hora Cátedra Honorarios"
-
-	case original == "HCP":
-		cambiado = "Hora Cátedra Salarios"
-
-	case original == "TCO-MTO":
-		cambiado = "Tiempo Completo Ocasional - Medio Tiempo Ocasional"
-
-	default:
+	if res, ok := stringmap[original]; ok {
+		cambiado = res
+	} else {
 		cambiado = original
 	}
 
