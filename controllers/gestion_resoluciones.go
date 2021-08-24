@@ -92,7 +92,7 @@ func (c *GestionResolucionesController) GetResolucionesInscritas() {
 		}
 	}()
 	var resolucion_vinculacion []models.ResolucionVinculacion
-	if (limit == 0) || (offset == 0) || (err1 != nil) || (err2 != nil) {
+	if (limit == 0) || (offset < 0) || (err1 != nil) || (err2 != nil) {
 		panic(map[string]interface{}{"funcion": "GetResolucionesInscritas", "err": "Error en los parametros de ingreso", "status": "400"})
 	}
 	var err3 map[string]interface{}
@@ -127,11 +127,9 @@ func (c *GestionResolucionesController) InsertarResolucionCompleta() {
 			}
 		}
 	}()
-	var v interface{}
-	var w models.ObjetoResolucion
+	var v models.ObjetoResolucion
 	if err1 := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err1 == nil {
-		w = v.(models.ObjetoResolucion)
-		if id_resolucion_creada, control, err2 := helpers.InsertarResolucionCompleta(w); err2 == nil || control == false {
+		if id_resolucion_creada, control, err2 := helpers.InsertarResolucionCompleta(v); err2 == nil || control == false {
 			c.Ctx.Output.SetStatus(200)
 			c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": id_resolucion_creada}
 		} else {

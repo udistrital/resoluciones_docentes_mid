@@ -32,7 +32,7 @@ func init() {
 			),
 		),
 
-		beego.NSNamespace("/gestion_previnculaciones",
+		beego.NSNamespace("/gestion_previnculacion",
 			beego.NSInclude(
 				&controllers.GestionPrevinculacionesController{},
 			),

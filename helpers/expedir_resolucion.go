@@ -71,7 +71,7 @@ func GetContenidoResolucion(id_resolucion string, id_facultad string) (contenido
 	var query string
 	var respuesta_peticion map[string]interface{}
 
-	if request, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/contenido_resolucion/"+id_resolucion, &contenidoResolucion); err1 == nil && request == 200 {
+	if request, err1 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/contenido_resolucion/"+id_resolucion, &respuesta_peticion); err1 == nil && request == 200 {
 		query = "?limit=-1&query=DependenciaId:" + id_facultad
 		LimpiezaRespuestaRefactor(respuesta_peticion, &contenidoResolucion)
 		if request2, err2 := GetJsonTest(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlcrudCore")+"/"+beego.AppConfig.String("NscrudCore")+"/ordenador_gasto/"+query, &ordenador_gasto); err2 == nil && request2 == 200 {
