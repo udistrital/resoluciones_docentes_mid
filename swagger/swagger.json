@@ -429,10 +429,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/Precontratacion/calcular_valor_contratos": {
+        "/gestion_previnculacion/Precontratacion/calcular_valor_contratos": {
             "post": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "create InsertarPrevinculaciones",
                 "operationId": "GestionPrevinculacionesController.InsetarPrevinculaciones",
@@ -463,10 +463,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/Precontratacion/calcular_valor_contratos_seleccionados": {
+        "/gestion_previnculacion/Precontratacion/calcular_valor_contratos_seleccionados": {
             "post": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "createCalcular_total_de_salarios_seleccionados",
                 "operationId": "GestionPrevinculacionesController.Calcular_total_de_salarios_seleccionados",
@@ -497,10 +497,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/Precontratacion/docentes_x_carga_horaria": {
+        "/gestion_previnculacion/Precontratacion/docentes_x_carga_horaria": {
             "get": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "create ListarDocentesCargaHoraria",
                 "operationId": "GestionPrevinculacionesController.ListarDocentesCargaHoraria",
@@ -552,10 +552,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/Precontratacion/insertar_previnculaciones": {
+        "/gestion_previnculacion/Precontratacion/insertar_previnculaciones": {
             "post": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "create InsertarPrevinculaciones",
                 "operationId": "GestionPrevinculacionesController.InsetarPrevinculaciones",
@@ -586,10 +586,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/docentes_previnculados": {
+        "/gestion_previnculacion/docentes_previnculados": {
             "get": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "create ListarDocentesPrevinculados",
                 "operationId": "GestionPrevinculacionesController.ListarDocentesPrevinculados",
@@ -614,10 +614,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/docentes_previnculados_all": {
+        "/gestion_previnculacion/docentes_previnculados_all": {
             "get": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "create ListarDocentesPrevinculadosAll",
                 "operationId": "GestionPrevinculacionesController.ListarDocentesPrevinculadosAll",
@@ -642,10 +642,10 @@
                 }
             }
         },
-        "/gestion_previnculaciones/rp_docente/{num_vinculacion}/{vigencia}/{identificacion}": {
+        "/gestion_previnculacion/rp_docente/{num_vinculacion}/{vigencia}/{identificacion}": {
             "get": {
                 "tags": [
-                    "gestion_previnculaciones"
+                    "gestion_previnculacion"
                 ],
                 "description": "Get RPs de la vinculacion docente",
                 "operationId": "GestionPrevinculacionesController.GetCdpRpDocente",
@@ -820,7 +820,7 @@
         }
     },
     "definitions": {
-        "16054.0xc000692c90.false": {
+        "16054.0xc00070d110.false": {
             "title": "false",
             "type": "object"
         },
@@ -1314,7 +1314,7 @@
             "type": "object",
             "properties": {
                 "cdp_rp_docente": {
-                    "$ref": "#/definitions/16054.0xc000692c90.false"
+                    "$ref": "#/definitions/16054.0xc00070d110.false"
                 }
             }
         },
@@ -1567,7 +1567,7 @@
             "description": "PreliquidacionController operations for Preliquidacion\n"
         },
         {
-            "name": "gestion_previnculaciones",
+            "name": "gestion_previnculacion",
             "description": "PreliquidacionController operations for Preliquidacion\n"
         },
         {
