@@ -5,9 +5,11 @@ import (
 )
 
 type ResolucionEstado struct {
-	Id            int
-	FechaRegistro time.Time
-	Usuario       string
-	Estado        *EstadoResolucion
-	Resolucion    *Resolucion
+	Id                 int               
+	Usuario            string            
+	EstadoResolucionId *EstadoResolucion 
+	ResolucionId       *Resolucion       
+	Activo             bool              
+	FechaCreacion      time.Time         
+	FechaModificacion  time.Time         
 }

@@ -5,21 +5,21 @@ import (
 )
 
 type Resolucion struct {
-	Id                      int
-	NumeroResolucion        string
-	FechaExpedicion         time.Time
-	Vigencia                int
-	IdDependencia           int
-	IdTipoResolucion        *TipoResolucion
-	PreambuloResolucion     string
-	ConsideracionResolucion string
-	Estado                  bool
-	FechaRegistro           time.Time
-	Objeto                  string
-	NumeroSemanas           int
-	Periodo                 int
-	Titulo                  string
-	IdDependenciaFirma      int
-	PeriodoCarga            int
-	VigenciaCarga           int
+	Id                      int             
+	NumeroResolucion        string          
+	FechaExpedicion         time.Time       
+	Vigencia                int             
+	DependenciaId           int             
+	TipoResolucionId        *TipoResolucion 
+	PreambuloResolucion     string          
+	ConsideracionResolucion string          
+	NumeroSemanas           int             
+	Periodo                 int             
+	Titulo                  string          
+	DependenciaFirmaId      int             
+	VigenciaCarga           int             
+	PeriodoCarga            int             
+	Activo                  bool            
+	FechaCreacion           time.Time       
+	FechaModificacion       time.Time       
 }

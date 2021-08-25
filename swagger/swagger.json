@@ -1,0 +1,1578 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Resoluciones Docentes API MID",
+        "description": "Middleware para la gestión de la información de resoluciones",
+        "version": "1.0.0",
+        "contact": {
+            "email": "computo@udistrital.edu.co"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "basePath": "/v1",
+    "paths": {
+        "/expedir_resolucion/cancelar": {
+            "post": {
+                "tags": [
+                    "expedir_resolucion"
+                ],
+                "description": "create Cancelar",
+                "operationId": "ExpedirResolucionController.Cancelar",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Expedición a cancelar content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ExpedicionCancelacion"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.ExpedicionCancelacion"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/expedir_resolucion/expedir": {
+            "post": {
+                "tags": [
+                    "expedir_resolucion"
+                ],
+                "description": "create Expedir",
+                "operationId": "ExpedirResolucionController.Expedir",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Expedicion Resolucion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ExpedicionResolucion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.ExpedicionResolucion"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/expedir_resolucion/expedirModificacion": {
+            "post": {
+                "tags": [
+                    "expedir_resolucion"
+                ],
+                "description": "create ExpedirModificacion",
+                "operationId": "ExpedirResolucionController.ExpedirModificacion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Validar Datos Expedición content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ExpedicionResolucion"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.ExpedicionResolucion"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/expedir_resolucion/validar_datos_expedicion": {
+            "post": {
+                "tags": [
+                    "expedir_resolucion"
+                ],
+                "description": "create ValidarDatosExpedicion",
+                "operationId": "ExpedirResolucionController.ValidarDatosExpedicion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Validar Datos Expedición content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ExpedicionResolucion"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/actualizar_vinculaciones_cancelacion": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "create ActualizarVinculacionesCancelacion",
+                "operationId": "GestionDesvinculacionesController.ActualizarVinculacionesCancelacion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/adicionar_horas": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "Se usa tanto para adiciones como para reducciones de horas y semanas",
+                "operationId": "GestionDesvinculacionesController.AdicionarHoras",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/anular_adicion": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "Se usa para adiciones, reducciones y cancelaciones",
+                "operationId": "GestionDesvinculacionesController.AnularAdicionDocente",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Anular Adiciones content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/anular_modificaciones": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "Se usa para cuando se anulan resoluciones modificatorias completas",
+                "operationId": "GestionDesvinculacionesController.AnularModificaciones",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for AnularModificaciones content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.VinculacionDocente"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/consultar_categoria": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "Consulta el servicio de categoría en académica para verificar si el docente tiene el semáforo completo",
+                "operationId": "GestionDesvinculacionesController.ConsultarCategoria",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Consultar Categoria content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.VinculacionDocente"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/docentes_cancelados": {
+            "get": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "create ListarDocentesCancelados",
+                "operationId": "GestionDesvinculacionesController.ListarDocentesCancelados",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id_resolucion",
+                        "description": "resolucion a consultar",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{int} []models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/docentes_desvinculados": {
+            "get": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "create ListarDocentesDesvinculados",
+                "operationId": "GestionDesvinculacionesController.ListarDocentesDesvinculados",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id_resolucion",
+                        "description": "resolucion a consultar",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{int} []models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_desvinculaciones/validar_saldo_cdp": {
+            "post": {
+                "tags": [
+                    "gestion_desvinculaciones"
+                ],
+                "description": "Se usa para validar el saldo de la disponibilidad con el valor del contrato de las adiciones",
+                "operationId": "GestionDesvinculacionesController.ValidarSaldoCDP",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Desvinculacion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Objeto_Desvinculacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{string}"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_documento_resolucion/get_contenido_resolucion": {
+            "get": {
+                "tags": [
+                    "gestion_documento_resolucion"
+                ],
+                "description": "create GetContenidoResolucion",
+                "operationId": "GestionDocumentoResolucionController.ListarDocentesCargaHoraria",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id_resolucion",
+                        "description": "año a consultar",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "id_facultad",
+                        "description": "periodo a listar",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResolucionCompleta"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/Precontratacion/calcular_valor_contratos": {
+            "post": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "create InsertarPrevinculaciones",
+                "operationId": "GestionPrevinculacionesController.InsetarPrevinculaciones",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Vinculaciones docentes content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.VinculacionDocente"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/Precontratacion/calcular_valor_contratos_seleccionados": {
+            "post": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "createCalcular_total_de_salarios_seleccionados",
+                "operationId": "GestionPrevinculacionesController.Calcular_total_de_salarios_seleccionados",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Vinculaciones docentes content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.VinculacionDocente"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} int"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/Precontratacion/docentes_x_carga_horaria": {
+            "get": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "create ListarDocentesCargaHoraria",
+                "operationId": "GestionPrevinculacionesController.ListarDocentesCargaHoraria",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "vigencia",
+                        "description": "año a consultar",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "periodo",
+                        "description": "periodo a listar",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "tipo_vinculacion",
+                        "description": "vinculacion del docente",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "facultad",
+                        "description": "facultad",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "nivel_academico",
+                        "description": "nivel_academico",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Docentes_x_Carga"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/Precontratacion/insertar_previnculaciones": {
+            "post": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "create InsertarPrevinculaciones",
+                "operationId": "GestionPrevinculacionesController.InsetarPrevinculaciones",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Vinculaciones docentes content",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.VinculacionDocente"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/docentes_previnculados": {
+            "get": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "create ListarDocentesPrevinculados",
+                "operationId": "GestionPrevinculacionesController.ListarDocentesPrevinculados",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id_resolucion",
+                        "description": "resolucion a consultar",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/docentes_previnculados_all": {
+            "get": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "create ListarDocentesPrevinculadosAll",
+                "operationId": "GestionPrevinculacionesController.ListarDocentesPrevinculadosAll",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "id_resolucion",
+                        "description": "resolucion a consultar",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.VinculacionDocente"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_previnculacion/rp_docente/{num_vinculacion}/{vigencia}/{identificacion}": {
+            "get": {
+                "tags": [
+                    "gestion_previnculacion"
+                ],
+                "description": "Get RPs de la vinculacion docente",
+                "operationId": "GestionPrevinculacionesController.GetCdpRpDocente",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "num_vinculacion",
+                        "description": "Número de la vinculación del docente",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "vigencia",
+                        "description": "Vigencia de la vinculación del docente",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "identificacion",
+                        "description": "Identificación del docente",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.RpDocente"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "403": {
+                        "description": ":vigencia is empty"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_resoluciones/get_resoluciones_aprobadas": {
+            "get": {
+                "tags": [
+                    "gestion_resoluciones"
+                ],
+                "description": "create  getResolucionesAprobadas",
+                "operationId": "GestionResolucionesController.getResolucionesAprobadas",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResolucionVinculacion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_resoluciones/get_resoluciones_inscritas": {
+            "get": {
+                "tags": [
+                    "gestion_resoluciones"
+                ],
+                "description": "create  getResolucionesInscritas",
+                "operationId": "GestionResolucionesController.getResolucionesInscritas",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResolucionVinculacion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        },
+        "/gestion_resoluciones/insertar_resolucion_completa": {
+            "post": {
+                "tags": [
+                    "gestion_resoluciones"
+                ],
+                "description": "create InsertarResolucionCompleta",
+                "operationId": "GestionResolucionesController.InsertarResolucionCompleta",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Objeto Resolucion content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ObjetoResolucion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} models.Resolucion"
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "404": {
+                        "description": "aborted by server"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "16054.0xc00070d110.false": {
+            "title": "false",
+            "type": "object"
+        },
+        "5548.\u003cnil\u003e.CancelacionContrato": {
+            "title": "CancelacionContrato",
+            "type": "object"
+        },
+        "5705.\u003cnil\u003e.ContratoVinculacion": {
+            "title": "ContratoVinculacion",
+            "type": "object"
+        },
+        "models.ApropiacionRubro": {
+            "title": "ApropiacionRubro",
+            "type": "object",
+            "properties": {
+                "Estado": {
+                    "$ref": "#/definitions/models.ApropiacionRubroEstado"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Rubro": {
+                    "$ref": "#/definitions/models.Rubro"
+                },
+                "Saldo": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Valor": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "Vigencia": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "models.ApropiacionRubroEstado": {
+            "title": "ApropiacionRubroEstado",
+            "type": "object",
+            "properties": {
+                "Descripcion": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Nombre": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Articulo": {
+            "title": "Articulo",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Numero": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Paragrafos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Paragrafo"
+                    }
+                },
+                "Texto": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Dedicacion": {
+            "title": "Dedicacion",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NombreDedicacion": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Disponibilidad": {
+            "title": "Disponibilidad",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroDisponibilidad": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "Vigencia": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "models.DisponibilidadApropiacion": {
+            "title": "DisponibilidadApropiacion",
+            "type": "object",
+            "properties": {
+                "Apropiacion": {
+                    "$ref": "#/definitions/models.ApropiacionRubro"
+                },
+                "Disponibilidad": {
+                    "$ref": "#/definitions/models.Disponibilidad"
+                },
+                "FuenteFinanciamiento": {
+                    "$ref": "#/definitions/models.FuenteFinanciamiento"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Valor": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },
+        "models.Docentes_x_Carga": {
+            "title": "Docentes_x_Carga",
+            "type": "object"
+        },
+        "models.ExpedicionCancelacion": {
+            "title": "ExpedicionCancelacion",
+            "type": "object",
+            "properties": {
+                "FechaExpedicion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "IdResolucion": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Vinculaciones": {
+                    "$ref": "#/definitions/5548.\u003cnil\u003e.CancelacionContrato"
+                }
+            }
+        },
+        "models.ExpedicionResolucion": {
+            "title": "ExpedicionResolucion",
+            "type": "object",
+            "properties": {
+                "FechaExpedicion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "IdResolucion": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Vinculaciones": {
+                    "$ref": "#/definitions/5705.\u003cnil\u003e.ContratoVinculacion"
+                }
+            }
+        },
+        "models.FuenteFinanciamiento": {
+            "title": "FuenteFinanciamiento",
+            "type": "object",
+            "properties": {
+                "Codigo": {
+                    "type": "string"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Nombre": {
+                    "type": "string"
+                },
+                "TipoFuenteFinanciamiento": {
+                    "$ref": "#/definitions/models.TipoFuenteFinanciamiento"
+                }
+            }
+        },
+        "models.ObjetoResolucion": {
+            "title": "ObjetoResolucion",
+            "type": "object",
+            "properties": {
+                "NomDependencia": {
+                    "type": "string"
+                },
+                "Resolucion": {
+                    "$ref": "#/definitions/models.Resolucion"
+                },
+                "ResolucionVieja": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ResolucionVinculacionDocente": {
+                    "$ref": "#/definitions/models.ResolucionVinculacionDocente"
+                }
+            }
+        },
+        "models.Objeto_Desvinculacion": {
+            "title": "Objeto_Desvinculacion",
+            "type": "object",
+            "properties": {
+                "DisponibilidadNueva": {
+                    "$ref": "#/definitions/models.DisponibilidadApropiacion"
+                },
+                "DocentesDesvincular": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.VinculacionDocente"
+                    }
+                },
+                "IdModificacionResolucion": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "IdNuevaResolucion": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "TipoDesvinculacion": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OrdenadorGasto": {
+            "title": "OrdenadorGasto",
+            "type": "object",
+            "properties": {
+                "Cargo": {
+                    "type": "string"
+                },
+                "DependenciaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NombreOrdenador": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Paragrafo": {
+            "title": "Paragrafo",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Numero": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Texto": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Resolucion": {
+            "title": "Resolucion",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "ConsideracionResolucion": {
+                    "type": "string"
+                },
+                "DependenciaFirmaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "DependenciaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaExpedicion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroResolucion": {
+                    "type": "string"
+                },
+                "NumeroSemanas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Periodo": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PeriodoCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PreambuloResolucion": {
+                    "type": "string"
+                },
+                "TipoResolucionId": {
+                    "$ref": "#/definitions/models.TipoResolucion"
+                },
+                "Titulo": {
+                    "type": "string"
+                },
+                "Vigencia": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "VigenciaCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.ResolucionCompleta": {
+            "title": "ResolucionCompleta",
+            "type": "object",
+            "properties": {
+                "Articulos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Articulo"
+                    }
+                },
+                "Consideracion": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Numero": {
+                    "type": "string"
+                },
+                "OrdenadorGasto": {
+                    "$ref": "#/definitions/models.OrdenadorGasto"
+                },
+                "Preambulo": {
+                    "type": "string"
+                },
+                "Titulo": {
+                    "type": "string"
+                },
+                "Vigencia": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Vinculacion": {
+                    "$ref": "#/definitions/models.ResolucionVinculacionDocente"
+                }
+            }
+        },
+        "models.ResolucionVinculacion": {
+            "title": "ResolucionVinculacion",
+            "type": "object",
+            "properties": {
+                "Dedicacion": {
+                    "type": "string"
+                },
+                "Estado": {
+                    "type": "string"
+                },
+                "Facultad": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "FacultadFirmaNombre": {
+                    "type": "string"
+                },
+                "FacultadNombre": {
+                    "type": "string"
+                },
+                "FechaExpedicion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "IdDependenciaFirma": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NivelAcademico": {
+                    "type": "string"
+                },
+                "Numero": {
+                    "type": "string"
+                },
+                "NumeroSemanas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Periodo": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PeriodoCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "TipoResolucion": {
+                    "type": "string"
+                },
+                "Vigencia": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "VigenciaCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.ResolucionVinculacionDocente": {
+            "title": "ResolucionVinculacionDocente",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "Dedicacion": {
+                    "type": "string"
+                },
+                "FacultadId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NivelAcademico": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RpDocente": {
+            "title": "RpDocente",
+            "type": "object",
+            "properties": {
+                "cdp_rp_docente": {
+                    "$ref": "#/definitions/16054.0xc00070d110.false"
+                }
+            }
+        },
+        "models.Rubro": {
+            "title": "Rubro",
+            "type": "object",
+            "properties": {
+                "Codigo": {
+                    "type": "string"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "Entidad": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Nombre": {
+                    "type": "string"
+                },
+                "UnidadEjecutora": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.TipoFuenteFinanciamiento": {
+            "title": "TipoFuenteFinanciamiento",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "CodigoAbreviacion": {
+                    "type": "string"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Nombre": {
+                    "type": "string"
+                },
+                "NumeroOrden": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.TipoResolucion": {
+            "title": "TipoResolucion",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "Descripcion": {
+                    "type": "string"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NombreTipoResolucion": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.VinculacionDocente": {
+            "title": "VinculacionDocente",
+            "type": "object",
+            "properties": {
+                "Activo": {
+                    "type": "boolean"
+                },
+                "Categoria": {
+                    "type": "string"
+                },
+                "Dedicacion": {
+                    "type": "string"
+                },
+                "DedicacionId": {
+                    "$ref": "#/definitions/models.Dedicacion"
+                },
+                "DependenciaAcademica": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Disponibilidad": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "FechaCreacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaInicio": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaInicioNueva": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "FechaModificacion": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "LugarExpedicionCedula": {
+                    "type": "string"
+                },
+                "NivelAcademico": {
+                    "type": "string"
+                },
+                "NombreCompleto": {
+                    "type": "string"
+                },
+                "NumeroContrato": {
+                    "type": "string"
+                },
+                "NumeroDisponibilidad": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroHorasModificacion": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroHorasNuevas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroHorasSemanales": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroMeses": {
+                    "type": "string"
+                },
+                "NumeroMesesNuevos": {
+                    "type": "string"
+                },
+                "NumeroRp": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "NumeroSemanas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroSemanasNuevas": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "NumeroSemanasRestantes": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Periodo": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PeriodoCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "PersonaId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ProyectoCurricularId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ProyectoNombre": {
+                    "type": "string"
+                },
+                "PuntoSalarialId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "ResolucionVinculacionDocenteId": {
+                    "$ref": "#/definitions/models.ResolucionVinculacionDocente"
+                },
+                "SalarioMinimoId": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "TipoDocumento": {
+                    "type": "string"
+                },
+                "ValorContrato": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "ValorContratoFormato": {
+                    "type": "string"
+                },
+                "ValorContratoInicialFormato": {
+                    "type": "string"
+                },
+                "ValorModificacionFormato": {
+                    "type": "string"
+                },
+                "Vigencia": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "VigenciaCarga": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "VigenciaRp": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "gestion_documento_resolucion",
+            "description": "GestionDocumentoResolucionController operations for Preliquidacion\n"
+        },
+        {
+            "name": "expedir_resolucion",
+            "description": "ExpedirResolucionController operations for ExpedirResolucion\n"
+        },
+        {
+            "name": "gestion_desvinculaciones",
+            "description": "PreliquidacionController operations for Preliquidacion\n"
+        },
+        {
+            "name": "gestion_previnculacion",
+            "description": "PreliquidacionController operations for Preliquidacion\n"
+        },
+        {
+            "name": "gestion_resoluciones",
+            "description": "GestionResolucionesController operations for Preliquidacion\n"
+        }
+    ]
+}

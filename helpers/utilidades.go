@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/administrativa_mid_api/models"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 func SendJson(url string, trequest string, target interface{}, datajson interface{}) error {
@@ -166,13 +166,14 @@ func diff(a, b time.Time) (year, month, day int) {
 }
 
 //CargarReglasBase general
-func CargarReglasBase(dominio string) (reglas string, err error) {
+func CargarReglasBase(dominio string) (reglas string, outputError map[string]interface{}) {
 	//carga de reglas desde el ruler
 	var reglasbase string = ``
 	var v []models.Predicado
-	err = GetJson(beego.AppConfig.String("Urlruler")+"/predicado/?query=Dominio.Nombre:"+dominio+"&limit=-1", &v)
-	if err != nil {
-		return
+	if response, err := GetJsonTest("http://"+beego.AppConfig.String("Urlruler")+beego.AppConfig.String("Nsruler")+"/predicado?query=Dominio.Nombre:"+dominio+"&limit=-1", &v); response == 200 && err == nil {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/CargarReglasBase", "err": err.Error(), "status": "404"}
+		return reglasbase, outputError
 	}
 	reglasbase = reglasbase + FormatoReglas(v) //funcion general para dar formato a reglas cargadas desde el ruler
 

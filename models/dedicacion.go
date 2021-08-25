@@ -1,7 +1,14 @@
 package models
 
+import (
+	"time"
+)
+
 type Dedicacion struct {
-	Descripcion      string
-	NombreDedicacion string
-	Id               int
+	Id                int       
+	NombreDedicacion  string    
+	Descripcion       string    
+	Activo            bool      
+	FechaCreacion     time.Time 
+	FechaModificacion time.Time 
 }

@@ -12,4 +12,5 @@ type ActaInicio struct {
 	FechaFin       time.Time
 	Descripcion    string
 	Usuario        string
+	FechaRegistro time.Time
 }

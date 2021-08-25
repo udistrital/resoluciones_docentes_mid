@@ -2,10 +2,9 @@ package helpers
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/astaxie/beego"
-	"github.com/udistrital/administrativa_mid_api/models"
+	"github.com/udistrital/resoluciones_docentes_mid/models"
 )
 
 func HomologarDedicacion_nombre(dedicacion string) (vinculacion_old []string) {
@@ -47,7 +46,7 @@ func HomologarDedicacion_nombre(dedicacion string) (vinculacion_old []string) {
 	return id_dedicacion_old
 }
 
-func HomologarFacultad(tipo, facultad string) (facultad_old string, err error) {
+func HomologarFacultad(tipo, facultad string) (facultad_old string, outputError map[string]interface{}) {
 	var id_facultad string
 	var temp map[string]interface{}
 	var string_consulta_servicio string
@@ -57,22 +56,25 @@ func HomologarFacultad(tipo, facultad string) (facultad_old string, err error) {
 	} else {
 		string_consulta_servicio = "facultad_oikos_gedep"
 	}
-
-	err = GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+string_consulta_servicio+"/"+facultad, &temp)
-	if err != nil {
-		return facultad_old, err
+	q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudHomologacion") + "/" + string_consulta_servicio + "/" + facultad
+	if response, err := GetJsonWSO2Test(q, &temp); err == nil && response == 200 {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/HomologarFacultad1", "err": err.Error(), "status": "502"}
+		return facultad_old, outputError
 	}
 	if temp != nil {
 		json_facultad, err := json.Marshal(temp)
 
 		if err != nil {
-			return facultad_old, err
+			outputError = map[string]interface{}{"funcion": "/HomologarFacultad2", "err": err.Error(), "status": "502"}
+			return facultad_old, outputError
 		}
 
 		var temp_proy models.ObjetoFacultad
-		err = json.Unmarshal(json_facultad, &temp_proy)
+		err1 := json.Unmarshal(json_facultad, &temp_proy)
 		if err != nil {
-			return facultad_old, err
+			outputError = map[string]interface{}{"funcion": "/HomologarFacultad3", "err": err1.Error(), "status": "502"}
+			return facultad_old, outputError
 		}
 
 		if tipo == "new" {
@@ -82,7 +84,8 @@ func HomologarFacultad(tipo, facultad string) (facultad_old string, err error) {
 		}
 
 	} else {
-		return id_facultad, fmt.Errorf("No hay datos de respuesta de las APIs")
+		outputError = map[string]interface{}{"funcion": "/HomologarFacultad4", "err": "No hay datos de respuesta de las APIs", "status": "502"}
+		return id_facultad, outputError
 	}
 
 	return id_facultad, nil
@@ -140,24 +143,27 @@ func HomologarDedicacion_ID(tipo, dedicacion string) (vinculacion_old, nombre_vi
 	return id_dedicacion_old, nombre_dedicacion
 }
 
-func HomologarProyectoCurricular(proyecto_old string) (proyecto string, err error) {
+func HomologarProyectoCurricular(proyecto_old string) (proyecto string, outputError map[string]interface{}) {
 	var id_proyecto string
 	var temp map[string]interface{}
 
-	err = GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/"+"proyecto_curricular_cod_proyecto/"+proyecto_old, &temp)
-	if err != nil {
-		return proyecto, err
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/proyecto_curricular_cod_proyecto/"+proyecto_old, &temp); err == nil && response == 200 {
+	} else {
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular1", "err": err.Error(), "status": "502"}
+		return proyecto, outputError
 	}
 
 	json_proyecto_curricular, err := json.Marshal(temp)
 
 	if err != nil {
-		return proyecto, err
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular2", "err": err.Error(), "status": "502"}
+		return proyecto, outputError
 	}
 	var temp_proy models.ObjetoProyectoCurricular
 	err = json.Unmarshal(json_proyecto_curricular, &temp_proy)
 	if err != nil {
-		return proyecto, err
+		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular3", "err": err.Error(), "status": "502"}
+		return proyecto, outputError
 	}
 	id_proyecto = temp_proy.Homologacion.IDOikos
 

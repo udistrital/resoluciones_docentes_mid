@@ -1,7 +1,14 @@
 package models
 
+import (
+	"time"
+)
+
 type ModificacionResolucion struct {
-	Id                 int
-	ResolucionNueva    int
-	ResolucionAnterior int
+	Id                   int         
+	ResolucionNuevaId    *Resolucion 
+	ResolucionAnteriorId *Resolucion 
+	Activo               bool        
+	FechaCreacion        time.Time   
+	FechaModificacion    time.Time   
 }
