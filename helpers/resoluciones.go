@@ -134,7 +134,7 @@ func InsertarResolucionEstado(id_res int) (contr bool) {
 	var respuesta_peticion map[string]interface{}
 	var cont bool
 	temp := models.ResolucionEstado{
-		FechaCreacion:      time.Now(),
+		//FechaCreacion:      time.Now(),
 		EstadoResolucionId: &models.EstadoResolucion{Id: 1},
 		ResolucionId:       &models.Resolucion{Id: id_res},
 	}
@@ -228,7 +228,7 @@ func InsertarResolucion(resolucion models.ObjetoResolucion) (contr bool, id_cre 
 	var respuesta_peticion map[string]interface{}
 
 	temp.Vigencia, _, _ = time.Now().Date()
-	temp.FechaCreacion = time.Now()
+	//temp.FechaCreacion = time.Now()
 	temp.Activo = true
 	switch resolucion.ResolucionVinculacionDocente.Dedicacion {
 	case "HCH":

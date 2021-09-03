@@ -403,18 +403,18 @@
                     {
                         "in": "query",
                         "name": "id_resolucion",
-                        "description": "año a consultar",
+                        "description": "Numero de resolución a consultar",
                         "type": "string"
                     },
                     {
                         "in": "query",
                         "name": "id_facultad",
-                        "description": "periodo a listar",
+                        "description": "dependencia que ordena el gasto",
                         "type": "string"
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "schema": {
                             "$ref": "#/definitions/models.ResolucionCompleta"
@@ -721,7 +721,7 @@
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "schema": {
                             "type": "array",
@@ -769,7 +769,7 @@
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "schema": {
                             "type": "array",
@@ -820,15 +820,15 @@
         }
     },
     "definitions": {
-        "16054.0xc00070d110.false": {
+        "16136.0xc00070eb10.false": {
             "title": "false",
             "type": "object"
         },
-        "5548.\u003cnil\u003e.CancelacionContrato": {
+        "5304.\u003cnil\u003e.CancelacionContrato": {
             "title": "CancelacionContrato",
             "type": "object"
         },
-        "5705.\u003cnil\u003e.ContratoVinculacion": {
+        "5466.\u003cnil\u003e.ContratoVinculacion": {
             "title": "ContratoVinculacion",
             "type": "object"
         },
@@ -910,12 +910,10 @@
                     "type": "string"
                 },
                 "FechaCreacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "FechaModificacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "Id": {
                     "type": "integer",
@@ -984,7 +982,7 @@
                     "format": "int64"
                 },
                 "Vinculaciones": {
-                    "$ref": "#/definitions/5548.\u003cnil\u003e.CancelacionContrato"
+                    "$ref": "#/definitions/5304.\u003cnil\u003e.CancelacionContrato"
                 }
             }
         },
@@ -1001,7 +999,7 @@
                     "format": "int64"
                 },
                 "Vinculaciones": {
-                    "$ref": "#/definitions/5705.\u003cnil\u003e.ContratoVinculacion"
+                    "$ref": "#/definitions/5466.\u003cnil\u003e.ContratoVinculacion"
                 }
             }
         },
@@ -1128,16 +1126,14 @@
                     "format": "int64"
                 },
                 "FechaCreacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "FechaExpedicion": {
                     "type": "string",
                     "format": "datetime"
                 },
                 "FechaModificacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "Id": {
                     "type": "integer",
@@ -1293,12 +1289,10 @@
                     "format": "int64"
                 },
                 "FechaCreacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "FechaModificacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "Id": {
                     "type": "integer",
@@ -1314,7 +1308,7 @@
             "type": "object",
             "properties": {
                 "cdp_rp_docente": {
-                    "$ref": "#/definitions/16054.0xc00070d110.false"
+                    "$ref": "#/definitions/16136.0xc00070eb10.false"
                 }
             }
         },
@@ -1382,12 +1376,10 @@
                     "type": "string"
                 },
                 "FechaCreacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "FechaModificacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "Id": {
                     "type": "integer",
@@ -1423,8 +1415,7 @@
                     "format": "int64"
                 },
                 "FechaCreacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "FechaInicio": {
                     "type": "string",
@@ -1435,8 +1426,7 @@
                     "format": "datetime"
                 },
                 "FechaModificacion": {
-                    "type": "string",
-                    "format": "datetime"
+                    "type": "string"
                 },
                 "Id": {
                     "type": "integer",
