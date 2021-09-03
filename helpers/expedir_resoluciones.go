@@ -218,7 +218,7 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 													v.Vigencia = aux2
 													//v.Vigencia.Valid = true
 													v.FechaInicio = acta.FechaInicio
-													v.FechaModificacion = time.Now()
+													//v.FechaModificacion = time.Now()
 													fmt.Println("CD es: ", response4.Id)
 													fmt.Println("AI es: ", response3.Id)
 													fmt.Println("CE es: ", response2.Id)
@@ -306,8 +306,8 @@ func Expedir(m models.ExpedicionResolucion) (outputError map[string]interface{})
 				e.ResolucionId = &r
 				er.Id = 2
 				e.EstadoResolucionId = &er
-				e.FechaCreacion = time.Now()
-				e.FechaModificacion = time.Now()
+				//e.FechaCreacion = time.Now()
+				//e.FechaModificacion = time.Now()
 				//If 9 - Resolucion_estado
 				if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_estado", "POST", &respuesta_peticion, &e); err == nil {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &response)
@@ -804,7 +804,7 @@ func ExpedirModificacion(m models.ExpedicionResolucion) (outputError map[string]
 				e.ResolucionId = &r
 				er.Id = 2
 				e.EstadoResolucionId = &er
-				e.FechaCreacion = time.Now()
+				//e.FechaCreacion = time.Now()
 				// If 9 - Resolucion_estado
 				if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_estado", "POST", &respuesta_peticion, &e); err == nil {
 					LimpiezaRespuestaRefactor(respuesta_peticion, &response)
@@ -896,7 +896,7 @@ func Cancelar(m models.ExpedicionCancelacion) (outputError map[string]interface{
 									e.ResolucionId = &r
 									er.Id = 2
 									e.EstadoResolucionId = &er
-									e.FechaCreacion = time.Now()
+									//e.FechaCreacion = time.Now()
 									//If  Resolucion_estado (post)
 									if err := SendJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion_estado", "POST", &respuesta_peticion, &e); err == nil {
 										LimpiezaRespuestaRefactor(respuesta_peticion, &response)

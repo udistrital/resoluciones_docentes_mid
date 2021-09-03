@@ -30,10 +30,10 @@ func ListarDocentesHorasLectivas(vigencia, periodo, tipo_vinculacion, facultad, 
 	var docentesXCarga models.ObjetoCargaLectiva
 
 	for _, pos := range tipoVinculacionOld {
-		t := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudAcademica") + "/carga_lectiva/" + vigencia + "/" + periodo + "/" + pos + "/" + facultadOld + "/" + nivel_academico
+		t := "http://" + beego.AppConfig.String("UrlcrudWSO2") + beego.AppConfig.String("NscrudAcademica") + "/carga_lectiva/" + vigencia + "/" + periodo + "/" + pos + "/" + facultadOld + "/" + nivel_academico
 		fmt.Println(t)
 		if response, err2 := GetJsonWSO2Test(t, &temp); response == 200 && err2 == nil {
-
+			//Esta consulta responde con status 202 y "queda pendiente" generando un EOF al procesar la respuesta
 		} else {
 			logs.Error(err2)
 			outputError = map[string]interface{}{"funcion": "/ListarDocentesHorasLectivas2", "err2": err2.Error(), "status": "404"}
@@ -66,7 +66,7 @@ func GetInformacionRpDocente(numero_cdp string, vigencia_cdp string, identificac
 
 	var temp map[string]interface{}
 	fmt.Println(numero_cdp + " " + vigencia_cdp + " " + identificacion)
-	if err := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudFinanciera")+"/cdprpdocente/"+numero_cdp+"/"+vigencia_cdp+"/"+identificacion, &temp); err == nil {
+	if err := GetJsonWSO2("http://"+beego.AppConfig.String("UrlcrudWSO2")+beego.AppConfig.String("NscrudFinanciera")+"/cdprpdocente/"+numero_cdp+"/"+vigencia_cdp+"/"+identificacion, &temp); err == nil {
 		json_cdp_rp, error_json := json.Marshal(temp)
 
 		if error_json == nil {
@@ -90,7 +90,7 @@ func GetInformacionRpDocente(numero_cdp string, vigencia_cdp string, identificac
 	return informacion_rp_docente
 }
 
-func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
+func ListarDocentesDesvinculados(query string) (VinculacionDocente []*models.VinculacionDocente, outputError map[string]interface{}) {
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -99,8 +99,9 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 		}
 	}()
 
-	v := []models.VinculacionDocente{}
-	var respuesta_peticion map[string]interface{}
+	//var v []models.VinculacionDocente
+	var respVinculaciones models.RespuestaVinculaciones
+	//var respuesta_peticion map[string]interface{}
 
 	var err1 map[string]interface{}
 	var err2 map[string]interface{}
@@ -108,8 +109,9 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 	var err4 map[string]interface{}
 
 	r := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/vinculacion_docente" + query
-	if response, err := GetJsonTest(r, &respuesta_peticion); err == nil && response == 200 {
-		LimpiezaRespuestaRefactor(respuesta_peticion, &v)
+	if response, err := GetJsonTest(r, &respVinculaciones); err == nil && response == 200 {
+		v := respVinculaciones.Data
+		//LimpiezaRespuestaRefactor(respuesta_peticion, &v)
 		for x, pos := range v {
 			documento_identidad := pos.PersonaId
 			v[x].NombreCompleto, err1 = BuscarNombreProveedor(documento_identidad)
@@ -130,7 +132,7 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 			}
 		}
 		if v == nil {
-			v = []models.VinculacionDocente{}
+			v = []*models.VinculacionDocente{}
 		}
 		return v, nil
 	} else {
@@ -141,11 +143,18 @@ func ListarDocentesDesvinculados(query string) (VinculacionDocente []models.Vinc
 }
 
 func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models.VinculacionDocente, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/ListarDocentesCancelados", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
+
 	var v []models.VinculacionDocente
-	var modRes []models.ModificacionResolucion
-	var modVin []models.ModificacionVinculacion
 	var cv models.VinculacionDocente
 	var respuesta_peticion map[string]interface{}
+	var respuestaModRes models.RespuestaModRes
+	var respuestaModVin models.RespuestaModVin
 	// if 3 - modificacion_resolucion
 
 	var err1 map[string]interface{}
@@ -154,13 +163,15 @@ func ListarDocentesCancelados(id_resolucion string) (VinculacionDocente []models
 	var err4 map[string]interface{}
 
 	r := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/modificacion_resolucion?query=ResolucionNuevaId.Id:" + id_resolucion
-	if response, err := GetJsonTest(r, &respuesta_peticion); err == nil && response == 200 {
-		LimpiezaRespuestaRefactor(respuesta_peticion, &modRes)
+	if response, err := GetJsonTest(r, &respuestaModRes); err == nil && response == 200 {
+		modRes := respuestaModRes.Data
+		//LimpiezaRespuestaRefactor(respuesta_peticion, &modRes)
 		// if 2 - modificacion_vinculacion
 		t := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/modificacion_vinculacion?limit=-1&query=ModificacionResolucionId.Id:" + strconv.Itoa(modRes[0].Id)
 		beego.Info(t)
-		if response, err := GetJsonTest(t, &respuesta_peticion); err == nil && response == 200 {
-			LimpiezaRespuestaRefactor(respuesta_peticion, &modVin)
+		if response, err := GetJsonTest(t, &respuestaModVin); err == nil && response == 200 {
+			modVin := respuestaModVin.Data
+			//LimpiezaRespuestaRefactor(respuesta_peticion, &modVin)
 			//for vinculaciones
 			for _, vinculacion := range modVin {
 				beego.Info(fmt.Sprintf("%+v", vinculacion.VinculacionDocenteCanceladaId))
@@ -225,7 +236,7 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		catDocente := models.ObjetoCategoriaDocente{}
 		emptyCatDocente := models.ObjetoCategoriaDocente{}
 		//TODO: quitar el hardconding para WSO2 cuando ya soporte https:
-		q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudUrano") + "/categoria_docente/" + vigencia + "/" + periodo + "/" + pos.DocDocente
+		q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + beego.AppConfig.String("NscrudUrano") + "/categoria_docente/" + vigencia + "/" + periodo + "/" + pos.DocDocente
 		response, err2 := GetJsonWSO2Test(q, &catDocente.CategoriaDocente)
 		if err2 != nil && response == 200 {
 			logs.Error(err2)

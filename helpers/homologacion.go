@@ -56,7 +56,7 @@ func HomologarFacultad(tipo, facultad string) (facultad_old string, outputError 
 	} else {
 		string_consulta_servicio = "facultad_oikos_gedep"
 	}
-	q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + "/" + beego.AppConfig.String("NscrudHomologacion") + "/" + string_consulta_servicio + "/" + facultad
+	q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + beego.AppConfig.String("NscrudHomologacion") + "/" + string_consulta_servicio + "/" + facultad
 	if response, err := GetJsonWSO2Test(q, &temp); err == nil && response == 200 {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/HomologarFacultad1", "err": err.Error(), "status": "502"}
@@ -147,7 +147,7 @@ func HomologarProyectoCurricular(proyecto_old string) (proyecto string, outputEr
 	var id_proyecto string
 	var temp map[string]interface{}
 
-	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudHomologacion")+"/proyecto_curricular_cod_proyecto/"+proyecto_old, &temp); err == nil && response == 200 {
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+beego.AppConfig.String("NscrudHomologacion")+"/proyecto_curricular_cod_proyecto/"+proyecto_old, &temp); err == nil && response == 200 {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/HomologarProyectoCurricular1", "err": err.Error(), "status": "502"}
 		return proyecto, outputError

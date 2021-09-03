@@ -13,7 +13,7 @@ func Buscar_Categoria_Docente(vigencia, periodo, documento_ident string) (catego
 	var idCategoriaOld string
 
 	//TODO: quitar el hardconding para WSO2 cuando ya soporte https:
-	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudUrano")+"/"+"categoria_docente/"+vigencia+"/"+periodo+"/"+documento_ident, &temp); response == 200 && err == nil {
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+beego.AppConfig.String("NscrudUrano")+"/"+"categoria_docente/"+vigencia+"/"+periodo+"/"+documento_ident, &temp); response == 200 && err == nil {
 		if temp != nil {
 
 			jsonDocentes, err := json.Marshal(temp)
