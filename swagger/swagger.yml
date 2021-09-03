@@ -263,14 +263,14 @@ paths:
       parameters:
       - in: query
         name: id_resolucion
-        description: año a consultar
+        description: Numero de resolución a consultar
         type: string
       - in: query
         name: id_facultad
-        description: periodo a listar
+        description: dependencia que ordena el gasto
         type: string
       responses:
-        "201":
+        "200":
           description: ""
           schema:
             $ref: '#/definitions/models.ResolucionCompleta'
@@ -471,7 +471,7 @@ paths:
         description: Filter. e.g. col1:v1,col2:v2 ...
         type: string
       responses:
-        "201":
+        "200":
           description: ""
           schema:
             type: array
@@ -503,7 +503,7 @@ paths:
         description: Filter. e.g. col1:v1,col2:v2 ...
         type: string
       responses:
-        "201":
+        "200":
           description: ""
           schema:
             type: array
@@ -534,13 +534,13 @@ paths:
         "404":
           description: aborted by server
 definitions:
-  5548.<nil>.CancelacionContrato:
+  5304.<nil>.CancelacionContrato:
     title: CancelacionContrato
     type: object
-  5705.<nil>.ContratoVinculacion:
+  5466.<nil>.ContratoVinculacion:
     title: ContratoVinculacion
     type: object
-  16054.0xc00070d110.false:
+  16136.0xc00070eb10.false:
     title: "false"
     type: object
   models.ApropiacionRubro:
@@ -600,10 +600,8 @@ definitions:
         type: string
       FechaCreacion:
         type: string
-        format: datetime
       FechaModificacion:
         type: string
-        format: datetime
       Id:
         type: integer
         format: int64
@@ -652,7 +650,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5548.<nil>.CancelacionContrato'
+        $ref: '#/definitions/5304.<nil>.CancelacionContrato'
   models.ExpedicionResolucion:
     title: ExpedicionResolucion
     type: object
@@ -664,7 +662,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5705.<nil>.ContratoVinculacion'
+        $ref: '#/definitions/5466.<nil>.ContratoVinculacion'
   models.FuenteFinanciamiento:
     title: FuenteFinanciamiento
     type: object
@@ -753,13 +751,11 @@ definitions:
         format: int64
       FechaCreacion:
         type: string
-        format: datetime
       FechaExpedicion:
         type: string
         format: datetime
       FechaModificacion:
         type: string
-        format: datetime
       Id:
         type: integer
         format: int64
@@ -870,10 +866,8 @@ definitions:
         format: int64
       FechaCreacion:
         type: string
-        format: datetime
       FechaModificacion:
         type: string
-        format: datetime
       Id:
         type: integer
         format: int64
@@ -884,7 +878,7 @@ definitions:
     type: object
     properties:
       cdp_rp_docente:
-        $ref: '#/definitions/16054.0xc00070d110.false'
+        $ref: '#/definitions/16136.0xc00070eb10.false'
   models.Rubro:
     title: Rubro
     type: object
@@ -932,10 +926,8 @@ definitions:
         type: string
       FechaCreacion:
         type: string
-        format: datetime
       FechaModificacion:
         type: string
-        format: datetime
       Id:
         type: integer
         format: int64
@@ -961,7 +953,6 @@ definitions:
         format: int64
       FechaCreacion:
         type: string
-        format: datetime
       FechaInicio:
         type: string
         format: datetime
@@ -970,7 +961,6 @@ definitions:
         format: datetime
       FechaModificacion:
         type: string
-        format: datetime
       Id:
         type: integer
         format: int64

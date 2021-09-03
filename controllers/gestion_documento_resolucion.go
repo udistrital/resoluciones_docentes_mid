@@ -21,9 +21,9 @@ func (c *GestionDocumentoResolucionController) URLMapping() {
 // GestionPrevinculacionesController ...
 // @Title ListarDocentesCargaHoraria
 // @Description create GetContenidoResolucion
-// @Param id_resolucion query string false "año a consultar"
-// @Param id_facultad query string false "periodo a listar"
-// @Success 201 {object} models.ResolucionCompleta
+// @Param id_resolucion query string false "Numero de resolución a consultar"
+// @Param id_facultad query string false "dependencia que ordena el gasto"
+// @Success 200 {object} models.ResolucionCompleta
 // @Failure 400 bad request
 // @Failure 404 aborted by server
 // @router /get_contenido_resolucion [get]
