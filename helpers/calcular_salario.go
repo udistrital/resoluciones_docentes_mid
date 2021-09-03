@@ -137,7 +137,7 @@ func EsDocentePlanta(idPersona string) (docentePlanta bool, outputError map[stri
 	var temp map[string]interface{}
 	var esDePlanta bool
 
-	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+"/"+beego.AppConfig.String("NscrudAcademica")+"/"+"consultar_datos_docente/"+idPersona, &temp); response == 200 && err == nil {
+	if response, err := GetJsonWSO2Test("http://"+beego.AppConfig.String("UrlcrudWSO2")+beego.AppConfig.String("NscrudAcademica")+"/"+"consultar_datos_docente/"+idPersona, &temp); response == 200 && err == nil {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/EsDocentePlanta1", "err": err.Error(), "status": "404"}
 		return false, outputError
@@ -191,7 +191,7 @@ func Calcular_totales_vinculacion_pdf_nueva(cedula, id_resolucion string, IdDedi
 			panic(outputError)
 		}
 	}()
-	query := "?limit=-1&query=IdPersona:" + cedula + ",IdResolucion.Id:" + id_resolucion
+	query := "?limit=-1&query=PersonaId:" + cedula + ",ResolucionVinculacionDocenteId.Id:" + id_resolucion
 	var temp []models.VinculacionDocente
 	var total_contrato int
 	var total_horas int
