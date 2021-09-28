@@ -820,15 +820,15 @@
         }
     },
     "definitions": {
-        "16136.0xc00070eb10.false": {
+        "16358.0xc000701c50.false": {
             "title": "false",
             "type": "object"
         },
-        "5304.\u003cnil\u003e.CancelacionContrato": {
+        "5336.\u003cnil\u003e.CancelacionContrato": {
             "title": "CancelacionContrato",
             "type": "object"
         },
-        "5466.\u003cnil\u003e.ContratoVinculacion": {
+        "5498.\u003cnil\u003e.ContratoVinculacion": {
             "title": "ContratoVinculacion",
             "type": "object"
         },
@@ -982,7 +982,7 @@
                     "format": "int64"
                 },
                 "Vinculaciones": {
-                    "$ref": "#/definitions/5304.\u003cnil\u003e.CancelacionContrato"
+                    "$ref": "#/definitions/5336.\u003cnil\u003e.CancelacionContrato"
                 }
             }
         },
@@ -999,7 +999,7 @@
                     "format": "int64"
                 },
                 "Vinculaciones": {
-                    "$ref": "#/definitions/5466.\u003cnil\u003e.ContratoVinculacion"
+                    "$ref": "#/definitions/5498.\u003cnil\u003e.ContratoVinculacion"
                 }
             }
         },
@@ -1117,6 +1117,9 @@
                 "ConsideracionResolucion": {
                     "type": "string"
                 },
+                "CuadroResponsabilidades": {
+                    "type": "string"
+                },
                 "DependenciaFirmaId": {
                     "type": "integer",
                     "format": "int64"
@@ -1184,6 +1187,9 @@
                     }
                 },
                 "Consideracion": {
+                    "type": "string"
+                },
+                "CuadroResponsabilidades": {
                     "type": "string"
                 },
                 "Id": {
@@ -1308,7 +1314,7 @@
             "type": "object",
             "properties": {
                 "cdp_rp_docente": {
-                    "$ref": "#/definitions/16136.0xc00070eb10.false"
+                    "$ref": "#/definitions/16358.0xc000701c50.false"
                 }
             }
         },

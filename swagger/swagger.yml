@@ -534,13 +534,13 @@ paths:
         "404":
           description: aborted by server
 definitions:
-  5304.<nil>.CancelacionContrato:
+  5336.<nil>.CancelacionContrato:
     title: CancelacionContrato
     type: object
-  5466.<nil>.ContratoVinculacion:
+  5498.<nil>.ContratoVinculacion:
     title: ContratoVinculacion
     type: object
-  16136.0xc00070eb10.false:
+  16358.0xc000701c50.false:
     title: "false"
     type: object
   models.ApropiacionRubro:
@@ -650,7 +650,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5304.<nil>.CancelacionContrato'
+        $ref: '#/definitions/5336.<nil>.CancelacionContrato'
   models.ExpedicionResolucion:
     title: ExpedicionResolucion
     type: object
@@ -662,7 +662,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5466.<nil>.ContratoVinculacion'
+        $ref: '#/definitions/5498.<nil>.ContratoVinculacion'
   models.FuenteFinanciamiento:
     title: FuenteFinanciamiento
     type: object
@@ -743,6 +743,8 @@ definitions:
         type: boolean
       ConsideracionResolucion:
         type: string
+      CuadroResponsabilidades:
+        type: string
       DependenciaFirmaId:
         type: integer
         format: int64
@@ -791,6 +793,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Articulo'
       Consideracion:
+        type: string
+      CuadroResponsabilidades:
         type: string
       Id:
         type: integer
@@ -878,7 +882,7 @@ definitions:
     type: object
     properties:
       cdp_rp_docente:
-        $ref: '#/definitions/16136.0xc00070eb10.false'
+        $ref: '#/definitions/16358.0xc000701c50.false'
   models.Rubro:
     title: Rubro
     type: object
