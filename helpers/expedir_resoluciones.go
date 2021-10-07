@@ -893,7 +893,7 @@ func Cancelar(m models.ExpedicionCancelacion) (outputError map[string]interface{
 									LimpiezaRespuestaRefactor(respuesta_peticion, &response)
 									var e models.ResolucionEstado
 									var er models.EstadoResolucion
-									e.ResolucionId = &r
+									e.ResolucionId = &models.Resolucion{Id: m.IdResolucion}
 									er.Id = 2
 									e.EstadoResolucionId = &er
 									//e.FechaCreacion = time.Now()
