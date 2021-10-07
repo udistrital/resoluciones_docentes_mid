@@ -170,7 +170,8 @@ func CargarReglasBase(dominio string) (reglas string, outputError map[string]int
 	//carga de reglas desde el ruler
 	var reglasbase string = ``
 	var v []models.Predicado
-	if response, err := GetJsonTest("http://"+beego.AppConfig.String("Urlruler")+beego.AppConfig.String("Nsruler")+"/predicado?query=Dominio.Nombre:"+dominio+"&limit=-1", &v); response == 200 && err == nil {
+	url := "http://" + beego.AppConfig.String("Urlruler") + "/" + beego.AppConfig.String("Nsruler") + "/predicado?query=Dominio.Nombre:" + dominio + "&limit=-1"
+	if response, err := GetJsonTest(url, &v); response == 200 && err == nil {
 	} else {
 		outputError = map[string]interface{}{"funcion": "/CargarReglasBase", "err": err.Error(), "status": "404"}
 		return reglasbase, outputError

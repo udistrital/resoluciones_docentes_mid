@@ -24,6 +24,7 @@ func LimpiezaRespuestaRefactor(respuesta map[string]interface{}, v interface{}) 
 			panic(err)
 		}
 		json.Unmarshal(b, v)
+		respuesta = nil
 	}
 	//fmt.Println(v)
 }
