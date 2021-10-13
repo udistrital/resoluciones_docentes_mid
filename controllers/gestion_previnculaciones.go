@@ -18,9 +18,12 @@ type GestionPrevinculacionesController struct {
 
 // URLMapping ...
 func (c *GestionPrevinculacionesController) URLMapping() {
-	c.Mapping("InsertarPrevinculaciones", c.InsertarPrevinculaciones)
+	c.Mapping("Calcular_total_de_salarios_seleccionados", c.Calcular_total_de_salarios_seleccionados)
 	c.Mapping("CalcularTotalDeSalarios", c.CalcularTotalSalarios)
+	c.Mapping("InsertarPrevinculaciones", c.InsertarPrevinculaciones)
 	c.Mapping("ListarDocentesCargaHoraria", c.ListarDocentesCargaHoraria)
+	c.Mapping("ListarDocentesPrevinculadosAll", c.ListarDocentesPrevinculadosAll)
+	c.Mapping("ListarDocentesPrevinculados", c.ListarDocentesPrevinculados)
 	c.Mapping("GetCdpRpDocente", c.GetCdpRpDocente)
 }
 

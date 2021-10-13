@@ -19,11 +19,14 @@ type GestionDesvinculacionesController struct {
 
 // URLMapping ...
 func (c *GestionDesvinculacionesController) URLMapping() {
-
-	//c.Mapping("ActualizarVinculaciones", c.ActualizarVinculaciones)
-	c.Mapping("AdicionarHoras", c.AdicionarHoras)
+	c.Mapping("ListarDocentesDesvinculados", c.ListarDocentesDesvinculados)
 	c.Mapping("ListarDocentesCancelados", c.ListarDocentesCancelados)
-
+	c.Mapping("AnularModificaciones", c.AnularModificaciones)
+	c.Mapping("AnularAdicionDocente", c.AnularAdicionDocente)
+	c.Mapping("ConsultarCategoria", c.ConsultarCategoria)
+	c.Mapping("ValidarSaldoCDP", c.ValidarSaldoCDP)
+	c.Mapping("AdicionarHoras", c.AdicionarHoras)
+	c.Mapping("ActualizarVinculacionesCancelacion", c.ActualizarVinculacionesCancelacion)
 }
 
 // GestionDesvinculacionesController ...
@@ -40,10 +43,6 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 
 	_, err1 := strconv.Atoi(id_resolucion)
 
-	if err1 != nil {
-		panic(map[string]interface{}{"funcion": "ListarDocentesDesvinculados", "err": "Error en los parametros de ingreso", "status": "400"})
-	}
-
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
@@ -57,6 +56,10 @@ func (c *GestionDesvinculacionesController) ListarDocentesDesvinculados() {
 			}
 		}
 	}()
+
+	if err1 != nil {
+		panic(map[string]interface{}{"funcion": "ListarDocentesDesvinculados", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
 
 	if lista_docentes, err := helpers.ListarDocentesDesvinculados(query); err == nil {
 		c.Ctx.Output.SetStatus(200)
@@ -81,10 +84,6 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 
 	_, err1 := strconv.Atoi(id_resolucion)
 
-	if err1 != nil {
-		panic(map[string]interface{}{"funcion": "ListarDocentesCancelados", "err": "Error en los parametros de ingreso", "status": "400"})
-	}
-
 	defer func() {
 		if err := recover(); err != nil {
 			logs.Error(err)
@@ -98,6 +97,10 @@ func (c *GestionDesvinculacionesController) ListarDocentesCancelados() {
 			}
 		}
 	}()
+
+	if err1 != nil {
+		panic(map[string]interface{}{"funcion": "ListarDocentesCancelados", "err": "Error en los parametros de ingreso", "status": "400"})
+	}
 
 	if lista_docentes, err := helpers.ListarDocentesCancelados(id_resolucion); err == nil {
 		c.Ctx.Output.SetStatus(200)

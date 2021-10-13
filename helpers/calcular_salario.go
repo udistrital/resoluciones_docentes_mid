@@ -91,7 +91,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		predicados = predicados + "vinculacion(" + strconv.Itoa(docente.PersonaId) + "," + strings.ToLower(docente.Dedicacion) + ", " + vigencia + ")." + "\n"
 		predicados = predicados + "horas(" + strconv.Itoa(docente.PersonaId) + "," + strconv.Itoa(docente.NumeroHorasSemanales*docente.NumeroSemanas) + ", " + vigencia + ")." + "\n"
 		reglasbase, err4 := CargarReglasBase("CDVE")
-		beego.Info("predicados: ", predicados, "a ", a)
+		beego.Info("predicados: ", predicados, "a: ", a)
 		if err4 != nil {
 			logs.Error(err4)
 			//outputError = map[string]interface{}{"funcion": "/CalcularSalarioPrecontratacion4", "err4": err4, "status": "502"}
@@ -103,7 +103,7 @@ func CalcularSalarioPrecontratacion(docentes_a_vincular []models.VinculacionDoce
 		contratos := m.ProveAll("valor_contrato(" + strings.ToLower(nivelAcademico) + "," + strconv.Itoa(docente.PersonaId) + "," + vigencia + ",X).")
 		for _, solution := range contratos {
 			a = fmt.Sprintf("%s", solution.ByName_("X"))
-			beego.Info("a: ", a)
+			//beego.Info("a: ", a)
 		}
 		f, err5 := strconv.ParseFloat(a, 64)
 		if err5 != nil {

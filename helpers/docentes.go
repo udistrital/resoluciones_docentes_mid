@@ -31,7 +31,6 @@ func ListarDocentesHorasLectivas(vigencia, periodo, tipo_vinculacion, facultad, 
 
 	for _, pos := range tipoVinculacionOld {
 		t := "http://" + beego.AppConfig.String("UrlcrudWSO2") + beego.AppConfig.String("NscrudAcademica") + "/carga_lectiva/" + vigencia + "/" + periodo + "/" + pos + "/" + facultadOld + "/" + nivel_academico
-		fmt.Println(t)
 		if response, err2 := GetJsonWSO2Test(t, &temp); response == 200 && err2 == nil {
 			//Esta consulta responde con status 202 y "queda pendiente" generando un EOF al procesar la respuesta
 		} else {
@@ -234,7 +233,6 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 	//BUSCAR CATEGORÍA DE CADA DOCENTE
 	for _, pos := range docentesXcargaHoraria.CargasLectivas.CargaLectiva {
 		catDocente := models.ObjetoCategoriaDocente{}
-		emptyCatDocente := models.ObjetoCategoriaDocente{}
 		//TODO: quitar el hardconding para WSO2 cuando ya soporte https:
 		q := "http://" + beego.AppConfig.String("UrlcrudWSO2") + beego.AppConfig.String("NscrudUrano") + "/categoria_docente/" + vigencia + "/" + periodo + "/" + pos.DocDocente
 		response, err2 := GetJsonWSO2Test(q, &catDocente.CategoriaDocente)
@@ -245,14 +243,11 @@ func ListarDocentesCargaHoraria(vigencia string, periodo string, tipoVinculacion
 		}
 		var err1 map[string]interface{}
 		pos.CategoriaNombre, pos.IDCategoria, err1 = Buscar_Categoria_Docente(vigencia, periodo, pos.DocDocente)
-		fmt.Println(err1)
 		if err1 != nil {
 			beego.Error(err1)
-			return newDocentesXcargaHoraria, outputError
+			return newDocentesXcargaHoraria, err1
 		}
-		if catDocente.CategoriaDocente != emptyCatDocente.CategoriaDocente {
-			newDocentesXcargaHoraria.CargasLectivas.CargaLectiva = append(newDocentesXcargaHoraria.CargasLectivas.CargaLectiva, pos)
-		}
+		newDocentesXcargaHoraria.CargasLectivas.CargaLectiva = append(newDocentesXcargaHoraria.CargasLectivas.CargaLectiva, pos)
 	}
 
 	//RETORNAR CON ID DE TIPO DE VINCULACION DE NUEVO MODELO
