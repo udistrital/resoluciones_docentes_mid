@@ -16,8 +16,9 @@ type GestionResolucionesController struct {
 
 // URLMapping ...
 func (c *GestionResolucionesController) URLMapping() {
+	c.Mapping("GetResolucionesAprobadas", c.GetResolucionesAprobadas)
+	c.Mapping("GetResolucionesInscritas", c.GetResolucionesInscritas)
 	c.Mapping("InsertarResolucionCompleta", c.InsertarResolucionCompleta)
-
 }
 
 // GestionResolucionesController ...

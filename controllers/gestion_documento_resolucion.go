@@ -15,7 +15,7 @@ type GestionDocumentoResolucionController struct {
 
 // URLMapping ...
 func (c *GestionDocumentoResolucionController) URLMapping() {
-
+	c.Mapping("GetContenidoResolucion", c.GetContenidoResolucion)
 }
 
 // GestionPrevinculacionesController ...
