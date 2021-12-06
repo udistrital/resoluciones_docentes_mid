@@ -43,11 +43,12 @@ func init() {
 				&controllers.GestionResolucionesController{},
 			),
 		),
-	/*  beego.NSNamespace("/user",
-	    beego.NSInclude(
-	        &controllers.UserController{},
-	    ),
-	), */
+
+		beego.NSNamespace("/disponibilidad",
+			beego.NSInclude(
+				&controllers.ConsultarDisponibilidadesController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

@@ -10,6 +10,93 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 basePath: /v1
 paths:
+  /disponibilidad/:
+    get:
+      tags:
+      - disponibilidad
+      description: get Disponibilidad
+      operationId: ConsultarDisponibilidadesController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Disponibilidad'
+        "400":
+          description: bad request
+        "404":
+          description: not found resource
+  /disponibilidad/ListaDisponibilidades/{vigencia}:
+    get:
+      tags:
+      - disponibilidad
+      description: get Disponibilidad by vigencia
+      operationId: ConsultarDisponibilidadesController.ListaDisponibilidades
+      parameters:
+      - in: query
+        name: vigencia
+        description: vigencia de la lista
+        type: string
+      - in: query
+        name: UnidadEjecutora
+        description: unidad ejecutora de las solicitudes a consultar
+        type: string
+      - in: query
+        name: query
+        description: query de filtrado para la lista de los cdp
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.Disponibilidad'
+        "400":
+          description: ad request
+        "404":
+          description: aborted by server
+  /disponibilidad/TotalDisponibilidades/{vigencia}:
+    get:
+      tags:
+      - disponibilidad
+      description: numero de disponibilidades segun vigencia o rango de fechas
+      operationId: ConsultarDisponibilidadesController.TotalDisponibilidades
+      parameters:
+      - in: query
+        name: vigencia
+        description: vigencia para la consulta del total de disponibilidades
+        required: true
+        type: string
+      - in: query
+        name: UnidadEjecutora
+        description: unidad ejecutora de las solicitudes a consultar
+        type: string
+      responses:
+        "200":
+          description: '{int} total'
+        "400":
+          description: bad request
+        "404":
+          description: aborted by server
   /expedir_resolucion/cancelar:
     post:
       tags:
@@ -534,13 +621,13 @@ paths:
         "404":
           description: aborted by server
 definitions:
-  5336.<nil>.CancelacionContrato:
+  5490.<nil>.CancelacionContrato:
     title: CancelacionContrato
     type: object
-  5498.<nil>.ContratoVinculacion:
+  5652.<nil>.ContratoVinculacion:
     title: ContratoVinculacion
     type: object
-  16358.0xc000701c50.false:
+  16526.0xc0006b32f0.false:
     title: "false"
     type: object
   models.ApropiacionRubro:
@@ -611,12 +698,22 @@ definitions:
     title: Disponibilidad
     type: object
     properties:
+      DisponibilidadApropiacion:
+        type: array
+        items:
+          $ref: '#/definitions/models.DisponibilidadApropiacion'
+      FechaRegistro:
+        type: string
+        format: datetime
       Id:
         type: integer
         format: int64
       NumeroDisponibilidad:
         type: number
         format: double
+      Solicitud:
+        type: integer
+        format: int64
       Vigencia:
         type: number
         format: double
@@ -650,7 +747,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5336.<nil>.CancelacionContrato'
+        $ref: '#/definitions/5490.<nil>.CancelacionContrato'
   models.ExpedicionResolucion:
     title: ExpedicionResolucion
     type: object
@@ -662,7 +759,7 @@ definitions:
         type: integer
         format: int64
       Vinculaciones:
-        $ref: '#/definitions/5498.<nil>.ContratoVinculacion'
+        $ref: '#/definitions/5652.<nil>.ContratoVinculacion'
   models.FuenteFinanciamiento:
     title: FuenteFinanciamiento
     type: object
@@ -882,7 +979,7 @@ definitions:
     type: object
     properties:
       cdp_rp_docente:
-        $ref: '#/definitions/16358.0xc000701c50.false'
+        $ref: '#/definitions/16526.0xc0006b32f0.false'
   models.Rubro:
     title: Rubro
     type: object
@@ -1062,3 +1159,6 @@ tags:
 - name: gestion_resoluciones
   description: |
     GestionResolucionesController operations for Preliquidacion
+- name: disponibilidad
+  description: |
+    ConsultarDisponibilidadesController operations for ConsultarDisponibilidades
