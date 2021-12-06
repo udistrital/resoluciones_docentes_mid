@@ -7,6 +7,33 @@ import (
 
 func init() {
 
+    beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"],
+        beego.ControllerComments{
+            Method: "GetAll",
+            Router: "/",
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"],
+        beego.ControllerComments{
+            Method: "ListarDisponibilidades",
+            Router: "/ListaDisponibilidades/:vigencia",
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ConsultarDisponibilidadesController"],
+        beego.ControllerComments{
+            Method: "TotalDisponibilidades",
+            Router: "/TotalDisponibilidades/:vigencia",
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ExpedirResolucionController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:ExpedirResolucionController"],
         beego.ControllerComments{
             Method: "Cancelar",
