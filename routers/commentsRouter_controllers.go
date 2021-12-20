@@ -216,6 +216,15 @@ func init() {
 
     beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:GestionResolucionesController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:GestionResolucionesController"],
         beego.ControllerComments{
+            Method: "GetResolucionesPorDocente",
+            Router: "/consulta_docente/:persona_id",
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:GestionResolucionesController"] = append(beego.GlobalControllerRouter["github.com/udistrital/resoluciones_docentes_mid/controllers:GestionResolucionesController"],
+        beego.ControllerComments{
             Method: "GetResolucionesAprobadas",
             Router: "/get_resoluciones_aprobadas",
             AllowHTTPMethods: []string{"get"},
