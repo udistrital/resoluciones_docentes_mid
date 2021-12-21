@@ -824,6 +824,42 @@
                 }
             }
         },
+        "/gestion_resoluciones/consulta_docente/{persona_id}": {
+            "get": {
+                "tags": [
+                    "gestion_resoluciones"
+                ],
+                "description": "get GetResolucionesPorDocente",
+                "operationId": "GestionResolucionesController.GetResolucionesPorDocente",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "persona_id",
+                        "description": "documento de identidad del docente",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "format": "int64",
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "502": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
         "/gestion_resoluciones/get_resoluciones_aprobadas": {
             "get": {
                 "tags": [
@@ -953,7 +989,7 @@
         }
     },
     "definitions": {
-        "16526.0xc0006b32f0.false": {
+        "16526.0xc0007058c0.false": {
             "title": "false",
             "type": "object"
         },
@@ -1461,7 +1497,7 @@
             "type": "object",
             "properties": {
                 "cdp_rp_docente": {
-                    "$ref": "#/definitions/16526.0xc0006b32f0.false"
+                    "$ref": "#/definitions/16526.0xc0007058c0.false"
                 }
             }
         },

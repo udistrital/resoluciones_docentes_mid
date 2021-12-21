@@ -19,6 +19,7 @@ func (c *GestionResolucionesController) URLMapping() {
 	c.Mapping("GetResolucionesAprobadas", c.GetResolucionesAprobadas)
 	c.Mapping("GetResolucionesInscritas", c.GetResolucionesInscritas)
 	c.Mapping("InsertarResolucionCompleta", c.InsertarResolucionCompleta)
+	c.Mapping("GetResolucionesPorDocente", c.GetResolucionesPorDocente)
 }
 
 // GestionResolucionesController ...
@@ -39,7 +40,7 @@ func (c *GestionResolucionesController) GetResolucionesAprobadas() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -83,7 +84,7 @@ func (c *GestionResolucionesController) GetResolucionesInscritas() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -119,7 +120,7 @@ func (c *GestionResolucionesController) InsertarResolucionCompleta() {
 		if err := recover(); err != nil {
 			logs.Error(err)
 			localError := err.(map[string]interface{})
-			c.Data["message"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
 			c.Data["data"] = (localError["err"])
 			if status, ok := localError["status"]; ok {
 				c.Abort(status.(string))
@@ -140,5 +141,40 @@ func (c *GestionResolucionesController) InsertarResolucionCompleta() {
 		panic(err1)
 	}
 
+	c.ServeJSON()
+}
+
+// GetResolucionesPorDocente ...
+// @Title GetResolucionesPorDocente
+// @Description get GetResolucionesPorDocente
+// @Param persona_id query string true "documento de identidad del docente"
+// @Success 201 {object} []int
+// @Failure 400 bad request
+// @Failure 502 internal server error
+// @router /consulta_docente/:persona_id [get]
+func (c *GestionResolucionesController) GetResolucionesPorDocente() {
+	defer func() {
+		if err := recover(); err != nil {
+			logs.Error(err)
+			localError := err.(map[string]interface{})
+			c.Data["mesaage"] = (beego.AppConfig.String("appname") + "/" + "GestionResolucionesController" + "/" + (localError["funcion"]).(string))
+			c.Data["data"] = (localError["err"])
+			if status, ok := localError["status"]; ok {
+				c.Abort(status.(string))
+			} else {
+				c.Abort("404")
+			}
+		}
+	}()
+	personaId := c.Ctx.Input.Param(":persona_id")
+	if personaId == "" {
+		panic(map[string]interface{}{"funcion": "GetResolucionesPorDocente", "err1": "Error en los parametros de ingreso", "status": "400"})
+	}
+	if resoluciones, err := helpers.ConsultarResolucionesDocente(personaId); err == nil {
+		c.Ctx.Output.SetStatus(200)
+		c.Data["json"] = map[string]interface{}{"Success": true, "Status": "200", "Message": "Successful", "Data": resoluciones}
+	} else {
+		panic(err)
+	}
 	c.ServeJSON()
 }
