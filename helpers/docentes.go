@@ -704,3 +704,45 @@ func GetCdpRpDocente(identificacion string, num_vinculacion string, vigencia str
 	}
 	return rpdocente, nil
 }
+
+func ConsultarResolucionesDocente(docenteId string) (resoluciones []string, outputError map[string]interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			outputError = map[string]interface{}{"funcion": "/ConsultarResolucionesDocente", "err": err, "status": "502"}
+			panic(outputError)
+		}
+	}()
+	var v []models.VinculacionDocente
+	var r models.Resolucion
+	var resp map[string]interface{}
+	var resp2 map[string]interface{}
+
+	url := beego.AppConfig.String("ProtocolAdmin") + "://" + beego.AppConfig.String("UrlCrudResoluciones") + "/" + beego.AppConfig.String("NscrudResoluciones") + "/vinculacion_docente?limit=0&query=PersonaId:" + docenteId
+	if err := GetJson(url, &resp); err != nil {
+		panic(err)
+	} else {
+		LimpiezaRespuestaRefactor(resp, &v)
+		for _, vinculacion := range v {
+			err2 := GetJson(beego.AppConfig.String("ProtocolAdmin")+"://"+beego.AppConfig.String("UrlCrudResoluciones")+"/"+beego.AppConfig.String("NscrudResoluciones")+"/resolucion/"+strconv.Itoa(vinculacion.ResolucionVinculacionDocenteId.Id), &resp2)
+			if err2 != nil {
+				panic(err2)
+			} else {
+				LimpiezaRespuestaRefactor(resp2, &r)
+				if !existe(r.NumeroResolucion, resoluciones) {
+					resoluciones = append(resoluciones, r.NumeroResolucion)
+				}
+			}
+		}
+	}
+
+	return resoluciones, outputError
+}
+
+func existe(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

@@ -26,7 +26,7 @@ func InsertarPrevinculaciones(v []models.VinculacionDocente) (respuesta int, out
 		LimpiezaRespuestaRefactor(respuesta_peticion, &idRespuesta)
 		respuesta = idRespuesta
 	} else {
-		logs.Error(err)
+		logs.Error(err2)
 		outputError = map[string]interface{}{"funcion": "/InsertarPrevinculaciones2", "err2": err2, "status": "404"}
 		return respuesta, outputError
 	}
